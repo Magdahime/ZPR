@@ -1,3 +1,4 @@
-import os
-env = Environment(ENV = {'PATH' : os.environ['PATH']})
-env.Program('zpr', Glob('*.cpp'))
+env = Environment(CPPPATH = ['#lib/SDL2/include'])
+env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
+Repository(['#lib/SDL2/include'])
+env.Program('../bin/SCONSKURWAJEBANY',Glob('*.cpp'),LIBS=['Shell32','SDL2main','SDL2'],LIBPATH=['#lib/SDL2/lib/x64'])
