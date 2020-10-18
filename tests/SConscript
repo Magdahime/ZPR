@@ -1,0 +1,5 @@
+env = Environment(CPPPATH = ['#include','#lib/boost/boost_1_74_0'])
+env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
+env.Append(CXXFLAGS=' /EHsc ' ' /MD ')
+Repository(['#lib/SDL2/include'])
+env.Program('../bin/Tests',Glob('*.cc'),LIBS=['Shell32'],LIBPATH=['lib/boost/boost_1_74_0/stage/lib'])

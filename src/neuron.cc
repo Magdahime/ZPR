@@ -9,6 +9,9 @@
 float Neuron::sigmoid(float value){
     return value/(1+abs(value));
 }
+void Neuron::mutate(){
+    //TODO: implement this!
+}
 std::vector<float>::iterator Neuron::getBias() {
     return this.bias_;
 }
