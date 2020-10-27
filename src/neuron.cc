@@ -13,33 +13,33 @@ void Neuron::mutate(){
     //TODO: implement this!
 }
 std::vector<float>::iterator Neuron::getBias() {
-    return this.bias_;
+    return this->bias_;
 }
 std::vector<float>::iterator Neuron::getInputsBegin() {
-    return this.inputsBegin_;
+    return this->inputsBegin_;
 }
 
 std::vector<float>::iterator Neuron::getInputsEnd() {
-    return this.inputsEnd_;
+    return this->inputsEnd_;
 }
 std::vector<float>::iterator Neuron::getWeightBegin() {
-    return this.weightsBegin_;
+    return this->weightsBegin_;
 }
 std::vector<float>::iterator Neuron::getWeightsEnd() {
-    return this.weightsEnd_;
+    return this->weightsEnd_;
 }
 void Neuron::setBias(std::vector<float>::iterator bias) {
-    this.bias = bias;
+    this->bias_ = bias;
 }
 void Neuron::setInputsBegin(std::vector<float>::iterator inputsBegin) {
-    this.inputsBegin = inputsBegin;
+    this->inputsBegin_ = inputsBegin;
 }
 void Neuron::setInputsEnd(std::vector<float>::iterator inputsEnd) {
-    this.inputsEnd = inputsEnd;
+    this->inputsEnd_ = inputsEnd;
 }
 void Neuron::setWeightBegin(std::vector<float>::iterator weightsBegin) {
-    this.weightsBegin = weightsBegin;
+    this->weightsBegin_ = weightsBegin;
 }
 void Neuron::setWeightsEnd(std::vector<float>::iterator weightsEnd) {
-    this.weightsEnd = weightsEnd;
+    this->weightsEnd_ = weightsEnd;
 }

@@ -7,25 +7,42 @@
 #ifndef RANDOMNUMBERGENERATOR
 #define RANDOMNUMBERGENERATOR
 #include "main.h"
-
+template <typename Numeric, typename RealOnlyNumeric = float>
 class RandomNumberGenerator {
 private:
+    
+    using distributionType = typename std::conditional <
+    std::is_integral<Numeric>::value, 
+    std::uniform_int_distribution<Numeric>,
+    std::uniform_real_distribution<Numeric>
+    >::type;
+
     std::mt19937_64 generator_;
-    std::uniform_real_distribution<float> distributionReal_;
-    std::uniform_int_distribution<int> distributionInt_;
+    distributionType distribution_;
+    std::normal_distribution<RealOnlyNumeric> normalDistribution_;
 public:
-    RandomNumberGenerator(float min, float max){
+    RandomNumberGenerator(Numeric min, Numeric max, RealOnlyNumeric mean = 5.0, RealOnlyNumeric stddev = 2.0){
         std::random_device rd;
         this->generator_ = std::mt19937_64(rd());
-        this->distributionReal_ = std::uniform_real_distribution<float>(min, max);
-        this->distributionInt_ = std::uniform_int_distribution<int>(static_cast<int>(min),
-                                                                 static_cast<int>(max));
+        this->distribution_ = distributionType(min, max);
+        this-> normalDistribution_ = std::normal_distribution<RealOnlyNumeric> (mean, stddev);
     }
-    double getFloat(){
-        return distributionReal_(generator_);
+    Numeric get(){
+        return distribution_(generator_);
     }
-    int getInt(){
-        return distributionInt_(generator_);
+    Numeric get(Numeric min, Numeric max){
+        distributionType::param_type d2(min, max);
+        distribution_.param(d2);
+        return distribution_(generator_);
+    }
+
+    RealOnlyNumeric getNormal(){
+        return normalDistribution_(generator_);
+    }
+
+    RealOnlyNumeric getNormal( RealOnlyNumeric mean, RealOnlyNumeric stddev){
+        this->normalDistribution_ = std::normal_distribution<RealOnlyNumeric> d1(mean, stddev);
+        return normalDistribution_(generator_);
     }
 };
 
