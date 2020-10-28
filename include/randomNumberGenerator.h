@@ -41,9 +41,15 @@ public:
     }
 
     RealOnlyNumeric getNormal( RealOnlyNumeric mean, RealOnlyNumeric stddev){
-        this->normalDistribution_ = std::normal_distribution<RealOnlyNumeric> d1(mean, stddev);
+        this->normalDistribution_ = std::normal_distribution<RealOnlyNumeric> (mean, stddev);
         return normalDistribution_(generator_);
     }
-};
 
+    float getNormalMin(){
+        return normalDistribution_.min();
+    }
+    float getNormalMax(){
+        return normalDistribution_.max();
+    }
+};
 #endif

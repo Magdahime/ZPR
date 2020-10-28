@@ -1,4 +1,4 @@
-env = Environment(CPPPATH = ['#lib/SDL2/include'])
+env = Environment(CPPPATH = ['#include','#lib/SDL2/include'])
 env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
 Repository(['#lib/SDL2/include'])
-env.Program('../bin/SCONSKURWAJEBANY',Glob('*.cc'),LIBS=['Shell32','SDL2main','SDL2'],LIBPATH=['#lib/SDL2/lib/x64'])
+env.Program('../bin/CreatureSIM',Glob('*.cc'),LIBS=['Shell32','SDL2main','SDL2'],LIBPATH=['#lib/SDL2/lib/x64'])

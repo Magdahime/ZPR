@@ -5,12 +5,18 @@
 
 #include "main.h"
 #include "neuron.h"
+#include "randomNumberGenerator.h"
 
 float Neuron::sigmoid(float value){
     return value/(1+abs(value));
 }
 void Neuron::mutate(){
-    //TODO: implement this!
+    RandomNumberGenerator<float> rng(MUTATIONLOWERBOUND, MUTATIONUPPERBOUND);
+    for(auto i = weightsBegin_; i != weightsEnd_; i++ ){
+        if(rng.get() <= MUTATIONTHRESHHOLD){
+            *i = rng.getNormal((*i),MUTATIONSTRENGTH * (*i)); 
+        }
+    }
 }
 std::vector<float>::iterator Neuron::getBias() {
     return this->bias_;

@@ -2,10 +2,11 @@
 ///     Author: Magdalena Majkowska                   ///
 ///     Unit tests for randomNumberGenerator class    ///
 /////////////////////////////////////////////////////////
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE RANDOM_NUMBER_GENERATOR
-#include <boost/test/included/unit_test.hpp>
+
+//#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
 #include <main.h>
+#include "neuron.h"
 #include "randomNumberGenerator.h"
 
 BOOST_AUTO_TEST_SUITE( randomNumberGeneratorSuite )
@@ -36,9 +37,7 @@ BOOST_AUTO_TEST_CASE( getNormalTest){
         ++hist[std::round(rng.getNormal())];
     }
     for(auto p : hist) {
-        std::cout << std::setw(2)
-                  << p.first << ' ' << std::string(p.second/200, '*') << '\n';
+        std::cout<< p.first << ' ' << std::string(p.second/200, '*') << '\n';
     }
-
-    }
+}
 BOOST_AUTO_TEST_SUITE_END()
