@@ -5,7 +5,8 @@
 
 #ifndef NEURON
 #define NEURON
-#include "main.h"
+#include <iostream>
+#include <vector>
 
 const unsigned short int NEURONINPUTSNUM = 8;
 const float MUTATIONSTRENGTH = 0.2f;

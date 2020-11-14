@@ -7,24 +7,28 @@ using std::cout;
 using std::endl;
 
 //SDL stuff.
-#include "SDL.h"
+#include <SFML/Graphics.hpp>
 
 int main (int argc, char* args[]) {
     cout << "Hello World!\n";
-    
-    // Initialize SDL
-    if (SDL_Init (SDL_INIT_VIDEO) < 0)
+
+    sf::RenderWindow window(sf::VideoMode(800, 600), "CreatureSim");
+    sf::CircleShape shape(100.f);
+    shape.setFillColor(sf::Color::Green);
+
+    while (window.isOpen())
     {
-        cout << "Couldn't initialize SDL: %s\n";
-        exit (1);
-    } else {
-        cout << "SDL initialized correctly!\n";
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        window.clear();
+        window.draw(shape);
+        window.display();
     }
-    //Important, otherwise stdout.txt
-    //might not be written two.
-    atexit (SDL_Quit);
-    
-    SDL_Quit();
 
     return 0;
 };

@@ -1,4 +1,4 @@
-test = ARGUMENTS.get('test', 1)
+test = ARGUMENTS.get('test', 0)
 
 if not int(test):
     print("Not testing tonight!")
