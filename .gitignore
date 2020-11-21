@@ -3,4 +3,5 @@ lib/*
 bin/*
 .idea
 .vscode
+.s*
 doc/*

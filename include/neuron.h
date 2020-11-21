@@ -21,8 +21,14 @@ class Neuron{
     std::vector<float>::iterator weightsEnd_;
     std::vector<float>::iterator bias_;
 public:
-    Neuron(const std::vector<float>::iterator weightsBegin, const std::vector<float>::iterator weightsEnd) :
-            weightsBegin_(weightsBegin), weightsEnd_(weightsEnd) {};
+    Neuron(){};
+    Neuron(
+        const std::vector<float>::iterator weightsBegin, 
+        const std::vector<float>::iterator weightsEnd
+        ) :
+            weightsBegin_(weightsBegin),
+            weightsEnd_(weightsEnd)
+        {};
     float sigmoid(float value);
     void mutate();
     std::vector<float>::iterator getInputsBegin();

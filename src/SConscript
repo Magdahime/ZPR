@@ -1,5 +1,29 @@
-env = Environment(CPPPATH = ['#include'])
+env = Environment(
+    CPPPATH=[
+        '#include',
+        '#/lib/boost/boost_1_74_0',
+        'C:\\Program Files (x86)\\IntelSWTools\\system_studio_2020\\OpenCL\\sdk\\include',
+        '#/lib/TGUI-0.9/include'
+        ]
+    )
 env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
 env.Append(CXXFLAGS='/EHsc /MD /std:c++17')
-Repository([ '#/lib/SFML-2.5.1' ]) 
-env.Program('../bin/CreatureSIM',Glob('*.cc'),LIBS=['sfml-graphics', 'sfml-window','sfml-system'],LIBPATH=[ '#/lib/SFML-2.5.1/lib'])
+Repository(['#/lib/SFML-2.5.1',
+            '#/lib/compute',
+            '#/lib/boost/boost_1_74_0',
+            'C:\\Program Files (x86)\\IntelSWTools\\system_studio_2020\\OpenCL\\sdk\\include'])
+env.Program('../bin/CreatureSIM', Glob('*.cc'),
+            LIBS=[
+                'sfml-graphics',
+                'sfml-window',
+                'sfml-system',
+                'tgui',
+                'OpenCL'
+            ],
+            LIBPATH=[
+                '#/lib/SFML-2.5.1/lib',
+                'C:\\Program Files (x86)\\IntelSWTools\\system_studio_2020\\OpenCL\\sdk\\lib\\x64',
+                '#/lib/boost/boost_1_74_0/stage/lib',
+                '#/lib/TGUI-0.9/lib'
+            ]
+)
