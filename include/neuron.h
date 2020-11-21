@@ -14,12 +14,14 @@ const float MUTATIONLOWERBOUND = 0.0f;
 const float MUTATIONUPPERBOUND = 1.0f;
 const float MUTATIONTHRESHHOLD = 0.35f;
 
-class Neuron{
+class Neuron
+{
     std::vector<float>::iterator inputsBegin_;
     std::vector<float>::iterator inputsEnd_;
     std::vector<float>::iterator weightsBegin_;
     std::vector<float>::iterator weightsEnd_;
     std::vector<float>::iterator bias_;
+
 public:
     Neuron(){};
     Neuron(

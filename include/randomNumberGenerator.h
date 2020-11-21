@@ -8,47 +8,54 @@
 #define RANDOMNUMBERGENERATOR
 #include "main.h"
 template <typename Numeric, typename RealOnlyNumeric = float>
-class RandomNumberGenerator {
+class RandomNumberGenerator
+{
 private:
-    
-    using distributionType = typename std::conditional <
-    std::is_integral<Numeric>::value, 
-    std::uniform_int_distribution<Numeric>,
-    std::uniform_real_distribution<Numeric>
-    >::type;
+    using distributionType = typename std::conditional<
+        std::is_integral<Numeric>::value,
+        std::uniform_int_distribution<Numeric>,
+        std::uniform_real_distribution<Numeric>>::type;
 
     std::mt19937_64 generator_;
     distributionType distribution_;
     std::normal_distribution<RealOnlyNumeric> normalDistribution_;
+
 public:
-    RandomNumberGenerator(Numeric min, Numeric max, RealOnlyNumeric mean = 5.0, RealOnlyNumeric stddev = 2.0){
+    RandomNumberGenerator(Numeric min, Numeric max, RealOnlyNumeric mean = 5.0, RealOnlyNumeric stddev = 2.0)
+    {
         std::random_device rd;
         this->generator_ = std::mt19937_64(rd());
         this->distribution_ = distributionType(min, max);
-        this-> normalDistribution_ = std::normal_distribution<RealOnlyNumeric> (mean, stddev);
+        this->normalDistribution_ = std::normal_distribution<RealOnlyNumeric>(mean, stddev);
     }
-    Numeric get(){
+    Numeric get()
+    {
         return distribution_(generator_);
     }
-    Numeric get(Numeric min, Numeric max){
+    Numeric get(Numeric min, Numeric max)
+    {
         distributionType::param_type d2(min, max);
         distribution_.param(d2);
         return distribution_(generator_);
     }
 
-    RealOnlyNumeric getNormal(){
+    RealOnlyNumeric getNormal()
+    {
         return normalDistribution_(generator_);
     }
 
-    RealOnlyNumeric getNormal( RealOnlyNumeric mean, RealOnlyNumeric stddev){
-        this->normalDistribution_ = std::normal_distribution<RealOnlyNumeric> (mean, stddev);
+    RealOnlyNumeric getNormal(RealOnlyNumeric mean, RealOnlyNumeric stddev)
+    {
+        this->normalDistribution_ = std::normal_distribution<RealOnlyNumeric>(mean, stddev);
         return normalDistribution_(generator_);
     }
 
-    float getNormalMin(){
+    float getNormalMin()
+    {
         return normalDistribution_.min();
     }
-    float getNormalMax(){
+    float getNormalMax()
+    {
         return normalDistribution_.max();
     }
 };

@@ -3,6 +3,7 @@
 //Program: SDL_HelloWorld
 
 #include <iostream>
+#include "map.h"
 using std::cout;
 using std::endl;
 
@@ -78,6 +79,20 @@ int main(int argc, char *args[])
 
     sf::Clock clock;
 
+// int main (int argc, char* argv[]) {
+    int width = 1600;
+    int height = 1200;
+    // sf::RenderWindow window(sf::VideoMode(width, height), "CreatureSim");
+    sf::Image image;
+    sf::Texture texture;
+    sf::Sprite sprite;
+    Map map(width, height);
+    unsigned char * pixels = map.generateR();
+    image.create(width,height,pixels);
+    texture.create(width,height);
+    texture.update(image);
+    sprite.setTexture(texture);
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -132,6 +147,8 @@ int main(int argc, char *args[])
             compute::copy(
                 device_results.begin(), device_results.end(), results.begin(), device.getQueue());
 
+            window.draw(sprite);
+            
             for (int i = 0; i < creatureNum; i++)
             {
                 // std::cout<<"Wynik: "<<results[2*i]<<" "<<results[2*i+1]<<"\n";
