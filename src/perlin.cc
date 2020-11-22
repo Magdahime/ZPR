@@ -6,7 +6,7 @@ Perlin::Perlin(int width, int height) : width_(width), height_(height)
 }
 void Perlin::generateWhiteNoise()
 {
-    RandomNumberGenerator rng(0.0, 1.0);
+    RandomNumberGenerator<float,float> rng(0.0, 1.0);
     for (int i = 0; i < height_ * width_; i++)
         primaryNoise_[i] = rng.get();
 }
@@ -23,14 +23,13 @@ float Perlin::linearInterpolation(float value1, float value2, float alpha)
     return value1 * (1 - alpha) + value2 * alpha;
 }
 
-
 float *Perlin::generateSmoothNoise(int octave)
 {
-    std::cout<<octave<<std::endl;
+    std::cout << octave << std::endl;
     float *smoothNoise = new float[width_ * height_];
     int samplePeriod = 1 << octave;
-    std::cout<<samplePeriod<<std::endl;
-    float frequency = 1.0f/samplePeriod;
+    std::cout << samplePeriod << std::endl;
+    float frequency = 1.0f / samplePeriod;
 
     for (int i = 0; i < width_ * height_; i++)
     {
@@ -55,14 +54,15 @@ float *Perlin::generatePerlinNoise()
 {
     generateWhiteNoise();
     float persistence = 0.8f;
-    float **smoothedNoises = new float*[OCTAVESNUMBER];
+    float **smoothedNoises = new float *[OCTAVESNUMBER];
     float amplitude = 1.0;
     float totalAmplitude = 0.0f;
-    for (int octave = 0; octave < OCTAVESNUMBER; octave++){
+    for (int octave = 0; octave < OCTAVESNUMBER; octave++)
+    {
         smoothedNoises[octave] = generateSmoothNoise(octave);
     }
-    float * perlinNoise = new float[width_*height_];
-    for (int octave = OCTAVESNUMBER-1; octave >= 0; octave--)
+    float *perlinNoise = new float[width_ * height_];
+    for (int octave = OCTAVESNUMBER - 1; octave >= 0; octave--)
     {
         amplitude *= persistence;
         totalAmplitude += amplitude;

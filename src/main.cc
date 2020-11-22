@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "map.h"
+#include "perlin.h"
 using std::cout;
 using std::endl;
 
@@ -18,7 +19,8 @@ int main (int argc, char* argv[]) {
     sf::Texture texture;
     sf::Sprite sprite;
     Map map(width, height);
-    unsigned char * pixels = map.generateR();
+    Perlin perlin(width,height);
+    unsigned char * pixels = map.generateMapFromPerlin(perlin);
     image.create(width,height,pixels);
     texture.create(width,height);
     texture.update(image);
