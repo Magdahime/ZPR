@@ -26,10 +26,10 @@ float Perlin::linearInterpolation(float value1, float value2, float alpha)
 
 float *Perlin::generateSmoothNoise(int octave)
 {
-    std::cout<<octave<<std::endl;
+    // std::cout<<octave<<std::endl;
     float *smoothNoise = new float[width_ * height_];
     int samplePeriod = 1 << octave;
-    std::cout<<samplePeriod<<std::endl;
+    // std::cout<<samplePeriod<<std::endl;
     float frequency = 1.0f/samplePeriod;
 
     for (int i = 0; i < width_ * height_; i++)

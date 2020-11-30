@@ -80,8 +80,8 @@ int main(int argc, char *args[])
     sf::Clock clock;
 
 // int main (int argc, char* argv[]) {
-    int width = 1600;
-    int height = 1200;
+    int width = 160;
+    int height = 120;
     // sf::RenderWindow window(sf::VideoMode(width, height), "CreatureSim");
     sf::Image image;
     sf::Texture texture;
@@ -92,6 +92,7 @@ int main(int argc, char *args[])
     texture.create(width,height);
     texture.update(image);
     sprite.setTexture(texture);
+    sprite.setScale(10.0f, 10.0f);
 
     while (window.isOpen())
     {
@@ -113,24 +114,28 @@ int main(int argc, char *args[])
                 // tmpSpecies.emplace_back(v.xPos);
                 // tmpSpecies.emplace_back(v.yPos);
                 // tmpSpecies.emplace_back(v.size);
-                tmpSpecies.emplace_back(1);
-                tmpSpecies.emplace_back(random<float>(-1, 1));
-                tmpSpecies.emplace_back(-1);
-                tmpSpecies.emplace_back(v.age / 1000.f);
+                // tmpSpecies.emplace_back((float)pixels[(int)(v.yPos*1600*4)+(int)(v.xPos*4)]/255.0f);
+                // tmpSpecies.emplace_back((float)pixels[(int)(v.yPos*1600*4)+(int)(v.xPos*4)+1]/255.0f);
+                // tmpSpecies.emplace_back((float)pixels[]/255.0f);
+                tmpSpecies.emplace_back((float)pixels[(((int)v.yPos*16*4)+((int)v.xPos*4/10))]/255.0f);
+                tmpSpecies.emplace_back((float)pixels[(((int)v.yPos*16*4)+((int)v.xPos*4/10))+1]/255.0f);
+                tmpSpecies.emplace_back((float)pixels[(((int)v.yPos*16*4)+((int)v.xPos*4/10))+2]/255.0f);
+                // tmpSpecies.emplace_back(v.age / 1000.f);
+                tmpSpecies.emplace_back(random<float>(-1.0f, 1.0f));
                 tmpSpecies.emplace_back(v.speed / (sqrt(1600 * 1600 + 1200 * 1200) / 500.0f));
                 tmpSpecies.emplace_back(v.hdg / (2.0f * 3.14159f));
             }
 
-            std::vector<float> tmpNeurons = {};
-            for (auto v : neurons)
-            {
-                tmpNeurons.emplace_back(v.w1);
-                tmpNeurons.emplace_back(v.w2);
-                tmpNeurons.emplace_back(v.w3);
-                tmpNeurons.emplace_back(v.w4);
-                tmpNeurons.emplace_back(v.w5);
-                tmpNeurons.emplace_back(v.w6);
-            }
+            // std::vector<float> tmpNeurons = {};
+            // for (auto v : neurons)
+            // {
+            //     tmpNeurons.emplace_back(v.w1);
+            //     tmpNeurons.emplace_back(v.w2);
+            //     tmpNeurons.emplace_back(v.w3);
+            //     tmpNeurons.emplace_back(v.w4);
+            //     tmpNeurons.emplace_back(v.w5);
+            //     tmpNeurons.emplace_back(v.w6);
+            // }
 
             compute::copy(
                 tmpSpecies.begin(), tmpSpecies.end(), device_species.begin(), device.getQueue());
@@ -148,7 +153,7 @@ int main(int argc, char *args[])
                 device_results.begin(), device_results.end(), results.begin(), device.getQueue());
 
             window.draw(sprite);
-            
+
             for (int i = 0; i < creatureNum; i++)
             {
                 // std::cout<<"Wynik: "<<results[2*i]<<" "<<results[2*i+1]<<"\n";
