@@ -6,7 +6,8 @@
 /////////////////////////////////////////////////////////
 #ifndef RANDOMNUMBERGENERATOR
 #define RANDOMNUMBERGENERATOR
-#include "main.h"
+#include <random>
+
 template <typename Numeric, typename RealOnlyNumeric = float>
 class RandomNumberGenerator
 {
@@ -21,7 +22,7 @@ private:
     std::normal_distribution<RealOnlyNumeric> normalDistribution_;
 
 public:
-    RandomNumberGenerator(Numeric min, Numeric max, RealOnlyNumeric mean = 5.0, RealOnlyNumeric stddev = 2.0)
+    RandomNumberGenerator(Numeric min = 0.0f, Numeric max = 1.0f, RealOnlyNumeric mean = 5.0, RealOnlyNumeric stddev = 2.0)
     {
         std::random_device rd;
         this->generator_ = std::mt19937_64(rd());
@@ -34,7 +35,7 @@ public:
     }
     Numeric get(Numeric min, Numeric max)
     {
-        distributionType::param_type d2(min, max);
+        typename distributionType::param_type d2(min, max);
         distribution_.param(d2);
         return distribution_(generator_);
     }

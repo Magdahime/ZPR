@@ -6,7 +6,7 @@ Perlin::Perlin(int width, int height) : width_(width), height_(height)
 }
 void Perlin::generateWhiteNoise()
 {
-    RandomNumberGenerator<float,float> rng(0.0, 1.0);
+    RandomNumberGenerator<float, float> rng(0.0, 1.0);
     for (int i = 0; i < height_ * width_; i++)
         primaryNoise_[i] = rng.get();
 }

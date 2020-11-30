@@ -4,3 +4,4 @@ bin/*
 doc/*
 .*
 .sconsign*
+src/*.obj

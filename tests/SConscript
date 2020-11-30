@@ -1,9 +1,21 @@
+import os
+import platform
+
+system = platform.system()
+system = system.lower()
+
 env = Environment(CPPPATH = ['#include','#lib/boost/boost_1_74_0',])
-env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
-env.Append(CXXFLAGS=' /EHsc ' ' /MD ')
-Repository(['#lib/SDL2/include'])
+
+if system=="windows":
+    print("windows")
+    env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
+    env.Append(CXXFLAGS=' /EHsc ' ' /MD ')
+    env.Append(LIBS=['Shell32'])
+else:
+    print("linux")
+    env.Append(CXXFLAGS='-Wall -std=c++17')
 sources=Glob("*.cc")
 sources.append("#/src/neuron.cc")
 sources.append("#/src/map.cc")
 sources.append("#/src/perlin.cc")
-env.Program('../bin/Tests',sources,LIBS=['Shell32'],LIBPATH=['#/lib/boost/boost_1_74_0/stage/lib'])
+env.Program('../bin/Tests',sources,LIBPATH=['#/lib/boost/boost_1_74_0/stage/lib'])

@@ -1,5 +1,23 @@
-env = Environment(CPPPATH = ['#include'])
-env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
-env.Append(CXXFLAGS='/EHsc /MD /std:c++17')
-Repository([ '#/lib/SFML-2.5.1' ]) 
-env.Program('../bin/CreatureSIM',Glob('*.cc'),LIBS=['sfml-graphics', 'sfml-window','sfml-system'],LIBPATH=[ '#/lib/SFML-2.5.1/lib'])
+
+import os
+import platform
+
+system = platform.system()
+system = system.lower()
+if system == "windows":
+    print("Windows!")
+    env = Environment(CPPPATH = ['#/include'])
+    env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
+    env.Append(CXXFLAGS='/EHsc /MD /std:c++17')
+    Repository([ '#/lib/SFML-2.5.1-Win' ]) 
+    env.Program('../bin/CreatureSIM',Glob('*.cc'),LIBS=['sfml-graphics', 'sfml-window','sfml-system'],LIBPATH=[ '#/lib/SFML-2.5.1-Win/lib'])
+
+else:
+    print("Linux!")
+    env = Environment() 
+    env.Append(CPPPATH = ['#include', '#lib/SFML-2.5.1/include'])
+    env.Append(CXXFLAGS='-Wall -std=c++17')
+    VariantDir('#/build', '#/src', duplicate=0)
+    resources = Glob("#src/*.cpp")
+    env.Program( '../bin/CreatureSIM',Glob('*.cc'),LIBS=['sfml-graphics', 'sfml-window','sfml-system'],LIBPATH=[ '#/lib/SFML-2.5.1/lib'])
+
