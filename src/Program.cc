@@ -14,7 +14,6 @@
 
 #include "Program.h"
 
-#include "WebsocketServer.h"
 #include "map.h"
 #include "perlin.h"
 
@@ -28,8 +27,6 @@ Program::Program()
     programWindowPtr_->setVerticalSyncEnabled(true);
     mainGuiPtr_ = make_unique<tgui::GuiSFML>();
     webviewPtr_ = make_unique<webview::webview>(true, nullptr);
-    websocketServerPtr_ = make_unique<WebsocketServer>();
-    websocketServerPtr_ -> spawn();
     mainGuiPtr_->setTarget(*programWindowPtr_);
     webviewPtr_->set_title("WebView Interface");
     webviewPtr_->set_size(480, 320, WEBVIEW_HINT_NONE);
@@ -74,7 +71,6 @@ void Program::run()
         messageContent = mainGuiPtr_->get<tgui::TextArea>("MsgArea1");
         messageSendBtn->onPress([&] {
             cout<<messageContent->getText().toAnsiString();
-            websocketServerPtr_->sendStringToAll(messageContent->getText().toAnsiString());
             webviewPtr_->eval("writeToBody(\"" + messageContent->getText().toAnsiString() +"\")");
             });
     });
@@ -97,5 +93,4 @@ void Program::run()
         mainGuiPtr_->draw();
         programWindowPtr_->display();
     }
-    websocketServerPtr_->close();
 }

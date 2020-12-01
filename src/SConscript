@@ -11,7 +11,6 @@ if system == "windows":
     env.Append(CPPPATH=['#include',
                         '#lib/SFML-2.5.1-Win/include',
                         '#lib/TGUI-0.9/include',
-                        '#lib/websocketpp',
                         '#lib/webview/include',
                         '#lib/boost/boost_1_74_0',
                         '#lib/openssl/include64'])
@@ -23,16 +22,14 @@ if system == "windows":
     env.Append(LIBPATH=['#lib/TGUI-0.9/lib',
                         '#lib/SFML-2.5.1-Win/lib',
                         '#lib/webview/lib',
-                        '#lib/boost/boost_1_74_0/stage/lib',
-                        '#lib/openssl/lib64'])
+                        '#lib/boost/boost_1_74_0/stage/lib'
+                        ])
 
     env.Append(LIBS=['sfml-graphics',
                      'sfml-window',
                      'sfml-system',
                      'tgui',
                      'webview',
-                     'libsslMD',
-                     'libcryptoMD',
                      'WebView2Loader.dll'])
 
     env.Program('../bin/CreatureSIM', Glob('*.cc'))
