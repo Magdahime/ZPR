@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////
+///                                                   ///
+///     Author: Bartlomiej Janowski                   ///
+///     This header file holds the data URI           ///
+///     that is forwarded to WebView window           ///
+///     on program launch                             ///
+///                                                   ///
+/////////////////////////////////////////////////////////
 #pragma once
 
 #include <string>
@@ -18,25 +26,32 @@ R"(data:text/html,
                 writeToBody("Kliknieto przycisk");
                 var x = document.getElementById("widthInput").value;
                 var y = document.getElementById("heightInput").value;
+                var element = document.getElementById("butt1");
+                element.parentNode.removeChild(element)
                 setMapSize(x, y);
             }
             function frameNum(num) {
                 document.getElementById("frameCounter").innerHTML = "Frame: ".concat(num);
+            }
+            function dataAvailable() {
+                writeToBody("Data available");
             }
         </script>
     </head>
 
     <body onload="">
         This is a placeholder. Some data may appear shortly.
-          <label for="widthInput">Perlin width:</label>
-            <input type="range" id="widthInput" name="widthInput" min="0" max="1000" oninput="this.nextElementSibling.value = this.value">
-            <output>0</output>
-            </br>
-          <label for="heightInput">Perlin height:</label>
-            <input type="range" id="heightInput" name="heightInput" min="0" max="1000" oninput="this.nextElementSibling.value = this.value">
-            <output>0</output>
-            </br>
-        <button onclick="testSend();">Hejka</button>
+        <label for="widthInput">Perlin width:</label>
+        <input type="range" id="widthInput" name="widthInput" min="0" max="1000"
+            oninput="this.nextElementSibling.value = this.value">
+        <output>0</output>
+        </br>
+        <label for="heightInput">Perlin height:</label>
+        <input type="range" id="heightInput" name="heightInput" min="0" max="1000"
+            oninput="this.nextElementSibling.value = this.value">
+        <output>0</output>
+        </br>
+        <button onclick="testSend();" id="butt1">Hejka</button>
         <div id="frameCounter">FramCounter</div>
     </body>
 

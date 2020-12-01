@@ -6,6 +6,8 @@
 #include "Neuron.h"
 #include "RandomNumberGenerator.h"
 
+Neuron::Neuron(const std::vector<float>::iterator weightsBegin, const std::vector<float>::iterator weightsEnd) : weightsBegin_(weightsBegin), weightsEnd_(weightsEnd){};
+
 float Neuron::sigmoid(float value){
     return value/(1+abs(value));
 }

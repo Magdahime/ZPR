@@ -10,7 +10,7 @@
 #include "WebviewHtml.h"
 
 #include "Program.h"
-
+#include "Simulation.h"
 #include "Map.h"
 #include "Perlin.h"
 
@@ -26,6 +26,7 @@ Program::Program()
     webviewPtr_->set_title("WebView Interface");
     webviewPtr_->set_size(480, 320, WEBVIEW_HINT_NONE);
     webviewPtr_->set_size(180, 120, WEBVIEW_HINT_MIN);
+    simulationPtr_ = make_unique<Simulation>();
 }
 
 void Program::run()
@@ -33,29 +34,30 @@ void Program::run()
     sf::Image image;
     sf::Texture texture;
     sf::Sprite sprite;
-    
 
-    unsigned char *pixels;
-    unique_ptr<Map> mapPtr;
-    unique_ptr<Perlin> perlinPtr;
+    shared_ptr<Map> mapPtr;
 
     bool submitted = false;
 
-    webviewPtr_->bind("setMapSize",[&](std::string s) -> std::string {
+    thread simulationThread;
+
+    webviewPtr_->bind("setMapSize", [&](std::string s) -> std::string {
         auto windowWidth = std::stoi(webview::json_parse(s, "", 0));
         auto windowHeight = std::stoi(webview::json_parse(s, "", 1));
         mapPtr = make_unique<Map>(windowWidth, windowHeight);
-        perlinPtr = make_unique<Perlin>(windowWidth, windowHeight);
-        pixels = mapPtr->generateMapFromPerlin(*perlinPtr);
+        auto perlin = Perlin(windowWidth, windowHeight);
+        auto pixels = mapPtr->generateMapFromPerlin(perlin);
         image.create(windowWidth, windowHeight, pixels);
         texture.create(windowWidth, windowHeight);
         texture.update(image);
         sprite.setTexture(texture);
         submitted = true;
+        simulationPtr_->setMap(mapPtr);
+        simulationThread = thread([this] { simulationPtr_->run_PROTO(); });
         return "OK";
     });
     webviewPtr_->navigate(WEBVIEW_HTML_STR);
-    auto webviewThread = thread([this] {webviewPtr_->run();});
+    auto webviewThread = thread([this] { webviewPtr_->run(); });
     unsigned int frameCounter = 0;
     while (programWindowPtr_->isOpen())
     {
@@ -65,13 +67,15 @@ void Program::run()
             if (event.type == sf::Event::Closed)
                 programWindowPtr_->close();
         }
-        programWindowPtr_->clear();
-        programWindowPtr_->draw(sprite);
-        if (!submitted)
-        {
-        }
-        programWindowPtr_->display();
         ++frameCounter;
         webviewPtr_->eval("frameNum(" + to_string(frameCounter) + ");");
+        if (simulationPtr_->tryNewData())
+        {
+            programWindowPtr_->clear();
+            programWindowPtr_->draw(sprite);
+            webviewPtr_->eval("dataAvailable();");
+            simulationPtr_->printAll_PROTO(programWindowPtr_.get());
+        }
+        programWindowPtr_->display();
     }
 }

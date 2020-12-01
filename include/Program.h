@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////
+///                                                   ///
+///     Author: Bartlomiej Janowski                   ///
+///     This is the main class of the application     ///
+///     all important data and objects are held       ///
+///     behind the pointers inside this class.        ///
+///                                                   ///
+/////////////////////////////////////////////////////////
 #pragma once
 
 //C++ Standard Library stuff.
@@ -5,14 +13,17 @@
 #include <string>
 #include <thread>
 
-namespace webview {
+namespace webview
+{
     class webview;
 };
 
-
-namespace sf {
+namespace sf
+{
     class RenderWindow;
 }
+
+class Simulation;
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 800;
@@ -22,6 +33,7 @@ class Program
 {
     std::unique_ptr<sf::RenderWindow> programWindowPtr_;
     std::unique_ptr<webview::webview> webviewPtr_;
+    std::unique_ptr<Simulation> simulationPtr_;
 
 public:
     Program();
