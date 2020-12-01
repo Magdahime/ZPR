@@ -11,6 +11,10 @@ sudo apt install libboost-all-dev
 ```
 sudo apt install libwebkit2gtk-4.0-dev
 ```
+**OpenMP** task parallelization
+```
+sudo apt install libomp-dev
+```
 **WEBVIEW** for displaying statistics and graphical user interface
 
 For Linux
