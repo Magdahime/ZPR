@@ -5,7 +5,7 @@
 #pragma once
 
 #include <iostream>
-#include "randomNumberGenerator.h"
+#include "RandomNumberGenerator.h"
 
 const int OCTAVESNUMBER =7;
 const float PI = 3.14159;

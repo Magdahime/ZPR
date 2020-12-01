@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include <vector>
-#include "neuron.h"
+#include "Neuron.h"
 
 class Creature
 {

@@ -6,7 +6,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Simulation.h"
-#include "Creature.hpp"
+#include "Creature.h"
 #include "Neuron.h"
 #include "Map.h"
 

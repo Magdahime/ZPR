@@ -9,7 +9,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
-#include "perlin.h"
+#include "Perlin.h"
 
 class Map
 {
