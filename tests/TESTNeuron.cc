@@ -5,9 +5,9 @@
 
 //#define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-#include <main.h>
-#include "neuron.h"
-#include "randomNumberGenerator.h"
+#include "Main.h"
+#include "Neuron.h"
+#include "RandomNumberGenerator.h"
 
 BOOST_AUTO_TEST_SUITE(NeuronSuite)
 BOOST_AUTO_TEST_CASE(MutateTest)

@@ -11,8 +11,8 @@
 
 #include "Program.h"
 
-#include "map.h"
-#include "perlin.h"
+#include "Map.h"
+#include "Perlin.h"
 
 using namespace std;
 

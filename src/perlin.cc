@@ -3,7 +3,7 @@
 ///     Source code of Perlin noise generator         ///
 /////////////////////////////////////////////////////////
 
-#include "perlin.h"
+#include "Perlin.h"
 
 Perlin::Perlin(int width, int height) : width_(width), height_(height)
 {

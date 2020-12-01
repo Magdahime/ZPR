@@ -3,9 +3,8 @@
 ///     Source code of simple neuron class            ///
 /////////////////////////////////////////////////////////
 
-#include "main.h"
-#include "neuron.h"
-#include "randomNumberGenerator.h"
+#include "Neuron.h"
+#include "RandomNumberGenerator.h"
 
 float Neuron::sigmoid(float value){
     return value/(1+abs(value));

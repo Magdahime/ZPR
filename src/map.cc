@@ -4,7 +4,7 @@
 /////////////////////////////////////////////////////////
 
 
-#include "map.h"
+#include "Map.h"
 
 unsigned char *Map::generateMapFromPerlin(Perlin &perlin)
 {
