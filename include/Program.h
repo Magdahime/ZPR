@@ -34,6 +34,7 @@ class Program
     std::unique_ptr<sf::RenderWindow> programWindowPtr_;
     std::unique_ptr<webview::webview> webviewPtr_;
     std::unique_ptr<Simulation> simulationPtr_;
+    std::thread webviewThread_;
 
 public:
     Program();
