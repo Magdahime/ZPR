@@ -37,10 +37,11 @@ else:
     env = Environment()
     env.Append(CPPPATH=['#include',
                         '#lib/webview'])
-    env.Append(CXXFLAGS='-Wall -std=c++17 -DWEBVIEWGTK')
+    env.Append(CXXFLAGS='-Wall -std=c++17 -DWEBVIEWGTK -fopenmp')
     env.Append(LIBS=['sfml-graphics',
                      'sfml-window',
-                     'sfml-system'
+                     'sfml-system',
+                     'gomp'
                      ])
     env.Append(LIBPATH=['#/lib/SFML-2.5.1/lib'])
     env.ParseConfig('pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0')
