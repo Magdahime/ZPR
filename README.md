@@ -27,3 +27,13 @@ For Windows
 .\scripts\config.ps1
 ```
 It will only clone the repository to its place in lib directory.
+
+# Compilation
+Use
+```
+scons
+```
+in the main project directory (the same in which this README is located) to compile the program.
+
+# Running the program
+The resulting executable will be located at *bin/CreatureSIM*. As you will be able to see it is very much work in progress.
