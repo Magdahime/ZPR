@@ -10,17 +10,15 @@ if system == "windows":
 
     env.Append(CPPPATH=['#include',
                         '#lib/SFML-2.5.1-Win/include',
-                        '#lib/TGUI-0.9/include',
                         '#lib/webview/include',
-                        '#lib/boost/boost_1_74_0',
-                        '#lib/openssl/include64'])
+                        '#lib/boost/boost_1_74_0'
+                        ])
 
     env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
 
     env.Append(CXXFLAGS='/EHsc /MD /std:c++17')
 
-    env.Append(LIBPATH=['#lib/TGUI-0.9/lib',
-                        '#lib/SFML-2.5.1-Win/lib',
+    env.Append(LIBPATH=['#lib/SFML-2.5.1-Win/lib',
                         '#lib/webview/lib',
                         '#lib/boost/boost_1_74_0/stage/lib'
                         ])
@@ -28,9 +26,9 @@ if system == "windows":
     env.Append(LIBS=['sfml-graphics',
                      'sfml-window',
                      'sfml-system',
-                     'tgui',
                      'webview',
-                     'WebView2Loader.dll'])
+                     'WebView2Loader.dll'
+                     ])
 
     env.Program('../bin/CreatureSIM', Glob('*.cc'))
 
@@ -38,11 +36,15 @@ else:
     print("Linux!")
     env = Environment()
     env.Append(CPPPATH=['#include',
-                        '#lib/SFML-2.5.1/include',
-                        '#/lib/TGUI-0.9/include',
-                        '#lib/websocketpp'])
+                        '#lib/webview/include'])
     env.Append(CXXFLAGS='-Wall -std=c++17')
+    env.Append(LIBS=['sfml-graphics',
+                     'sfml-window',
+                     'sfml-system',
+                     'webview'
+                     ])
+    env.Append(LIBPATH=['#/lib/SFML-2.5.1/lib'])
+    env.ParseConfig('pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0')
     VariantDir('#/build', '#/src', duplicate=0)
     resources = Glob("#src/*.cpp")
-    env.Program('../bin/CreatureSIM', Glob('*.cc'), LIBS=[
-                'sfml-graphics', 'sfml-window', 'sfml-system'], LIBPATH=['#/lib/SFML-2.5.1/lib'])
+    env.Program('../bin/CreatureSIM', Glob('*.cc'))

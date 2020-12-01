@@ -14,19 +14,30 @@ R"(data:text/html,
                 myDiv.innerHTML = "<p>".concat(content, "</p>");
                 document.body.appendChild(myDiv);
             }
-            function openSocket() {
-                writeToBody("JS works!");
-                var socket = new WebSocket("wss://zprssl.janowski.xyz:9002/");
-                socket.onmessage = function (event) {
-                    writeToBody(event.data);
-                };
+            function testSend() {
+                writeToBody("Kliknieto przycisk");
+                var x = document.getElementById("widthInput").value;
+                var y = document.getElementById("heightInput").value;
+                setMapSize(x, y);
+            }
+            function frameNum(num) {
+                document.getElementById("frameCounter").innerHTML = "Frame: ".concat(num);
             }
         </script>
     </head>
 
-    <body onload="openSocket();">
-        This is a placeholder. Some data may appear shortly. <a href="https://localhost:9002/">Please trust the certificate first</a>
-        Or go to <a href="https://google.com/">google</a>
+    <body onload="">
+        This is a placeholder. Some data may appear shortly.
+          <label for="widthInput">Perlin width:</label>
+            <input type="range" id="widthInput" name="widthInput" min="0" max="1000" oninput="this.nextElementSibling.value = this.value">
+            <output>0</output>
+            </br>
+          <label for="heightInput">Perlin height:</label>
+            <input type="range" id="heightInput" name="heightInput" min="0" max="1000" oninput="this.nextElementSibling.value = this.value">
+            <output>0</output>
+            </br>
+        <button onclick="testSend();">Hejka</button>
+        <div id="frameCounter">FramCounter</div>
     </body>
 
     </html>

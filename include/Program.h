@@ -9,9 +9,6 @@ namespace webview {
     class webview;
 };
 
-namespace tgui {
-    class GuiSFML;
-};
 
 namespace sf {
     class RenderWindow;
@@ -24,7 +21,6 @@ const std::string WINDOW_NAME = "CreatureSim";
 class Program
 {
     std::unique_ptr<sf::RenderWindow> programWindowPtr_;
-    std::unique_ptr<tgui::GuiSFML> mainGuiPtr_;
     std::unique_ptr<webview::webview> webviewPtr_;
 
 public:

@@ -29,75 +29,75 @@ public:
     virtual void live() = 0;
     virtual void die() = 0;
 
-    std::vector<Neuron>::iterator Creature::getNeuronBegin()
+    std::vector<Neuron>::iterator getNeuronBegin()
     {
         return this->neuronBegin_;
     }
-    std::vector<Neuron>::iterator Creature::getNeuronEnd()
+    std::vector<Neuron>::iterator getNeuronEnd()
     {
         return this->neuronEnd_;
     }
-    float Creature::getAge()
+    float getAge()
     {
         return this->age_;
     }
-    float Creature::getWeight()
+    float getWeight()
     {
         return this->weight_;
     }
-    float Creature::getHunger()
+    float getHunger()
     {
         return this->hunger_;
     }
-    float Creature::getSpeed()
+    float getSpeed()
     {
         return this->speed_;
     }
-    float Creature::getHeading()
+    float getHeading()
     {
         return this->heading_;
     }
-    float Creature::getPosX()
+    float getPosX()
     {
         return this->posX_;
     }
-    float Creature::getPosY()
+    float getPosY()
     {
         return this->posY_;
     }
-    void Creature::setAge(float age)
+    void setAge(float age)
     {
         this->age_ = age;
     }
-    void Creature::setWeight(float weight)
+    void setWeight(float weight)
     {
         this->weight_ = weight;
     }
-    void Creature::setHunger(float hunger)
+    void setHunger(float hunger)
     {
         this->hunger_ = hunger;
     }
-    void Creature::setSpeed(float speed)
+    void setSpeed(float speed)
     {
         this->speed_ = speed;
     }
-    void Creature::setHeading(float heading)
+    void setHeading(float heading)
     {
         this->heading_ = heading;
     }
-    void Creature::setPosX(float posX)
+    void setPosX(float posX)
     {
         this->posX_ = posX;
     }
-    void Creature::setPosY(float posY)
+    void setPosY(float posY)
     {
         this->posY_ = posY;
     }
-    void Creature::setNeuronBegin(std::vector<Neuron>::iterator neuronBegin)
+    void setNeuronBegin(std::vector<Neuron>::iterator neuronBegin)
     {
         this->neuronBegin_ = neuronBegin;
     }
-    void Creature::setNeuronEnd(std::vector<Neuron>::iterator neuronEnd)
+    void setNeuronEnd(std::vector<Neuron>::iterator neuronEnd)
     {
         this->neuronEnd_ = neuronEnd;
     }
