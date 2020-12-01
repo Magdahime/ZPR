@@ -1,3 +1,9 @@
+/////////////////////////////////////////////////////////
+///     Author: Magdalena Majkowska                   ///
+///     Source code of map class                      ///
+/////////////////////////////////////////////////////////
+
+
 #include "map.h"
 
 unsigned char *Map::generateMapFromPerlin(Perlin &perlin)
@@ -15,6 +21,13 @@ unsigned char *Map::generateMapFromPerlin(Perlin &perlin)
 
     return pixels_;
 }
+
+//////////////////////////////////////////////////////////////////////////////
+///     Converter from hsv values to rgb                                   ///
+///     It is an implementation of algorithm                               /// 
+///     found on the internet                                              ///
+///     https://www.rapidtables.com/convert/color/hsv-to-rgb.html          ///
+//////////////////////////////////////////////////////////////////////////////
 
 Map::RGB Map::convert2RGB(Map::HSV &hsv)
 {
@@ -62,6 +75,14 @@ Map::RGB Map::convert2RGB(Map::HSV &hsv)
     }
     return RGB(std::round((R1 + m) * 255), std::round((G1 + m) * 255), std::round((B1 + m) * 255));
 }
+
+//////////////////////////////////////////////////////////////////////
+///     Converter from rgb values to hsv                           ///
+///     It is an implementation of algorithm                       /// 
+///     found on the internet                                      ///
+///     https://www.rapidtables.com/convert/color/rgb-to-hsv.html  ///
+//////////////////////////////////////////////////////////////////////
+
 
 Map::HSV Map::convert2HSV(Map::RGB &rgb)
 {

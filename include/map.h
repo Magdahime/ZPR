@@ -1,3 +1,10 @@
+/////////////////////////////////////////////////////////////////
+///     Author: Magdalena Majkowska                           ///
+///     Definition of map that will be used in simulation     ///
+///     It will be generated using Perlin noise generator     ///
+///     as hsv values later to be converted to rgb            ///
+/////////////////////////////////////////////////////////////////
+
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
