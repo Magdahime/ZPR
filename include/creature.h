@@ -4,8 +4,8 @@
 ///     of simulation                                 ///
 /////////////////////////////////////////////////////////
 
-#ifndef CREATURE
-#define CREATURE
+#pragma once
+
 #include <iostream>
 #include <vector>
 #include "neuron.h"
@@ -102,5 +102,3 @@ public:
         this->neuronEnd_ = neuronEnd;
     }
 };
-
-#endif

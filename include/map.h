@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
@@ -18,23 +20,23 @@ public:
     }
     Map(int width, int height, unsigned char* pixels): width_(width), height_(height), pixels_(pixels){}
     Map(){}
-    struct RGB{
+    struct RGBvals{
     float r_;
     float g_;
     float b_;
-    RGB(float r, float g, float b) : r_(r), g_(g), b_(b){}
-    RGB(){}
+    RGBvals(float r, float g, float b) : r_(r), g_(g), b_(b){}
+    RGBvals(){}
     };
-    struct HSV{
+    struct HSVvals{
     float h_;
     float s_;
     float v_;
-    HSV(float h, float s, float v) : h_(h), s_(s), v_(v){}
-    HSV(){}
+    HSVvals(float h, float s, float v) : h_(h), s_(s), v_(v){}
+    HSVvals(){}
     };
     unsigned char *generateMapFromPerlin(Perlin& perlin);
-    HSV convert2HSV(RGB& rgb);
-    RGB convert2RGB(HSV& hsv);
+    HSVvals convert2HSV(RGBvals& rgb);
+    RGBvals convert2RGB(HSVvals& hsv);
     bool compareFloat(float float1, float float2, float epsilon = 0.01f);
 
 };

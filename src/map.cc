@@ -16,7 +16,7 @@ unsigned char *Map::generateMapFromPerlin(Perlin &perlin)
     return pixels_;
 }
 
-Map::RGB Map::convert2RGB(Map::HSV &hsv)
+Map::RGBvals Map::convert2RGB(Map::HSVvals &hsv)
 {
     float C = hsv.v_ * hsv.s_;
     int partial = std::round((hsv.h_ / 60.0));
@@ -60,12 +60,12 @@ Map::RGB Map::convert2RGB(Map::HSV &hsv)
         G1 = 0.0f;
         B1 = X;
     }
-    return RGB(std::round((R1 + m) * 255), std::round((G1 + m) * 255), std::round((B1 + m) * 255));
+    return RGBvals(std::round((R1 + m) * 255), std::round((G1 + m) * 255), std::round((B1 + m) * 255));
 }
 
-Map::HSV Map::convert2HSV(Map::RGB &rgb)
+Map::HSVvals Map::convert2HSV(Map::RGBvals &rgb)
 {
-    HSV hsv;
+    HSVvals hsv;
     float R1 = rgb.r_ / 255;
     float B1 = rgb.b_ / 255;
     float G1 = rgb.g_ / 255;

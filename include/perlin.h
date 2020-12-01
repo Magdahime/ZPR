@@ -2,8 +2,8 @@
 ///     Author: Magdalena Majkowska                   ///
 ///     Definition of perlin noise generator          ///
 /////////////////////////////////////////////////////////
-#ifndef PERLIN
-#define PERLIN
+#pragma once
+
 #include <iostream>
 #include "randomNumberGenerator.h"
 
@@ -24,4 +24,3 @@ public:
     float linearInterpolation(float value1, float value2, float alpha);
     float * generatePerlinNoise();
 };
-#endif

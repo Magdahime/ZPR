@@ -4,8 +4,8 @@
 ///     and its source code - it is supposed to       ///
 ///     return random integers and floats             ///
 /////////////////////////////////////////////////////////
-#ifndef RANDOMNUMBERGENERATOR
-#define RANDOMNUMBERGENERATOR
+#pragma once
+
 #include <random>
 
 template <typename Numeric, typename RealOnlyNumeric = float>
@@ -60,4 +60,3 @@ public:
         return normalDistribution_.max();
     }
 };
-#endif

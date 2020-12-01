@@ -1,0 +1,120 @@
+Renderer.1 {
+    BackgroundColor = transparent;
+    BorderColor = #3C3C3C;
+    Borders = (0, 0, 0, 0);
+    TextColor = #3C3C3C;
+    TextureBackground = None;
+}
+
+Panel.ConfigPanel {
+    Size = (420, 600);
+
+    Renderer {
+        BackgroundColor = white;
+        BorderColor = black;
+        TextureBackground = None;
+    }
+
+    Label.TitleLabel {
+        Position = (10, 10);
+        Renderer = &1;
+        Size = (250, 27);
+        Text = "Symulator Ewolucji 1.0";
+        TextSize = 20;
+    }
+
+    Label.PopSizeLabel {
+        AutoSize = true;
+        Position = (10, 60);
+        Renderer = &1;
+        Size = (154.8, 21);
+        Text = "Wielkosc populacji";
+        TextSize = 16;
+    }
+
+    Slider.PopSizeSlider {
+        ChangeValueOnScroll = true;
+        InvertedDirection = false;
+        Maximum = 10000;
+        Minimum = 0;
+        MouseCursor = Hand;
+        Position = (20, 100);
+        Size = (380, 20);
+        Step = 1;
+        Value = 0;
+
+        Renderer {
+            BorderColor = #3C3C3C;
+            BorderColorHover = black;
+            Borders = (1, 1, 1, 1);
+            TextureThumb = None;
+            TextureThumbHover = None;
+            TextureTrack = None;
+            TextureTrackHover = None;
+            ThumbColor = #F5F5F5;
+            ThumbColorHover = white;
+            TrackColor = #F5F5F5;
+            TrackColorHover = white;
+        }
+    }
+
+    Label.PopSizeCounter {
+        HorizontalAlignment = Right;
+        Position = (280, 80);
+        Renderer = &1;
+        ScrollbarPolicy = Never;
+        Size = (120, 18);
+        Text = 0;
+        TextSize = 12;
+    }
+
+    Button.ConfirmButt {
+        Position = (340, 510);
+        Size = (60, 25);
+        Text = Zapisz;
+        TextSize = 13;
+
+        Renderer {
+            BackgroundColor = #F5F5F5;
+            BackgroundColorDisabled = #E6E6E6;
+            BackgroundColorDown = #EBEBEB;
+            BackgroundColorHover = white;
+            BorderColor = #3C3C3C;
+            BorderColorDisabled = #7D7D7D;
+            BorderColorDown = black;
+            BorderColorFocused = #1E1EB4;
+            BorderColorHover = black;
+            Borders = (1, 1, 1, 1);
+            TextColor = #3C3C3C;
+            TextColorDisabled = #7D7D7D;
+            TextColorDown = black;
+            TextColorHover = black;
+            Texture = None;
+            TextureDisabled = None;
+            TextureDown = None;
+            TextureFocused = None;
+            TextureHover = None;
+        }
+    }
+
+    ScrollablePanel.ScrollablePanel1 {
+        ContentSize = (360, 300);
+        Position = (20, 170);
+        Size = (380, 150);
+
+        Renderer {
+            BackgroundColor = white;
+            BorderColor = black;
+            TextureBackground = None;
+        }
+
+        Label.Label1 {
+            MaximumTextWidth = 360;
+            Renderer = &1;
+            ScrollbarPolicy = Never;
+            Size = (360, 168);
+            Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+            TextSize = 13;
+        }
+    }
+}

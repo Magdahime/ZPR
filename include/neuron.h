@@ -3,8 +3,8 @@
 ///     Definition of simple neuron class             ///
 /////////////////////////////////////////////////////////
 
-#ifndef NEURON
-#define NEURON
+#pragma once
+
 #include <iostream>
 #include <vector>
 
@@ -37,4 +37,3 @@ public:
     void setWeightBegin(std::vector<float>::iterator weightsBegin);
     void setWeightsEnd(std::vector<float>::iterator weightsEnd);
 };
-#endif
