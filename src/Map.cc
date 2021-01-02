@@ -3,7 +3,6 @@
 ///     Source code of map class                      ///
 /////////////////////////////////////////////////////////
 
-
 #include "Map.h"
 
 unsigned char *Map::generateMapFromPerlin(Perlin &perlin)
@@ -22,10 +21,9 @@ unsigned char *Map::generateMapFromPerlin(Perlin &perlin)
     return pixels_;
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 ///     Converter from hsv values to rgb                                   ///
-///     It is an implementation of algorithm                               /// 
+///     It is an implementation of algorithm                               ///
 ///     found on the internet                                              ///
 ///     https://www.rapidtables.com/convert/color/hsv-to-rgb.html          ///
 //////////////////////////////////////////////////////////////////////////////
@@ -77,14 +75,12 @@ Map::RGBvals Map::convert2RGB(Map::HSVvals &hsv)
     return RGBvals(std::round((R1 + m) * 255), std::round((G1 + m) * 255), std::round((B1 + m) * 255));
 }
 
-
 //////////////////////////////////////////////////////////////////////
 ///     Converter from rgb values to hsv                           ///
-///     It is an implementation of algorithm                       /// 
+///     It is an implementation of algorithm                       ///
 ///     found on the internet                                      ///
 ///     https://www.rapidtables.com/convert/color/rgb-to-hsv.html  ///
 //////////////////////////////////////////////////////////////////////
-
 
 Map::HSVvals Map::convert2HSV(Map::RGBvals &rgb)
 {
@@ -109,23 +105,23 @@ Map::HSVvals Map::convert2HSV(Map::RGBvals &rgb)
         hsv.h_ = 0.0f;
     else if (compareFloat(Cmax, R1))
     {
-        int partial = std::round((G1 - B1)/delta);
+        int partial = std::round((G1 - B1) / delta);
         hsv.h_ = partial % 6;
     }
     else if (compareFloat(Cmax, G1))
-        hsv.h_ = ((B1 - R1)/delta) + 2.0;
+        hsv.h_ = ((B1 - R1) / delta) + 2.0;
     else if (compareFloat(Cmax, B1))
-        hsv.h_ = ((R1 - G1)/delta) + 4.0;
+        hsv.h_ = ((R1 - G1) / delta) + 4.0;
 
-    hsv.h_*=60;
+    hsv.h_ *= 60;
 
-    if(hsv.h_ < 0){
-        hsv.h_+=360;
+    if (hsv.h_ < 0)
+    {
+        hsv.h_ += 360;
     }
 
     return hsv;
 }
-
 
 float Map::max3(float float1, float float2, float float3)
 {

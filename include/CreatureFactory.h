@@ -13,7 +13,6 @@
 #include "Creature.h"
 #include <boost/json.hpp>
 
-
 const std::string DEFAULT_CONFIGURATION_PATH = ".\\config\\creature";
 const std::string DEFAULT_CREATURE = "default";
 
@@ -61,15 +60,32 @@ struct CreatureParameters
     float rearAntenna_;
     float bottomAntenna_;
 
-    CreatureParameters(std::string type, float energy, float weight, float hue, float positionX, float positionY,
-                       float speedMultiplier) : type_(type), energy_(energy), weight_(weight), hue_(hue), positionX_(positionX),
-                                                positionY_(positionY), speedMultiplier_(speedMultiplier){
-        age_ = 0.0;
-        heading_ = 0.0f;
-        speed_ = 0.0f;
-        leftAntenna_ = 0.0f;
-        rightAntenna_ = 0.0f;
-        rearAntenna_ = 0.0f;
-        bottomAntenna_ = 0.0f;
-    };
+    CreatureParameters(
+        std::string type,
+        float energy,
+        float weight,
+        float hue,
+        float positionX,
+        float positionY,
+        float speedMultiplier,
+        float age = .0f,
+        float heading = .0f,
+        float speed = .0f,
+        float leftAntenna = .0f,
+        float rightAntenna = .0f,
+        float rearAntenna = .0f,
+        float bottomAntenna = .0f) : type_(type),
+                                     energy_(energy),
+                                     weight_(weight),
+                                     hue_(hue),
+                                     positionX_(positionX),
+                                     positionY_(positionY),
+                                     speedMultiplier_(speedMultiplier),
+                                     age_(age),
+                                     heading_(heading),
+                                     speed_(speed),
+                                     leftAntenna_(leftAntenna),
+                                     rightAntenna_(rightAntenna),
+                                     rearAntenna_(rearAntenna),
+                                     bottomAntenna_(bottomAntenna){};
 };

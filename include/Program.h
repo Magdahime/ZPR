@@ -31,9 +31,9 @@ const std::string WINDOW_NAME = "CreatureSim";
 
 class Program
 {
-    std::unique_ptr<sf::RenderWindow> programWindowPtr_;
-    std::unique_ptr<webview::webview> webviewPtr_;
-    std::unique_ptr<Simulation> simulationPtr_;
+    std::shared_ptr<sf::RenderWindow> programWindowPtr_;
+    std::shared_ptr<webview::webview> webviewPtr_;
+    std::shared_ptr<Simulation> simulationPtr_;
     std::thread webviewThread_;
 
 public:

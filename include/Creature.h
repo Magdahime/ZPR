@@ -18,12 +18,27 @@ const float MAX_CREATURE_HEADING = 360.0f;
 
 class Creature
 {
-    std::vector<Neuron>::iterator neuronBegin_;
-    std::vector<Neuron>::iterator neuronEnd_;
-    std::vector<float>::iterator attributesBegin_;
-    std::vector<float>::iterator attributesEnd_;
+    std::weak_ptr<std::vector<float>> neuronVector_;
+    std::weak_ptr<std::vector<float>> creatureVector_;
+
+    unsigned int neuronBegin_;
+    unsigned int neuronEnd_;
+    unsigned int attributesBegin_;
+    unsigned int attributesEnd_;
 
 public:
+    Creature(
+        std::shared_ptr<std::vector<float>> neuronVector,
+        std::shared_ptr<std::vector<float>> creatureVector,
+        unsigned int neuronBegin,
+        unsigned int neuronEnd,
+        unsigned int attributesBegin,
+        unsigned int attributesEnd) : neuronVector_(neuronVector),
+                                      creatureVector_(creatureVector),
+                                      neuronBegin_(neuronBegin),
+                                      neuronEnd_(neuronEnd),
+                                      attributesBegin_(attributesBegin),
+                                      attributesEnd_(attributesEnd){};
 
     virtual void mutate() = 0;
     virtual void eat() = 0;
@@ -32,17 +47,18 @@ public:
     virtual void die() = 0;
 };
 
-
-class PeacefulCreature : Creature{
+class PeacefulCreature : Creature
+{
 
 public:
-    static Creature * create();
+    static Creature *create();
 };
 
-class AggressiveCreature : Creature{
+class AggressiveCreature : Creature
+{
 
 public:
-    static Creature * create();
+    static Creature *create();
 };
 
 using CreatureSPtr = std::shared_ptr<Creature>;
