@@ -10,11 +10,14 @@
 #include "Neuron.h"
 #include "Map.h"
 
+
 using namespace std;
 
 Simulation::~Simulation(){};
 
-Simulation::Simulation() : dataSemaphore_(0){};
+Simulation::Simulation() : dataSemaphore_(1) {};
+
+
 
 /*
     This is just a prototype to show that openMP is a viable way of parallelisation.
@@ -51,15 +54,26 @@ void Simulation::run_PROTO()
     }
     cout << "Done RUN_PROTO x: " << xSize << "y: " << ySize << "\n";
     int i = 0;
+    time_t now = time(0);
+    time_t newnow;
+    dataSemaphore_.post();
     while (true)
     {
+        dataSemaphore_.wait();
+        i++;
+        newnow = time(0);
+        if(newnow != now){
+            std::cout<<"IPS:\t"<<i<<"\n";
+            i=0;
+        }
+        now = newnow;
         iteration_PROTO();
     }
 };
 
 void Simulation::iteration_PROTO()
 {
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < data_PROTO_.size(); i += 24)
     {
         float speedResult = 0.0f;
@@ -72,11 +86,11 @@ void Simulation::iteration_PROTO()
             hdgResult += data_PROTO_[i + j] * data_PROTO_[i + j + 16];
         }
         data_PROTO_[i + 3] *= (speedResult < 0.0f) ? 0.8f : 1.2f;
-        if (data_PROTO_[i + 3] > ((xSize > ySize) ? xSize * 0.2f : ySize * 0.2f))
+        if (data_PROTO_[i + 3] > ((xSize > ySize) ? xSize * 0.0002f : ySize * 0.0002f))
         {
-            data_PROTO_[i + 3] = ((xSize > ySize) ? xSize * 0.2f : ySize * 0.2f);
+            data_PROTO_[i + 3] = ((xSize > ySize) ? xSize * 0.0002f : ySize * 0.0002f);
         }
-        data_PROTO_[i + 2] += (hdgResult < 0.0f) ? pi / 6.0f : -pi / 6.0f;
+        data_PROTO_[i + 2] += (hdgResult < 1.0f) ? pi / 6.0f : (hdgResult > 1.0f) ? -pi / 6.0f : 0.0f;
         if (data_PROTO_[i + 2] < 0)
         {
             data_PROTO_[i + 2] += 2 * pi;
@@ -109,8 +123,7 @@ void Simulation::iteration_PROTO()
         data_PROTO_[i + 6] = map_->getPixel(x, y, 1);
         data_PROTO_[i + 7] = map_->getPixel(x, y, 2);
     }
-    if (!dataSemaphore_.try_wait())
-        dataSemaphore_.post();
+    // dataSemaphore_.unlock();
 };
 
 void Simulation::printAll_PROTO(sf::RenderWindow *window)
@@ -125,9 +138,33 @@ void Simulation::printAll_PROTO(sf::RenderWindow *window)
     }
 };
 
+void Simulation::printClipped_PROTO(std::shared_ptr<sf::RenderWindow> window, sf::View view){
+    float xMin, xMax, yMin, yMax;
+    xMin = view.getCenter().x - view.getSize().x / 2.f;
+    xMax = view.getCenter().x + view.getSize().x / 2.f; 
+    yMin = view.getCenter().y - view.getSize().y / 2.f;
+    yMax = view.getCenter().y + view.getSize().y / 2.f; 
+    for (int i = 0; i < data_PROTO_.size(); i += 24)
+    {
+        float xPos = data_PROTO_[i];
+        float yPos = data_PROTO_[i + 1];
+        if(xMin <= xPos && xPos <= xMax && yMin <= yPos && yPos <= yMax){
+            sf::CircleShape circle;
+            circle.setPosition(data_PROTO_[i] - data_PROTO_[i + 4] / ( 20.f * 2.f ), data_PROTO_[i + 1] - data_PROTO_[i + 4] / ( 20.f * 2.f ));
+            circle.setRadius(data_PROTO_[i + 4] / 20.f);
+            circle.setFillColor(sf::Color(data_PROTO_[i + 5] * .9f, data_PROTO_[i + 6] * .9f, data_PROTO_[i + 7] * .9f));
+            window->draw(circle);
+        }
+    }
+};
+
 bool Simulation::tryNewData()
 {
     return dataSemaphore_.try_wait();
+}
+
+void Simulation::postVideo(){
+    dataSemaphore_.post();
 }
 
 void Simulation::setMap(shared_ptr<Map> mapPtr)

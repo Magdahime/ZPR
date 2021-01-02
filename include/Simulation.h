@@ -16,7 +16,7 @@
 #include <memory>
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
 
-const unsigned int CREATURE_COUNT_PROTO = 1000;
+const unsigned int CREATURE_COUNT_PROTO = 100000;
 const float pi = 3.1415927f;
 
 class Creature;
@@ -46,6 +46,8 @@ public:
     void run_PROTO();
     void iteration_PROTO();
     bool tryNewData();
+    void postVideo();
     void setMap(std::shared_ptr<Map> mapPtr);
     void printAll_PROTO(sf::RenderWindow *window);
+    void printClipped_PROTO(std::shared_ptr<sf::RenderWindow> window, sf::View view);
 };

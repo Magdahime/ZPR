@@ -5,22 +5,22 @@
 #pragma once
 
 #include <iostream>
-#include "RandomNumberGenerator.h"
+#include "randomNumberGenerator.h"
 
-const int OCTAVESNUMBER =7;
+const int OCTAVESNUMBER = 7;
 const float PI = 3.14159;
 
 class Perlin
 {
     const int width_;
     const int height_;
-    float * primaryNoise_;
+    float *primaryNoise_;
 
 public:
     Perlin(int width, int height);
     void generateWhiteNoise();
-    float * generateSmoothNoise(int octave);
+    float *generateSmoothNoise(int octave);
     float cosineInterpolation(float value1, float value2, float alpha);
     float linearInterpolation(float value1, float value2, float alpha);
-    float * generatePerlinNoise();
+    float *generatePerlinNoise();
 };

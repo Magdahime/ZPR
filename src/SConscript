@@ -10,17 +10,19 @@ if system == "windows":
 
     env.Append(CPPPATH=['#include',
                         '#lib/SFML-2.5.1-Win/include',
-                        '#lib/webview/include',
-                        '#lib/boost_1_75_0'
+                        '#lib/webview',
+                        '#lib/boost_1_75_0',
+                        "C:\\Program Files\\Python39\\include"     
                         ])
 
     env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
 
-    env.Append(CXXFLAGS='/EHsc /MD /std:c++17 /openmp')
+    env.Append(CXXFLAGS='/EHsc /MD /std:c++17 /openmp:experimental')
 
     env.Append(LIBPATH=['#lib/SFML-2.5.1-Win/lib',
                         '#lib/webview/lib',
-                        '#lib/boost_1_75_0/stage/lib'
+                        '#lib/boost_1_75_0/stage/lib',
+                        'C:\Program Files\Python39\libs'
                         ])
 
     env.Append(LIBS=['sfml-graphics',
@@ -35,9 +37,10 @@ if system == "windows":
 else:
     print("Linux!")
     env = Environment()
+    env.Append(CPPDEFINES=['LINUX_WV'])
     env.Append(CPPPATH=['#include',
-                        '#lib/webview'])
-    env.Append(CXXFLAGS='-Wall -std=c++17 -DWEBVIEWGTK -fopenmp')
+                        '#lib/webview/include'])
+    env.Append(CXXFLAGS='-Wall -std=c++17 -DWEBVIEWGTK')
     env.Append(LIBS=['sfml-graphics',
                      'sfml-window',
                      'sfml-system',
