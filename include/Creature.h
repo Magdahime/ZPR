@@ -11,6 +11,10 @@
 #include <memory>
 #include "Neuron.h"
 
+const float MAX_CREATURE_SPEED = 5.0f;
+const float MIN_CREATURE_SPEED = 0.0f;
+const float MIN_CREATURE_HEADING = 0.0f;
+const float MAX_CREATURE_HEADING = 360.0f;
 
 class Creature
 {
