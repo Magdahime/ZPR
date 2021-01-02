@@ -11,11 +11,15 @@
 #include <cmath>
 #include "Perlin.h"
 
+const int DEGREES = 360;
+
 class Map
 {
     int width_;
     int height_;
     unsigned char *pixels_;
+    unsigned char* HSVpixels_;
+    void scalePerlin(float *perlinH,float *perlinS,float *perlinV);
     float max3(float float1, float float2, float float3);
     float min3(float float1, float float2, float float3);
 
@@ -23,6 +27,7 @@ public:
     Map(int width, int height) : width_(width), height_(height)
     {
         pixels_ = new unsigned char[width_ * height_ * 4];
+        HSVpixels_ = new unsigned char[width_ * height_ * 4];
     }
     Map(int width, int height, unsigned char *pixels) : width_(width), height_(height), pixels_(pixels) {}
     Map() {}

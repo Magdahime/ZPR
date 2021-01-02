@@ -1,0 +1,9 @@
+{
+    "type": "userDefinedExample",
+    "energy": 20.0,
+    "weight": 20.0,
+    "hue": 314.0,
+    "positionX": 200.0,
+    "positionY": 2000.0,
+    "speedMultiplier": 1.5
+}

@@ -11,7 +11,7 @@ if system == "windows":
     env.Append(CPPPATH=['#include',
                         '#lib/SFML-2.5.1-Win/include',
                         '#lib/webview/include',
-                        '#lib/boost/boost_1_74_0'
+                        '#lib/boost_1_75_0'
                         ])
 
     env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
@@ -20,7 +20,7 @@ if system == "windows":
 
     env.Append(LIBPATH=['#lib/SFML-2.5.1-Win/lib',
                         '#lib/webview/lib',
-                        '#lib/boost/boost_1_74_0/stage/lib'
+                        '#lib/boost_1_75_0/stage/lib'
                         ])
 
     env.Append(LIBS=['sfml-graphics',
