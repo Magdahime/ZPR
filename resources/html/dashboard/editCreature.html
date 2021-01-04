@@ -26,28 +26,8 @@
 
     <!-- Custom styles for this template -->
     <link href="dashboard.css" rel="stylesheet">
-    <script type="text/javascript">
-        //FUNCTIONS
-        function writeToBody(content) {
-            var myDiv = document.createElement("div");
-            myDiv.innerHTML = "<p>".concat(content, "</p>");
-            document.body.appendChild(myDiv);
-        }
-        function testSend() {
-            writeToBody("Kliknieto przycisk");
-            var x = document.getElementById("widthInput").value;
-            var y = document.getElementById("heightInput").value;
-            var element = document.getElementById("butt1");
-            element.parentNode.removeChild(element)
-            setMapSize(x, y);
-        }
-        function frameNum(num) {
-            document.getElementById("frameCounter").innerHTML = "Frame: ".concat(num);
-        }
-        function dataAvailable() {
-            writeToBody("Data available");
-        }
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script type="text/javascript" src='../js/charts.js'></script>
 </head>
 
 <body onload="">
@@ -94,8 +74,6 @@
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Edit Creature</h1>
                 </div>
-
-                <h1>Tuasadaoisdhj</h1>
 
                 <script src="/js/bootstrap.bundle.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
