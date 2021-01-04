@@ -17,7 +17,7 @@
 class JsonParser
 {
 public:
-    static std::vector<std::filesystem::path> searchFiles(std::string pathToFolder)
+    static std::vector<std::filesystem::path> searchFiles(const std::string& pathToFolder)
     {
         std::vector<std::filesystem::path> filenames;
         std::filesystem::path path = pathToFolder;

@@ -15,6 +15,8 @@
 #include "Map.h"
 #include "Perlin.h"
 
+#include "CreatureFactory.h"
+
 using namespace std;
 
 Program::~Program(){};
@@ -74,7 +76,7 @@ void Program::run()
             programWindowPtr_->setView(simView);
             submitted = true;
             simulationPtr_->setMap(mapPtr);
-            simulationThread = thread([this] { simulationPtr_->run_PROTO(); });
+            simulationThread = thread([this] { simulationPtr_->run(); });
             return "OK";
         }
     );
@@ -171,7 +173,8 @@ void Program::run()
         programWindowPtr_->draw(sprite);
         simView = programWindowPtr_->getView();
 
-        simulationPtr_->printClipped_PROTO(programWindowPtr_, simView);
+        // simulationPtr_->printClipped_PROTO(programWindowPtr_, simView);
+        simulationPtr_->printClipped(programWindowPtr_, simView);
 
         // simulationPtr_->printAll_PROTO(programWindowPtr_.get());
 

@@ -17,11 +17,11 @@ import socketserver
 
 PORT = 2137
 
-Handler = http.server.SimpleHTTPRequestHandler
+DIRECTORY = executablePath + "/../resources/html"
 
-import os
-
-os.chdir(executablePath + "/../resources/html")
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=DIRECTORY, **kwargs)
 
 with socketserver.TCPServer(( "127.0.0.1" , PORT), Handler) as httpd:
     httpd.serve_forever()

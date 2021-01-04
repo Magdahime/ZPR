@@ -16,7 +16,8 @@
 const std::string DEFAULT_CONFIGURATION_PATH = ".\\config\\creature";
 const std::string DEFAULT_CREATURE = "default";
 
-const float STDDEV = 0.5;
+const float CREATURE_FACTORY_STDDEV = 0.2;
+const unsigned int PARAMS_PER_CREATURE = 14;
 
 struct CreatureParameters;
 
@@ -34,18 +35,17 @@ class CreatureFactory
     CreatureParametersSPtr create(CreatureParametersSPtr csptr);
 
 public:
-    CreatureParametersSPtr createCreature(std::string type);
+    CreatureParametersSPtr createCreature(const std::string &type);
     CreatureParametersSPtr createChild(CreatureParametersSPtr csptr);
     static CreatureFactory &getInstance();
     void registerCreature();
-    void registerFolder(std::string pathToFolder);
+    void registerFolder(const std::string &pathToFolder);
     FactoryMap getFactoryMap() { return FactoryMap_; }
     ~CreatureFactory() { FactoryMap_.clear(); }
 };
 
 struct CreatureParameters
 {
-    std::string type_;
     float energy_;
     float weight_;
     float hue_;
@@ -55,10 +55,12 @@ struct CreatureParameters
     float age_;
     float heading_;
     float speed_;
-    float leftAntenna_;
-    float rightAntenna_;
-    float rearAntenna_;
-    float bottomAntenna_;
+    float leftAntennaH_;
+    float rightAntennaH_;
+    float rearAntennaH_;
+    float bottomAntennaH_;
+    float popDensity_;
+    std::string type_;
 
     CreatureParameters(
         std::string type,
@@ -71,21 +73,23 @@ struct CreatureParameters
         float age = .0f,
         float heading = .0f,
         float speed = .0f,
-        float leftAntenna = .0f,
-        float rightAntenna = .0f,
-        float rearAntenna = .0f,
-        float bottomAntenna = .0f) : type_(type),
-                                     energy_(energy),
-                                     weight_(weight),
-                                     hue_(hue),
-                                     positionX_(positionX),
-                                     positionY_(positionY),
-                                     speedMultiplier_(speedMultiplier),
-                                     age_(age),
-                                     heading_(heading),
-                                     speed_(speed),
-                                     leftAntenna_(leftAntenna),
-                                     rightAntenna_(rightAntenna),
-                                     rearAntenna_(rearAntenna),
-                                     bottomAntenna_(bottomAntenna){};
+        float leftAntennaH = .0f,
+        float rightAntennaH = .0f,
+        float rearAntennaH = .0f,
+        float bottomAntennaH = .0f,
+        float popDensity = .0f) : type_(type),
+                                  energy_(energy),
+                                  weight_(weight),
+                                  hue_(hue),
+                                  positionX_(positionX),
+                                  positionY_(positionY),
+                                  speedMultiplier_(speedMultiplier),
+                                  age_(age),
+                                  heading_(heading),
+                                  speed_(speed),
+                                  leftAntennaH_(leftAntennaH),
+                                  rightAntennaH_(rightAntennaH),
+                                  rearAntennaH_(rearAntennaH),
+                                  bottomAntennaH_(bottomAntennaH),
+                                  popDensity_(popDensity){};
 };

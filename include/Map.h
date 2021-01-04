@@ -18,8 +18,8 @@ class Map
     int width_;
     int height_;
     unsigned char *pixels_;
-    unsigned char* HSVpixels_;
-    void scalePerlin(float *perlinH,float *perlinS,float *perlinV);
+    unsigned char *HSVpixels_;
+    void scalePerlin(float *perlinH, float *perlinS, float *perlinV);
     float max3(float float1, float float2, float float3);
     float min3(float float1, float float2, float float3);
 
@@ -54,4 +54,10 @@ public:
     inline int getWidth() { return width_; };
     inline int getHeight() { return height_; };
     inline int getPixel(int x, int y, int offset) { return pixels_[width_ * y * 4 + x * 4 + offset]; }
+    inline int getPixelH(int x, int y)
+    {
+        if (x < width_ && y < height_ && x >= 0 && y>= 0)
+            return HSVpixels_[width_ * y * 4 + x * 4];
+        return 0;
+    }
 };

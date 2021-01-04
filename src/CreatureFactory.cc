@@ -4,7 +4,7 @@
 #include "RandomNumberGenerator.h"
 
 namespace fs = std::filesystem;
-void CreatureFactory::registerFolder(std::string pathToFolder)
+void CreatureFactory::registerFolder(const std::string &pathToFolder)
 {
     std::vector<std::filesystem::path> files = JsonParser::searchFiles(pathToFolder);
     for (auto entry : files)
@@ -23,7 +23,7 @@ CreatureParametersSPtr CreatureFactory::parseCreature(boost::json::object obj)
                                                 (float)obj["hue"].as_double(),
                                                 (float)obj["positionX"].as_double(),
                                                 (float)obj["positionY"].as_double(),
-                                                (float)obj["positionY"].as_double());
+                                                (float)obj["speedMultiplier"].as_double());
 }
 
 CreatureFactory &CreatureFactory::getInstance()
@@ -37,7 +37,7 @@ CreatureFactory::CreatureFactory()
     registerFolder(DEFAULT_CONFIGURATION_PATH);
 }
 
-CreatureParametersSPtr CreatureFactory::createCreature(std::string type)
+CreatureParametersSPtr CreatureFactory::createCreature(const std::string &type)
 {
     auto iterator = FactoryMap_.find(type);
     if (iterator != FactoryMap_.end())
@@ -54,17 +54,18 @@ CreatureParametersSPtr CreatureFactory::createCreature(std::string type)
 CreatureParametersSPtr CreatureFactory::create(CreatureParametersSPtr csptr)
 {
     RandomNumberGenerator<float, float> rng;
-    csptr->energy_ = rng.getNormal(csptr->energy_, STDDEV);
-    csptr->weight_ = rng.getNormal(csptr->weight_, STDDEV);
-    csptr->hue_ = rng.getNormal(csptr->hue_, STDDEV);
-    csptr->positionX_ = rng.getNormal(csptr->positionX_, STDDEV);
-    csptr->positionY_ = rng.getNormal(csptr->positionY_, STDDEV);
-    csptr->speedMultiplier_ = rng.getNormal(csptr->speedMultiplier_, STDDEV);
+    csptr->energy_ = fmax(0, rng.getNormal(csptr->energy_, CREATURE_FACTORY_STDDEV));
+    csptr->weight_ = fmax(0, rng.getNormal(csptr->weight_, CREATURE_FACTORY_STDDEV));
+    csptr->hue_ = fmod(rng.getNormal(csptr->hue_, CREATURE_FACTORY_STDDEV) + 360.f, 360.f);
+    csptr->positionX_ = rng.getNormal(csptr->positionX_, CREATURE_FACTORY_STDDEV);
+    csptr->positionY_ = rng.getNormal(csptr->positionY_, CREATURE_FACTORY_STDDEV);
+    csptr->speedMultiplier_ = fabs(rng.getNormal(csptr->speedMultiplier_, CREATURE_FACTORY_STDDEV));
     csptr->heading_ = rng.get(MIN_CREATURE_HEADING, MAX_CREATURE_HEADING);
     csptr->speed_ = rng.get(MIN_CREATURE_SPEED, MAX_CREATURE_SPEED);
     return csptr;
 }
 
-CreatureParametersSPtr CreatureFactory::createChild(CreatureParametersSPtr csptr){
+CreatureParametersSPtr CreatureFactory::createChild(CreatureParametersSPtr csptr)
+{
     return create(csptr);
 }
