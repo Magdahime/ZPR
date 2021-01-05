@@ -11,7 +11,7 @@ if system == "windows":
 
     env.Append(CPPPATH=['#include',
                         '#lib/SFML-2.5.1-Win/include',
-                        '#lib/webview',
+                        '#lib/webview/include',
                         '#lib/boost_1_75_0',
                         pathlib.Path(os.__file__).parents[1] / 'include' 
                         ])

@@ -29,7 +29,7 @@ void Simulation::prepare(unsigned int creatureCount)
 }
 void Simulation::prepare()
 {
-    prepare(CREATURE_COUNT_PROTO);
+    prepare(parameters_.creaturesNum_);
 }
 void Simulation::run()
 {
@@ -82,11 +82,40 @@ void Simulation::updateCreature(int creatureIndex)
                                                                       // 4 -> birth
     CreatureParametersSPtr creature = container_.getCreatureParameters(creatureIndex);
 
-    if (fabs(results[0]) > ACTIVATION_THRESHOLD)
+    calculateSteer(creature, results[0]);
+    calculateAcceleration(creature, results[1]);
+    calculateEating(creature, results[2]);
+    calculateAttack(creature, results[3]);
+    bool birth = calculateBirth(creature, results[4]);
+    calculateEnergy(creature);
+    calculateMovement(creature);
+    calculateAntennas(creature);
+    calculateAge(creature);
+
+    if (birth)
     {
-        if (results[0] > 0)
+        auto childParams = CreatureFactory::getInstance().createChild(creature);
+        childParams->weight_ = parameters_.weightBirth_;
+        auto neurons = container_.getNeurons(creatureIndex);
+        auto childNeurons = NeuronFactory::getInstance().createChild(neurons);
+        // std::cout<<"\nStarting birth...\n"; //alert DEBUG COUT
+        container_.putCreature(childParams, childNeurons);
+    }
+    if (creature->weight_ < parameters_.minWeight_)
+    {
+        container_.deleteCreature(creatureIndex);
+    }
+
+    container_.updateCreatureParameters(creatureIndex, creature);
+}
+
+void Simulation::calculateSteer(CreatureParametersSPtr creature, float result)
+{
+    if (fabs(result) > ACTIVATION_THRESHOLD)
+    {
+        if (result > 0)
         {
-            creature->heading_ += ANGLE_PER_FRAME * 2.f * pi / 360.f;
+            creature->heading_ += parameters_.anglePerFrame_ * 2.f * pi / 360.f;
             creature->heading_ = fmod(creature->heading_ + 2.f * pi, 2.f * pi);
         }
         else
@@ -95,19 +124,28 @@ void Simulation::updateCreature(int creatureIndex)
             creature->heading_ = fmod(creature->heading_ + 2.f * pi, 2.f * pi);
         }
     }
-    if (fabs(results[1]) > ACTIVATION_THRESHOLD) // ACCELERATE
+}
+
+void Simulation::calculateAcceleration(CreatureParametersSPtr creature, float result)
+{
+    if (fabs(result) > ACTIVATION_THRESHOLD) // ACCELERATE
     {
-        if (results[1] > 0)
+        if (result > 0)
         {
-            creature->speed_ *= ACCELERATION_MULTIPLIER;
-            creature->speed_ = fmin(creature->speed_, MAX_SPEED);
+            creature->speed_ *= parameters_.accelerationMultiplier_;
+            creature->speed_ = fmin(creature->speed_, parameters_.maxSpeed_);
         }
         else
         {
-            creature->speed_ /= ACCELERATION_MULTIPLIER;
+            creature->speed_ /= parameters_.accelerationMultiplier_;
         }
     }
-    if (results[2] > ACTIVATION_THRESHOLD) // EAT
+}
+
+void Simulation::calculateEating(CreatureParametersSPtr creature, float result)
+{
+
+    if (result > ACTIVATION_THRESHOLD) // EAT
     {
         float currH = map_->getPixelH(creature->positionX_, creature->positionY_);
         float diffH = fabs(creature->hue_ - currH);
@@ -116,39 +154,40 @@ void Simulation::updateCreature(int creatureIndex)
         float dist = -((diffH * diffH + 30.f * 30.f) / 180.f - 50.f); //alert MAGIC
         creature->energy_ += dist;
     }
+}
+void Simulation::calculateAttack(CreatureParametersSPtr creature, float result) {}
+
+bool Simulation::calculateBirth(CreatureParametersSPtr creature, float result)
+{
     bool birth = false;
-    if (results[4] > ACTIVATION_THRESHOLD && creature->age_ > BIRTH_AGE_THRESHOLD) // BIRTH
+    if (result > ACTIVATION_THRESHOLD && creature->age_ > parameters_.birthAgeThreshhold_) // BIRTH
     {
         thread_local static RandomNumberGenerator<float> rng;
-        if (creature->weight_ + rng.get(0, BIRTH_WEIGHT_THRESHOLD) > BIRTH_WEIGHT_THRESHOLD)
+        if (creature->weight_ + rng.get(0, parameters_.birthWeightThreshhold_) > parameters_.birthWeightThreshhold_)
         {
             birth = true;
-            creature->energy_ -= ENERGY_BIRTH;
-            creature->weight_ -= WEIGHT_BIRTH;
+            creature->energy_ -= parameters_.energyBirth_;
+            creature->weight_ -= parameters_.weightBirth_;
         }
         else
         {
-            creature->energy_ -= ENERGY_BIRTH_FAILED;
+            creature->energy_ -= parameters_.energyBirthFailed_;
         }
     }
-    creature->energy_ -= (1000.f + creature->age_) / 20.f / 200.f; //alert MAGIC // idle energy consumption
+    return birth;
+}
+
+void Simulation::calculateMovement(CreatureParametersSPtr creature)
+{
     creature->speed_ = fabs(creature->speed_);
     float movement = creature->speed_ * creature->speedMultiplier_;
-    if (creature->energy_ > ENERGY_THRESHOLD)
-    {
-        creature->weight_ += (creature->energy_ - ENERGY_THRESHOLD);
-        creature->energy_ = ENERGY_THRESHOLD;
-    }
-    else if (creature->energy_ < 0)
-    {
-        creature->weight_ -= fabs(creature->energy_);
-        creature->energy_ = 0;
-    }
-
     creature->positionX_ += sin(creature->heading_) * movement;
     (creature->positionX_ > map_->getWidth()) ? creature->positionX_ -= map_->getWidth() : ((creature->positionX_ < 0) ? creature->positionX_ += map_->getWidth() : 0);
     creature->positionY_ += cos(creature->heading_) * movement;
     (creature->positionY_ > map_->getHeight()) ? creature->positionY_ -= map_->getHeight() : ((creature->positionY_ < 0) ? creature->positionY_ += map_->getHeight() : 0);
+}
+void Simulation::calculateAntennas(CreatureParametersSPtr creature)
+{
     creature->bottomAntennaH_ = map_->getPixelH(creature->positionX_, creature->positionY_);
 
     float xPos = creature->positionX_ + creature->speedMultiplier_ * sin(creature->heading_ - 45.f / 180.f * pi);
@@ -165,24 +204,26 @@ void Simulation::updateCreature(int creatureIndex)
     yPos = creature->positionY_ - creature->speedMultiplier_ * cos(creature->heading_);
     hValue = map_->getPixelH(xPos, yPos);
     creature->rearAntennaH_ = (hValue != INVALID_COORDS) ? hValue : creature->bottomAntennaH_;
+}
 
+void Simulation::calculateAge(CreatureParametersSPtr creature)
+{
     creature->age_ += 1.f / TARGET_FPS;
+}
 
-    if (birth)
+void Simulation::calculateEnergy(CreatureParametersSPtr creature)
+{
+    creature->energy_ -= (1000.f + creature->age_) / 20.f / 200.f; //alert MAGIC // idle energy consumption
+    if (creature->energy_ > parameters_.energyThreshhold_)
     {
-        auto childParams = CreatureFactory::getInstance().createChild(creature);
-        childParams->weight_ = WEIGHT_BIRTH;
-        auto neurons = container_.getNeurons(creatureIndex);
-        auto childNeurons = NeuronFactory::getInstance().createChild(neurons);
-        // std::cout<<"\nStarting birth...\n"; //alert DEBUG COUT
-        container_.putCreature(childParams, childNeurons);
+        creature->weight_ += (creature->energy_ - parameters_.energyThreshhold_);
+        creature->energy_ = parameters_.energyThreshhold_;
     }
-    if (creature->weight_ < MIN_WEIGHT)
+    else if (creature->energy_ < 0)
     {
-        container_.deleteCreature(creatureIndex);
+        creature->weight_ -= fabs(creature->energy_);
+        creature->energy_ = 0;
     }
-
-    container_.updateCreatureParameters(creatureIndex, creature);
 }
 
 void Simulation::printAll(std::shared_ptr<sf::RenderWindow> window)

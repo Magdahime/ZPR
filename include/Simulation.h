@@ -39,7 +39,6 @@ const float TARGET_FPS = 60.f;
 
 const float MIN_WEIGHT = 10.f;
 
-
 class Creature;
 class Neuron;
 class Map;
@@ -49,6 +48,22 @@ namespace sf
     class RenderWindow;
     class View;
 }
+
+struct SimulationParameters
+{
+    unsigned int creaturesNum_;
+    float energyThreshhold_;
+    float minWeight_;
+    float birthWeightThreshhold_;
+    float energyBirth_;
+    float energyBirthFailed_;
+    float weightBirth_;
+    float birthAgeThreshhold_;
+    float anglePerFrame_;
+    float accelerationMultiplier_;
+    float maxSpeed_;
+};
+
 
 class Simulation
 {
@@ -60,6 +75,7 @@ class Simulation
     std::vector<float> data_PROTO_;
 
     CreatureContainer container_;
+    SimulationParameters parameters_;
 
     void populateNeurons();
     void updateCreature(int creatureIndex);
@@ -75,9 +91,21 @@ public:
     void iteration_PROTO();
     bool tryNewData();
     void postVideo();
+    void calculateSteer(CreatureParametersSPtr creature, float result);
+    void calculateAcceleration(CreatureParametersSPtr creature, float result);
+    void calculateEating(CreatureParametersSPtr creature, float result);
+    void calculateAttack(CreatureParametersSPtr creature, float result);
+    bool calculateBirth(CreatureParametersSPtr creature, float result);
+    void calculateMovement(CreatureParametersSPtr creature);
+    void calculateAntennas(CreatureParametersSPtr creature);
+    void calculateAge(CreatureParametersSPtr creature);
+    void calculateEnergy(CreatureParametersSPtr creature);
     void setMap(std::shared_ptr<Map> mapPtr);
     void printAll_PROTO(sf::RenderWindow *window);
     void printAll(std::shared_ptr<sf::RenderWindow>);
     void printClipped_PROTO(std::shared_ptr<sf::RenderWindow> window, sf::View view);
     void printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View view);
+    void setSimulationParameters(SimulationParameters params)
+    {this->parameters_ = params;}
+    SimulationParameters getSimulationParameters() { return parameters_; }
 };

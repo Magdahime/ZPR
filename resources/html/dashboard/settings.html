@@ -26,27 +26,7 @@
 
     <!-- Custom styles for this template -->
     <link href="dashboard.css" rel="stylesheet">
-    <script type="text/javascript">
-        //FUNCTIONS
-        function writeToBody(content) {
-            var myDiv = document.createElement("div");
-            myDiv.innerHTML = "<p>".concat(content, "</p>");
-            document.body.appendChild(myDiv);
-        }
-        function testSend() {
-            writeToBody("Kliknieto przycisk");
-            var x = document.getElementById("widthInput").value;
-            var y = document.getElementById("heightInput").value;
-            var element = document.getElementById("butt1");
-            element.parentNode.removeChild(element)
-            setMapSize(x, y);
-        }
-        function frameNum(num) {
-            document.getElementById("frameCounter").innerHTML = "Frame: ".concat(num);
-        }
-        function dataAvailable() {
-            writeToBody("Data available");
-        }
+    <script type="text/javascript" src='/js/settings.js'></script>
     </script>
 </head>
 
@@ -94,7 +74,8 @@
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Simulation Settings</h1>
                 </div>
-                <div class="mx-auto my-5" style="width: 1000px;">
+                <form action ="#" onsubmit="sendData()">
+                <div class="mx-auto my-5">
                     <hr>
                     <div class="row my-5">
                         <div class="col-lg-3">
@@ -127,7 +108,7 @@
                             <label for="creaturesInput">Number of creatures</label>
                         </div>
                         <div class="col-lg-5">
-                            <input type="range" id="creaturesInput" name="creaturesInput" min="1" max="10000"
+                            <input type="range" id="creaturesInput" name="creaturesInput" min="1" max="1000"
                                 oninput='document.getElementById("creaturesOutput").value = this.value'>
                         </div>
                         <div class="col-lg-2">
@@ -135,14 +116,110 @@
                         </div>
                     </div>
                     <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="energyThreshhold">Maximum value of energy (after exceeding this value the energy
+                                is
+                                transformed into weight)</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="energyThreshhold" name="energyThreshhold"
+                                value="100">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="minWeight">Minimum weight of a creature (it dies if it is lower)</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="minWeight" name="minWeight" value="10">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="birthWeightThreshhold">Minimum weight needed to reproduce</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="birthWeightThreshhold"
+                                name="birthWeightThreshhold" value="100">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="energyBirth">Energy used for reproduction</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="energyBirth" name="energyBirth" value="20">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="energyBirthFailed">Energy used when reproduction fails</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="energyBirthFailed" name="energyBirthFailed"
+                                value="20">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="weightBirth">Weight of creature when born</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="weightBirth" name="weightBirth" value="20">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="birthAgeThreshhold">Minimum age to reproduce</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="birthAgeThreshhold" name="birthAgeThreshhold" value="1">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="anglePerFrame">Maximum value of angle that creature can turn through of </label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="anglePerFrame" name="anglePerFrame" value="2">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="accelerationMultiplier">Acceleration multiplier</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="accelerationMultiplier" name="accelerationMultiplier" value="0.05">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="maxSpeed">Maximum speed of the creature</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="maxSpeed" name="maxSpeed" value="0.05">
+                        </div>
+                    </div>
+                    <hr>
                 </div>
                 <div class="mx-auto my-5" style="width: 200px;">
-                    <button class="btn btn-primary btn-lg" onclick="testSend();" id="butt1">Generate map</button>
+                    <button class="btn btn-primary btn-lg" type="submit" id="butt1">Generate map</button>
                 </div>
+            </form>
 
 
                 <script src="/js/bootstrap.bundle.min.js"></script>
-
+                <script>setPrimaryValues()</script>
                 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
                     integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
                     crossorigin="anonymous"></script>
