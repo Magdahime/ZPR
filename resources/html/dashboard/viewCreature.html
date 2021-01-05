@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Webview for EvolutionSim</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+
+    <!-- Custom styles for this template -->
+    <link href="dashboard.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script type="text/javascript" src='../js/charts.js'></script>
+</head>
+
+<body onload="">
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">
+                                <span data-feather="home"></span>
+                                Main Page
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="settings.html">
+                                <span data-feather="list"></span>
+                                Simulation Settings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="editSimulation.html">
+                                <span data-feather="edit"></span>
+                                Edit Simulation
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="viewCreature.html">
+                                <span data-feather="meh"></span>
+                                View Creature
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="statistics.html">
+                                <span data-feather="bar-chart-2"></span>
+                                Statistics
+                            </a>
+                        </li>
+                    </ul>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">View Creature</h1>
+                </div>
+                <h2 id="status">NO CREATURE IS SELECTED</h2>
+                <hr>
+                <div class = "row">
+                    <div class="col-sm-2">
+                        <table class="table" id= "CreatureTable">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Age</th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Weight</th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Energy</th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Colour</th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Position on the map</th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Current speed</th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Heading</th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Left Antenna</th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Right Antenna</th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Bottom Antenna</th>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-sm-10">
+                        <div id="svg"></div>
+                    </div>
+                </div>
+                <hr>
+                <script></script>
+
+                <script src="/js/bootstrap.bundle.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
+                    integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
+                    crossorigin="anonymous"></script>
+                <script src="dashboard.js"></script>
+</body>
+
+</html>

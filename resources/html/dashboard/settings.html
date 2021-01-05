@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Webview for EvolutionSim</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+
+    <!-- Custom styles for this template -->
+    <link href="dashboard.css" rel="stylesheet">
+    <script type="text/javascript">
+        //FUNCTIONS
+        function writeToBody(content) {
+            var myDiv = document.createElement("div");
+            myDiv.innerHTML = "<p>".concat(content, "</p>");
+            document.body.appendChild(myDiv);
+        }
+        function testSend() {
+            writeToBody("Kliknieto przycisk");
+            var x = document.getElementById("widthInput").value;
+            var y = document.getElementById("heightInput").value;
+            var element = document.getElementById("butt1");
+            element.parentNode.removeChild(element)
+            setMapSize(x, y);
+        }
+        function frameNum(num) {
+            document.getElementById("frameCounter").innerHTML = "Frame: ".concat(num);
+        }
+        function dataAvailable() {
+            writeToBody("Data available");
+        }
+    </script>
+</head>
+
+<body onload="">
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">
+                                <span data-feather="home"></span>
+                                Main Page
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="settings.html">
+                                <span data-feather="list"></span>
+                                Simulation Settings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="editSimulation.html">
+                                <span data-feather="edit"></span>
+                                Edit Simulation
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="viewCreature.html">
+                                <span data-feather="meh"></span>
+                                View Creature
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="statistics.html">
+                                <span data-feather="bar-chart-2"></span>
+                                Statistics
+                            </a>
+                        </li>
+                    </ul>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Simulation Settings</h1>
+                </div>
+                <div class="mx-auto my-5" style="width: 1000px;">
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="widthInput">Perlin width:</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input type="range" id="widthInput" name="widthInput" min="1" max="1000"
+                                oninput='document.getElementById("widthOutput").value = this.value'>
+                        </div>
+                        <div class="col-lg-2">
+                            <output id="widthOutput" for="widthInput">0</output>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="heightInput">Perlin height:</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input type="range" id="heightInput" name="heightInput" min="1" max="1000"
+                                oninput='document.getElementById("heightOutput").value = this.value'>
+                        </div>
+                        <div class="col-lg-2">
+                            <output id="heightOutput" for="heightInput">0</output>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="creaturesInput">Number of creatures</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input type="range" id="creaturesInput" name="creaturesInput" min="1" max="10000"
+                                oninput='document.getElementById("creaturesOutput").value = this.value'>
+                        </div>
+                        <div class="col-lg-2">
+                            <output id="creaturesOutput" for="creaturesInput">0</output>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <div class="mx-auto my-5" style="width: 200px;">
+                    <button class="btn btn-primary btn-lg" onclick="testSend();" id="butt1">Generate map</button>
+                </div>
+
+
+                <script src="/js/bootstrap.bundle.min.js"></script>
+
+                <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
+                    integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
+                    crossorigin="anonymous"></script>
+                <script src="dashboard.js"></script>
+</body>
+
+</html>
