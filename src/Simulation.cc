@@ -56,7 +56,7 @@ void Simulation::run()
 int Simulation::iteration()
 {
     int counter = 0;
-// #pragma omp parallel for reduction(+ : counter)
+    // #pragma omp parallel for reduction(+ : counter)
     for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
@@ -86,7 +86,7 @@ void Simulation::updateCreature(int creatureIndex)
     {
         if (results[0] > 0)
         {
-            creature->heading_ += 2.f * 2.f * pi / 360.f; //alert MAGIC
+            creature->heading_ += ANGLE_PER_FRAME * 2.f * pi / 360.f;
             creature->heading_ = fmod(creature->heading_ + 2.f * pi, 2.f * pi);
         }
         else
@@ -99,12 +99,12 @@ void Simulation::updateCreature(int creatureIndex)
     {
         if (results[1] > 0)
         {
-            creature->speed_ *= 1.2f;                         //alert MAGIC
-            creature->speed_ = fmin(creature->speed_, 0.05f); //alert MAGIC
+            creature->speed_ *= ACCELERATION_MULTIPLIER;
+            creature->speed_ = fmin(creature->speed_, MAX_SPEED);
         }
         else
         {
-            creature->speed_ /= 1.2f; //alert MAGIC
+            creature->speed_ /= ACCELERATION_MULTIPLIER;
         }
     }
     if (results[2] > ACTIVATION_THRESHOLD) // EAT
@@ -117,7 +117,7 @@ void Simulation::updateCreature(int creatureIndex)
         creature->energy_ += dist;
     }
     bool birth = false;
-    if (results[4] > ACTIVATION_THRESHOLD && creature->age_ > 1.f) // BIRTH //alert MAGIC
+    if (results[4] > ACTIVATION_THRESHOLD && creature->age_ > BIRTH_AGE_THRESHOLD) // BIRTH
     {
         thread_local static RandomNumberGenerator<float> rng;
         if (creature->weight_ + rng.get(0, BIRTH_WEIGHT_THRESHOLD) > BIRTH_WEIGHT_THRESHOLD)
@@ -141,9 +141,7 @@ void Simulation::updateCreature(int creatureIndex)
     }
     else if (creature->energy_ < 0)
     {
-        // std::cout << "\nPRZED: " << creatureIndex << " " << creature->weight_;
         creature->weight_ -= fabs(creature->energy_);
-        // std::cout << "\nPO: " << creatureIndex << " " << creature->weight_;
         creature->energy_ = 0;
     }
 
@@ -152,22 +150,23 @@ void Simulation::updateCreature(int creatureIndex)
     creature->positionY_ += cos(creature->heading_) * movement;
     (creature->positionY_ > map_->getHeight()) ? creature->positionY_ -= map_->getHeight() : ((creature->positionY_ < 0) ? creature->positionY_ += map_->getHeight() : 0);
     creature->bottomAntennaH_ = map_->getPixelH(creature->positionX_, creature->positionY_);
-    {
-        float xPos = creature->positionX_ + creature->speedMultiplier_ * sin(creature->heading_ - 45.f / 180.f * pi);
-        float yPos = creature->positionY_ + creature->speedMultiplier_ * cos(creature->heading_ - 45.f / 180.f * pi);
-        creature->rightAntennaH_ = map_->getPixelH(xPos, yPos);
-    }
-    {
-        float xPos = creature->positionX_ + creature->speedMultiplier_ * sin(creature->heading_ + 45.f / 180.f * pi);
-        float yPos = creature->positionY_ + creature->speedMultiplier_ * cos(creature->heading_ + 45.f / 180.f * pi);
-        creature->leftAntennaH_ = map_->getPixelH(xPos, yPos);
-    }
-    {
-        float xPos = creature->positionX_ - creature->speedMultiplier_ * sin(creature->heading_);
-        float yPos = creature->positionY_ - creature->speedMultiplier_ * cos(creature->heading_);
-        creature->rearAntennaH_ = map_->getPixelH(xPos, yPos);
-    }
-    creature->age_ += 1.f / 60.f; //alert MAGIC
+
+    float xPos = creature->positionX_ + creature->speedMultiplier_ * sin(creature->heading_ - 45.f / 180.f * pi);
+    float yPos = creature->positionY_ + creature->speedMultiplier_ * cos(creature->heading_ - 45.f / 180.f * pi);
+    float hValue = map_->getPixelH(xPos, yPos);
+    creature->rightAntennaH_ = (hValue != INVALID_COORDS) ? hValue : creature->bottomAntennaH_;
+
+    xPos = creature->positionX_ + creature->speedMultiplier_ * sin(creature->heading_ + 45.f / 180.f * pi);
+    yPos = creature->positionY_ + creature->speedMultiplier_ * cos(creature->heading_ + 45.f / 180.f * pi);
+    hValue = map_->getPixelH(xPos, yPos);
+    creature->leftAntennaH_ = (hValue != INVALID_COORDS) ? hValue : creature->bottomAntennaH_;
+
+    xPos = creature->positionX_ - creature->speedMultiplier_ * sin(creature->heading_);
+    yPos = creature->positionY_ - creature->speedMultiplier_ * cos(creature->heading_);
+    hValue = map_->getPixelH(xPos, yPos);
+    creature->rearAntennaH_ = (hValue != INVALID_COORDS) ? hValue : creature->bottomAntennaH_;
+
+    creature->age_ += 1.f / TARGET_FPS;
 
     if (birth)
     {
@@ -177,8 +176,8 @@ void Simulation::updateCreature(int creatureIndex)
         // std::cout<<"\nStarting birth...\n"; //alert DEBUG COUT
         container_.putCreature(childParams, childNeurons);
     }
-    if (creature->weight_ < 10.f)
-    { //alert MAGIC
+    if (creature->weight_ < MIN_WEIGHT)
+    {
         container_.deleteCreature(creatureIndex);
     }
 
@@ -230,8 +229,8 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
             window->draw(circle);
             sf::CircleShape marker;
             marker.setPosition(
-                creature->positionX_ - radius * sin(creature->heading_) - radius / 10.f, //alert MAGIC
-                creature->positionY_ - radius * cos(creature->heading_) - radius / 10.f);
+                creature->positionX_ + radius * sin(creature->heading_) - radius / 10.f, //alert MAGIC
+                creature->positionY_ + radius * cos(creature->heading_) - radius / 10.f);
             marker.setRadius(radius / 10.f); //alert MAGIC
             Map::HSVvals hsvmarker(creature->hue_, 1, 1);
             hsvmarker.h_ = fmod(hsvmarker.h_ + 180.f, 360.f);

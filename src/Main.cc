@@ -7,7 +7,8 @@
 
 using namespace std;
 
-void pyServ(const string& executablePath){
+void pyServ(const string &executablePath)
+{
     Py_Initialize();
     auto py_main = PyImport_AddModule("__main__");
     PyModule_AddStringConstant(py_main, "executablePath", executablePath.c_str());

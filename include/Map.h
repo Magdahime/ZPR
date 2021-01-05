@@ -12,6 +12,7 @@
 #include "Perlin.h"
 
 const int DEGREES = 360;
+const int INVALID_COORDS = -1;
 
 class Map
 {
@@ -58,6 +59,6 @@ public:
     {
         if (x < width_ && y < height_ && x >= 0 && y>= 0)
             return HSVpixels_[width_ * y * 4 + x * 4];
-        return 0;
+        return INVALID_COORDS;
     }
 };

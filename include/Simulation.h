@@ -29,6 +29,17 @@ const float ENERGY_BIRTH = 20.f;
 const float ENERGY_BIRTH_FAILED = 20.f;
 const float WEIGHT_BIRTH = 20.f;
 
+const float ANGLE_PER_FRAME = 2.0f;
+const float ACCELERATION_MULTIPLIER = 0.05f;
+const float MAX_SPEED = 0.05f;
+
+const float BIRTH_AGE_THRESHOLD = 1.f;
+
+const float TARGET_FPS = 60.f;
+
+const float MIN_WEIGHT = 10.f;
+
+
 class Creature;
 class Neuron;
 class Map;
