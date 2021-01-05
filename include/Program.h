@@ -29,8 +29,9 @@ class Program
 {
     std::shared_ptr<sf::RenderWindow> programWindowPtr_;
     std::shared_ptr<webview::webview> webviewPtr_;
-    Simulation simulation_;
+    std::shared_ptr<Simulation> simulationPtr_;
     std::thread webviewThread_;
+    std::thread simulationThread_;
     StatisticsThread statThread_;
 
 public:

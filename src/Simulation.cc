@@ -39,7 +39,7 @@ void Simulation::run()
     time_t newnow;
     dataSemaphore_.post();
     int c = 0;
-    while (true)
+    while (!terminate_)
     {
         dataSemaphore_.wait();
         i++;

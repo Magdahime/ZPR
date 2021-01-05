@@ -19,6 +19,7 @@ Program::~Program(){};
 Program::Program()
 {
     webviewPtr_ = std::make_shared<webview::webview>(zpr_dev_flags::WEBVIEW_DEBUG, nullptr);
+    simulationPtr_ = std::make_shared<Simulation>();
     programWindowPtr_ = std::make_shared<sf::RenderWindow>(sf::VideoMode(zpr_windows::SF_X, zpr_windows::SF_Y), zpr_windows::SF_NAME),
     programWindowPtr_->setVerticalSyncEnabled(true);
     webviewPtr_->set_title(zpr_windows::WV_NAME);
@@ -37,17 +38,18 @@ void Program::run()
 
     sf::View simView;
 
-    bool submitted = false;
+    bool submittedMap = false;
+    bool submittedParams = false;
 
-    thread simulationThread;
 #ifdef LINUX_WV
     webviewPtr_->dispatch([&] {
 #endif //LINUX_WV
         webviewPtr_->bind(
             "setMapSize",
             [&](std::string s) -> std::string {
-                if (submitted)
+                if (submittedMap)
                     return "ALREADY SUBMITTED";
+                submittedMap = true;
                 auto windowWidth = std::stoi(webview::json_parse(s, "", 0));
                 auto windowHeight = std::stoi(webview::json_parse(s, "", 1));
                 mapPtr = make_shared<Map>(windowWidth, windowHeight);
@@ -62,30 +64,32 @@ void Program::run()
                 simView.zoom(.06125f); //alert MAGIC
                 simView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
                 programWindowPtr_->setView(simView);
-                submitted = true;
-                simulation_.setMap(mapPtr);
+                simulationPtr_->setMap(mapPtr);
                 return "OK";
             });
 
-            webviewPtr_->bind(
-                "setSimulationParameters",
-                [&](std::string s) -> std::string{
-                    SimulationParameters newParams;
-                    newParams.creaturesNum_ = std::stoi(webview::json_parse(s, "", 0));
-                    newParams.energyThreshhold_ = std::stof(webview::json_parse(s, "", 1));
-                    newParams.minWeight_ = std::stof(webview::json_parse(s, "", 2));
-                    newParams.birthWeightThreshhold_= std::stof(webview::json_parse(s, "", 3));
-                    newParams.energyBirth_= std::stof(webview::json_parse(s, "", 4));
-                    newParams.energyBirthFailed_= std::stof(webview::json_parse(s, "", 5));
-                    newParams. weightBirth_= std::stof(webview::json_parse(s, "", 6));
-                    newParams.birthAgeThreshhold_= std::stof(webview::json_parse(s, "", 7));
-                    newParams.anglePerFrame_= std::stof(webview::json_parse(s, "", 8));
-                    newParams.accelerationMultiplier_= std::stof(webview::json_parse(s, "", 9));
-                    newParams.maxSpeed_= std::stof(webview::json_parse(s, "", 10));
-                    simulation_.setSimulationParameters(newParams);
-                    simulationThread = thread([this] { simulation_.run();});
-                    return "OK";
-                });
+        webviewPtr_->bind(
+            "setSimulationParameters",
+            [&](std::string s) -> std::string {
+                if (submittedParams)
+                    return "ALREADY SUBMITTED";
+                submittedParams = true;
+                SimulationParameters newParams;
+                newParams.creaturesNum_ = std::stoi(webview::json_parse(s, "", 0));
+                newParams.energyThreshhold_ = std::stof(webview::json_parse(s, "", 1));
+                newParams.minWeight_ = std::stof(webview::json_parse(s, "", 2));
+                newParams.birthWeightThreshhold_ = std::stof(webview::json_parse(s, "", 3));
+                newParams.energyBirth_ = std::stof(webview::json_parse(s, "", 4));
+                newParams.energyBirthFailed_ = std::stof(webview::json_parse(s, "", 5));
+                newParams.weightBirth_ = std::stof(webview::json_parse(s, "", 6));
+                newParams.birthAgeThreshhold_ = std::stof(webview::json_parse(s, "", 7));
+                newParams.anglePerFrame_ = std::stof(webview::json_parse(s, "", 8));
+                newParams.accelerationMultiplier_ = std::stof(webview::json_parse(s, "", 9));
+                newParams.maxSpeed_ = std::stof(webview::json_parse(s, "", 10));
+                simulationPtr_->setSimulationParameters(newParams);
+                simulationThread_ = std::thread(&Simulation::run, &(*simulationPtr_));
+                return "OK";
+            });
 #ifdef LINUX_WV
     });
 #endif //LINUX_WV
@@ -93,12 +97,29 @@ void Program::run()
     time_t now = time(0);
     time_t newnow;
     bool moving = false;
+    bool webviewClosed = false;
     sf::Vector2f oldPos;
 
     statThread_.run();
 
     while (programWindowPtr_->isOpen())
     {
+
+        try
+        {
+#ifdef LINUX_WV
+            webviewPtr_->dispatch([webviewPtr_, frameCounter] {
+#endif //LINUX_WV
+                webviewPtr_->eval("frameNum(" + to_string(frameCounter) + ");");
+#ifdef LINUX_WV
+            });
+#endif //LINUX_WV
+        }
+        catch (...)
+        {
+            webviewClosed = true;
+            break;
+        }
         sf::Event event;
         while (programWindowPtr_->pollEvent(event))
         {
@@ -106,10 +127,15 @@ void Program::run()
             {
             case sf::Event::Closed:
                 webviewPtr_->terminate();
+                statThread_.terminate();
+                simulationPtr_->terminate();
                 programWindowPtr_->close();
                 break;
             case sf::Event::MouseWheelMoved:
             {
+                webviewPtr_->dispatch([&] {
+                    webviewPtr_->terminate();
+                });
                 simView = programWindowPtr_->getView();
                 simView.zoom(pow(2.0f, event.mouseWheel.delta * 0.5));
                 sf::Vector2i pixelPos = sf::Mouse::getPosition(*programWindowPtr_);
@@ -158,20 +184,16 @@ void Program::run()
             frameCounter = 0;
         }
         now = newnow;
-#ifdef LINUX_WV
-        webviewPtr_->dispatch([&] {
-#endif //LINUX_WV
-            webviewPtr_->eval("frameNum(" + to_string(frameCounter) + ");");
-#ifdef LINUX_WV
-        });
-#endif //LINUX_WV
 
-        simulation_.postVideo();
+        simulationPtr_->postVideo();
 
         programWindowPtr_->clear();
         programWindowPtr_->draw(sprite);
         simView = programWindowPtr_->getView();
-        simulation_.printClipped(programWindowPtr_, simView);
+        simulationPtr_->printClipped(programWindowPtr_, simView);
         programWindowPtr_->display();
     }
+    statThread_.terminate();
+    simulationPtr_->terminate();
+    programWindowPtr_->close();
 }

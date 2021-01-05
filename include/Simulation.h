@@ -47,7 +47,7 @@ namespace sf
 {
     class RenderWindow;
     class View;
-}
+} // namespace sf
 
 struct SimulationParameters
 {
@@ -64,7 +64,6 @@ struct SimulationParameters
     float maxSpeed_;
 };
 
-
 class Simulation
 {
     std::vector<Creature> creatures_;
@@ -76,6 +75,8 @@ class Simulation
 
     CreatureContainer container_;
     SimulationParameters parameters_;
+
+    bool terminate_ = false;
 
     void populateNeurons();
     void updateCreature(int creatureIndex);
@@ -105,7 +106,8 @@ public:
     void printAll(std::shared_ptr<sf::RenderWindow>);
     void printClipped_PROTO(std::shared_ptr<sf::RenderWindow> window, sf::View view);
     void printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View view);
-    void setSimulationParameters(SimulationParameters params)
-    {this->parameters_ = params;}
-    SimulationParameters getSimulationParameters() { return parameters_; }
+    void setSimulationParameters(SimulationParameters params) { this->parameters_ = params; };
+    SimulationParameters getSimulationParameters() { return parameters_; };
+
+    void terminate() { terminate_ = true; };
 };
