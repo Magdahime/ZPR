@@ -13,27 +13,23 @@
 #include <string>
 #include <thread>
 
-namespace webview
-{
+//SFML
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
+
+// ZPR
+#include "Simulation.h"
+
+
+namespace webview {
     class webview;
-};
-
-namespace sf
-{
-    class RenderWindow;
 }
-
-class Simulation;
-
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 800;
-const std::string WINDOW_NAME = "CreatureSim";
 
 class Program
 {
     std::shared_ptr<sf::RenderWindow> programWindowPtr_;
     std::shared_ptr<webview::webview> webviewPtr_;
-    std::shared_ptr<Simulation> simulationPtr_;
+    Simulation simulation_;
     std::thread webviewThread_;
 
 public:
