@@ -170,6 +170,8 @@ function treeMapColorsChart() {
 }
 
 function getDataAboutNetwork(graph) {
+    var h1Element = document.getElementById("status");
+    h1Element.innerHTML=''
     if (graph != undefined) {
         renderNeuralNetowork(graph)
     }
@@ -244,11 +246,16 @@ function renderNeuralNetowork(graph) {
             return "translate(" + d.x + "," + d.y + ")";
         }
         );
-
+    var lastLayer = Object.keys(netsize)[Object.keys(netsize).length -1]
     var circle = node.append("circle")
         .attr("class", "node")
         .attr("r", nodeSize)
-        .style("fill", function (d) { return color(d.layer); });
+        .style("fill", function (d) {
+            if (parseInt(d.label) == 1.0 && d.layer == lastLayer) {
+                return '#00ff00'
+            }
+            return color(d.layer);
+        });
 
 
     node.append("text")
@@ -266,8 +273,6 @@ function updateDataAboutNetwork(graph) {
     }
 }
 
-
-
 function updateCellValues(tableName, data) {
     var table = document.getElementById(tableName);
     for (var r = 0, n = table.rows.length; r < n; r++) {
@@ -276,6 +281,13 @@ function updateCellValues(tableName, data) {
 }
 
 function updateDataAboutCreature(data) {
+    var h1Element = document.getElementById("status");
+    h1Element.innerHTML=''
     data = JSON.parse(data)
-    updateCellValues("CreatureTable",data.data)
+    updateCellValues("CreatureTable", data.data)
+}
+
+function creatureDead(){
+    var h1Element = document.getElementById("status");
+    h1Element.innerHTML='CREATURE IS DEAD. SELECT ANOTHER'
 }
