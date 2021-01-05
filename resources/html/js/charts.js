@@ -265,3 +265,17 @@ function updateDataAboutNetwork(graph) {
         renderNeuralNetowork(graph)
     }
 }
+
+
+
+function updateCellValues(tableName, data) {
+    var table = document.getElementById(tableName);
+    for (var r = 0, n = table.rows.length; r < n; r++) {
+        table.rows[r].cells[1].innerHTML = data[r];
+    }
+}
+
+function updateDataAboutCreature(data) {
+    data = JSON.parse(data)
+    updateCellValues("CreatureTable",data.data)
+}
