@@ -5,7 +5,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-#include <boost/chrono.hpp>
+#include <chrono>
 
 #include "Simulation.h"
 #include "Creature.h"

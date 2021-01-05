@@ -5,6 +5,7 @@
 ///     return random integers and floats             ///
 /////////////////////////////////////////////////////////
 #pragma once
+#pragma warning (disable: 4003)
 
 #include <random>
 

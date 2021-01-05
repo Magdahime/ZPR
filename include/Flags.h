@@ -25,4 +25,9 @@ namespace zpr_windows
     const int WV_Y = 600;
     const int SF_X = 800;
     const int SF_Y = 800;
+} // namespace zpr_windows
+
+namespace zpr_consts
+{
+    const int statistics_sleep_millis = 1000;
 }

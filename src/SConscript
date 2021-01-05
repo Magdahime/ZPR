@@ -1,6 +1,7 @@
 
 import os
 import platform
+import pathlib
 
 system = platform.system()
 system = system.lower()
@@ -12,7 +13,7 @@ if system == "windows":
                         '#lib/SFML-2.5.1-Win/include',
                         '#lib/webview',
                         '#lib/boost_1_75_0',
-                        "C:\\Program Files\\Python39\\include"     
+                        pathlib.Path(os.__file__).parents[1] / 'include' 
                         ])
 
     env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
@@ -22,7 +23,7 @@ if system == "windows":
     env.Append(LIBPATH=['#lib/SFML-2.5.1-Win/lib',
                         '#lib/webview/lib',
                         '#lib/boost_1_75_0/stage/lib',
-                        'C:\Program Files\Python39\libs'
+                        pathlib.Path(os.__file__).parents[1] / 'libs'
                         ])
 
     env.Append(LIBS=['sfml-graphics',

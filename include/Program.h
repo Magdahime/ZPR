@@ -19,7 +19,7 @@
 
 // ZPR
 #include "Simulation.h"
-
+#include "StatisticsThread.h"
 
 namespace webview {
     class webview;
@@ -31,6 +31,7 @@ class Program
     std::shared_ptr<webview::webview> webviewPtr_;
     Simulation simulation_;
     std::thread webviewThread_;
+    StatisticsThread statThread_;
 
 public:
     Program();

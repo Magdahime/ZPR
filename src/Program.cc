@@ -25,9 +25,7 @@ Program::Program()
     webviewPtr_->set_title(zpr_windows::WV_NAME);
     webviewPtr_->set_size(zpr_windows::WV_X, zpr_windows::WV_Y, WEBVIEW_HINT_FIXED);
     webviewPtr_->navigate(zpr_paths::HTTP_PATH);
-    webviewThread_ = thread([&] {
-        webviewPtr_->run();
-    });
+    webviewThread_ = std::thread(&webview::webview::run, &(*webviewPtr_));
 }
 
 void Program::run()
@@ -78,6 +76,8 @@ void Program::run()
     time_t newnow;
     bool moving = false;
     sf::Vector2f oldPos;
+
+    statThread_.run();
 
     while (programWindowPtr_->isOpen())
     {

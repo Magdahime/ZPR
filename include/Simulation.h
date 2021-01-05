@@ -47,6 +47,7 @@ class Map;
 namespace sf
 {
     class RenderWindow;
+    class View;
 }
 
 class Simulation
