@@ -56,8 +56,7 @@ void Simulation::run()
 int Simulation::iteration()
 {
     int counter = 0;
-#pragma omp parallel for reduction(+ \
-                                   : counter)
+// #pragma omp parallel for reduction(+ : counter)
     for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
@@ -110,20 +109,17 @@ void Simulation::updateCreature(int creatureIndex)
     }
     if (results[2] > ACTIVATION_THRESHOLD) // EAT
     {
-        // if (results[2] > 0)
-        // {
         float currH = map_->getPixelH(creature->positionX_, creature->positionY_);
         float diffH = fabs(creature->hue_ - currH);
         if (diffH > 180.f)
             diffH = fabs(diffH - 360.f);
         float dist = -((diffH * diffH + 30.f * 30.f) / 180.f - 50.f); //alert MAGIC
         creature->energy_ += dist;
-        // }
     }
     bool birth = false;
-    if (results[4] > ACTIVATION_THRESHOLD)
+    if (results[4] > ACTIVATION_THRESHOLD && creature->age_ > 1.f) // BIRTH //alert MAGIC
     {
-        RandomNumberGenerator<float> rng;
+        thread_local static RandomNumberGenerator<float> rng;
         if (creature->weight_ + rng.get(0, BIRTH_WEIGHT_THRESHOLD) > BIRTH_WEIGHT_THRESHOLD)
         {
             birth = true;
@@ -136,7 +132,7 @@ void Simulation::updateCreature(int creatureIndex)
         }
     }
     creature->energy_ -= (1000.f + creature->age_) / 20.f / 200.f; //alert MAGIC // idle energy consumption
-    creature->speedMultiplier_ = fabs(creature->speed_);
+    creature->speed_ = fabs(creature->speed_);
     float movement = creature->speed_ * creature->speedMultiplier_;
     if (creature->energy_ > ENERGY_THRESHOLD)
     {
@@ -178,7 +174,8 @@ void Simulation::updateCreature(int creatureIndex)
         auto childParams = CreatureFactory::getInstance().createChild(creature);
         auto neurons = container_.getNeurons(creatureIndex);
         auto childNeurons = NeuronFactory::getInstance().createChild(neurons);
-        // container_.putCreature(childParams, childNeurons);
+        // std::cout<<"\nStarting birth...\n"; //alert DEBUG COUT
+        container_.putCreature(childParams, childNeurons);
     }
     if (creature->weight_ < 10.f)
     { //alert MAGIC
@@ -187,136 +184,6 @@ void Simulation::updateCreature(int creatureIndex)
 
     container_.updateCreatureParameters(creatureIndex, creature);
 }
-
-/*
-    This is just a prototype to show that openMP is a viable way of parallelisation.
-    It will be replaced with a more sensible solution as soon as possible.
-*/
-void Simulation::run_PROTO()
-{
-    auto t1 = boost::chrono::high_resolution_clock::now();
-    prepare();
-    auto t2 = boost::chrono::high_resolution_clock::now();
-    std::cout << "DURATION FOR " << CREATURE_COUNT_PROTO << " CREATURES:\t" << (boost::chrono::duration_cast<boost::chrono::milliseconds>(t2 - t1)) << "\n";
-    data_PROTO_.resize(CREATURE_COUNT_PROTO * 24);
-    int xSize = map_->getWidth();
-    int ySize = map_->getHeight();
-#pragma omp parallel for
-    for (int i = 0; i < data_PROTO_.size(); i += 24)
-    {
-        RandomNumberGenerator<float> rngX(0, xSize);
-        RandomNumberGenerator<float> rngY(0, ySize);
-        RandomNumberGenerator<float> rngHdg(0.0f, 2 * pi);
-        RandomNumberGenerator<float> rngSpeed(0.0f, (xSize > ySize) ? xSize * 0.001f : ySize * 0.001f);
-        RandomNumberGenerator<float> rngSize(0.0f, 10.0f);
-        RandomNumberGenerator<float> rngWeight(-1.0f, 1.0f);
-        int x = rngX.get();
-        int y = rngY.get();
-        data_PROTO_[i] = x;
-        data_PROTO_[i + 1] = y;
-        data_PROTO_[i + 2] = rngHdg.get();
-        data_PROTO_[i + 3] = rngSpeed.get();
-        data_PROTO_[i + 4] = rngSize.get();
-        data_PROTO_[i + 5] = map_->getPixel(x, y, 0);
-        data_PROTO_[i + 6] = map_->getPixel(x, y, 1);
-        data_PROTO_[i + 7] = map_->getPixel(x, y, 2);
-        for (int j = 8; j < 24; j++)
-        {
-            data_PROTO_[i + j] = rngWeight.get();
-        }
-    }
-    cout << "Done RUN_PROTO x: " << xSize << "y: " << ySize << "\n";
-    int i = 0;
-    time_t now = time(0);
-    time_t newnow;
-    dataSemaphore_.post();
-    while (true)
-    {
-        dataSemaphore_.wait();
-        i++;
-        newnow = time(0);
-        if (newnow != now)
-        {
-            std::cout << "IPS:\t" << i << "\n";
-            i = 0;
-        }
-        now = newnow;
-        iteration_PROTO();
-
-        t1 = boost::chrono::high_resolution_clock::now();
-        iteration();
-        t2 = boost::chrono::high_resolution_clock::now();
-        if (i == 0)
-            std::cout << "ITERATION DURATION FOR " << CREATURE_COUNT_PROTO << " CREATURES:\t" << (boost::chrono::duration_cast<boost::chrono::milliseconds>(t2 - t1)) << "\n";
-    }
-};
-
-void Simulation::iteration_PROTO()
-{
-#pragma omp parallel for
-    for (int i = 0; i < data_PROTO_.size(); i += 24)
-    {
-        float speedResult = 0.0f;
-        float hdgResult = 0.0f;
-        int xSize = map_->getWidth();
-        int ySize = map_->getHeight();
-        for (int j = 0; j < 8; ++j)
-        {
-            speedResult += data_PROTO_[i + j] * data_PROTO_[i + j + 8];
-            hdgResult += data_PROTO_[i + j] * data_PROTO_[i + j + 16];
-        }
-        data_PROTO_[i + 3] *= (speedResult < 0.0f) ? 0.8f : 1.2f;
-        if (data_PROTO_[i + 3] > ((xSize > ySize) ? xSize * 0.0002f : ySize * 0.0002f))
-        {
-            data_PROTO_[i + 3] = ((xSize > ySize) ? xSize * 0.0002f : ySize * 0.0002f);
-        }
-        data_PROTO_[i + 2] += (hdgResult < 1.0f) ? pi / 6.0f : (hdgResult > 1.0f) ? -pi / 6.0f : 0.0f;
-        if (data_PROTO_[i + 2] < 0)
-        {
-            data_PROTO_[i + 2] += 2 * pi;
-        }
-        if (data_PROTO_[i + 2] > 2 * pi)
-        {
-            data_PROTO_[i + 2] -= 2 * pi;
-        }
-        data_PROTO_[i] += sin(data_PROTO_[i + 2]) * data_PROTO_[i + 3];
-        data_PROTO_[i + 1] += cos(data_PROTO_[i + 2]) * data_PROTO_[i + 3];
-        if (data_PROTO_[i] > map_->getWidth())
-        {
-            data_PROTO_[i] -= map_->getWidth();
-        }
-        else if (data_PROTO_[i] < 0)
-        {
-            data_PROTO_[i] += map_->getWidth();
-        }
-        if (data_PROTO_[i + 1] > map_->getHeight())
-        {
-            data_PROTO_[i + 1] -= map_->getHeight();
-        }
-        else if (data_PROTO_[i + 1] < 0)
-        {
-            data_PROTO_[i + 1] += map_->getHeight();
-        }
-        int x = data_PROTO_[i];
-        int y = data_PROTO_[i + 1];
-        data_PROTO_[i + 5] = map_->getPixel(x, y, 0);
-        data_PROTO_[i + 6] = map_->getPixel(x, y, 1);
-        data_PROTO_[i + 7] = map_->getPixel(x, y, 2);
-    }
-    // dataSemaphore_.unlock();
-};
-
-void Simulation::printAll_PROTO(sf::RenderWindow *window)
-{
-    for (int i = 0; i < data_PROTO_.size(); i += 24)
-    {
-        sf::CircleShape circle;
-        circle.setPosition(data_PROTO_[i] - data_PROTO_[i + 4] / 2.0f, data_PROTO_[i + 1] - data_PROTO_[i + 4] / 2.0f);
-        circle.setRadius(data_PROTO_[i + 4]);
-        circle.setFillColor(sf::Color(data_PROTO_[i + 5] * 0.5f, data_PROTO_[i + 6] * 0.5f, data_PROTO_[i + 7] * 0.5f));
-        window->draw(circle);
-    }
-};
 
 void Simulation::printAll(std::shared_ptr<sf::RenderWindow> window)
 {
@@ -374,28 +241,6 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
         }
     }
 }
-
-void Simulation::printClipped_PROTO(std::shared_ptr<sf::RenderWindow> window, sf::View view)
-{
-    float xMin, xMax, yMin, yMax;
-    xMin = view.getCenter().x - view.getSize().x / 2.f;
-    xMax = view.getCenter().x + view.getSize().x / 2.f;
-    yMin = view.getCenter().y - view.getSize().y / 2.f;
-    yMax = view.getCenter().y + view.getSize().y / 2.f;
-    for (int i = 0; i < data_PROTO_.size(); i += 24)
-    {
-        float xPos = data_PROTO_[i];
-        float yPos = data_PROTO_[i + 1];
-        if (xMin <= xPos && xPos <= xMax && yMin <= yPos && yPos <= yMax)
-        {
-            sf::CircleShape circle;
-            circle.setPosition(data_PROTO_[i] - data_PROTO_[i + 4] / (20.f * 2.f), data_PROTO_[i + 1] - data_PROTO_[i + 4] / (20.f * 2.f));
-            circle.setRadius(data_PROTO_[i + 4] / 20.f);
-            circle.setFillColor(sf::Color(data_PROTO_[i + 5] * .5f, data_PROTO_[i + 6] * .5f, data_PROTO_[i + 7] * .5f));
-            window->draw(circle);
-        }
-    }
-};
 
 bool Simulation::tryNewData()
 {

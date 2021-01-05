@@ -12,7 +12,7 @@ float Neuron::sigmoid(float value){
     return value/(1+abs(value));
 }
 void Neuron::mutate(){
-    RandomNumberGenerator<float> rng(MUTATIONLOWERBOUND, MUTATIONUPPERBOUND);
+    thread_local static RandomNumberGenerator<float> rng(MUTATIONLOWERBOUND, MUTATIONUPPERBOUND);
     for(auto i = weightsBegin_; i != weightsEnd_; i++ ){
         if(rng.get() <= MUTATIONTHRESHHOLD){
             *i = rng.getNormal((*i),MUTATIONSTRENGTH * (*i)); 

@@ -39,7 +39,7 @@ struct NeuronParameters
     unsigned int layerNo;
     std::vector<float> weights;
 
-    inline static RandomNumberGenerator<float> rng = RandomNumberGenerator<float>(-1.f, 1.f, 0.f, STDDEV_NEURON);
+    inline thread_local static RandomNumberGenerator<float> rng = RandomNumberGenerator<float>(-1.f, 1.f, 0.f, STDDEV_NEURON);
 
     NeuronParameters(
         unsigned int inputsNo,
@@ -109,13 +109,13 @@ public:
         {
             // std::cout << " b ";
             // --i;
-            // set->push_back(std::make_shared<NeuronLayer>());
+            set->push_back(std::make_shared<NeuronLayer>());
             for (NeuronParameters &neuron : (*layer))
             {
                 // std::cout << " c ";
                 ++i;
                 //     0;
-                //     // set->back()->emplace_back(neuron.getChild());
+                    set->back()->emplace_back(neuron.getChild());
             }
         }
         // std::cout << " I: " << i;

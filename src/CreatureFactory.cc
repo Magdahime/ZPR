@@ -53,7 +53,8 @@ CreatureParametersSPtr CreatureFactory::createCreature(const std::string &type)
 
 CreatureParametersSPtr CreatureFactory::create(CreatureParametersSPtr csptr)
 {
-    RandomNumberGenerator<float, float> rng;
+    thread_local static RandomNumberGenerator<float, float> rng;
+    csptr->age_ = 0.f;
     csptr->energy_ = fmax(0, rng.getNormal(csptr->energy_, CREATURE_FACTORY_STDDEV));
     csptr->weight_ = fmax(0, rng.getNormal(csptr->weight_, CREATURE_FACTORY_STDDEV));
     csptr->hue_ = fmod(rng.getNormal(csptr->hue_, CREATURE_FACTORY_STDDEV) + 360.f, 360.f);

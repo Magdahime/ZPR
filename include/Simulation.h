@@ -18,7 +18,7 @@
 
 #include "CreatureContainer.h"
 
-const unsigned int CREATURE_COUNT_PROTO = 100000;
+const unsigned int CREATURE_COUNT_PROTO = 10;
 const float pi = 3.1415927f;
 
 const float ACTIVATION_THRESHOLD = 0.8f;
