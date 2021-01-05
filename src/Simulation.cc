@@ -128,7 +128,7 @@ void Simulation::updateCreature(int creatureIndex)
         }
         else
         {
-            creature->energy_ -= parameters_.energyBirth__FAILED;
+            creature->energy_ -= parameters_.energyBirthFailed_;
         }
     }
     creature->energy_ -= (1000.f + creature->age_) / 20.f / 200.f; //alert MAGIC // idle energy consumption

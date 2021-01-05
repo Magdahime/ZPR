@@ -11,7 +11,6 @@ function setPrimaryValues() {
 //FUNCTIONS
 
 function sendData() {
-    writeToBody("Kliknieto przycisk");
     var x = document.getElementById("widthInput").value;
     var y = document.getElementById("heightInput").value;
     var creatures = document.getElementById("creaturesInput").value;

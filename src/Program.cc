@@ -3,7 +3,6 @@
 
 // Webview
 #include "webview.h"
-#include "WebviewHtml.h"
 
 #include "Program.h"
 #include "Simulation.h"
@@ -67,15 +66,14 @@ void Program::run()
                 programWindowPtr_->setView(simView);
                 submitted = true;
                 simulation_.setMap(mapPtr);
-                simulationThread = thread([this] { simulation_.run(); });
                 return "OK";
             });
 
-            webview_->bind(
+            webviewPtr_->bind(
                 "setSimulationParameters",
                 [&](std::string s) -> std::string{
                     SimulationParameters newParams;
-                    newParams.creaturesNum = std::stoi(webview::json_parse(s, "", 0));
+                    newParams.creaturesNum_ = std::stoi(webview::json_parse(s, "", 0));
                     newParams.energyThreshhold_ = std::stof(webview::json_parse(s, "", 1));
                     newParams.minWeight_ = std::stof(webview::json_parse(s, "", 2));
                     newParams.birthWeightThreshhold_= std::stof(webview::json_parse(s, "", 3));
@@ -87,6 +85,8 @@ void Program::run()
                     newParams.accelerationMultiplier_= std::stof(webview::json_parse(s, "", 9));
                     newParams.maxSpeed_= std::stof(webview::json_parse(s, "", 10));
                     simulation_.setSimulationParameters(newParams);
+                    simulationThread = thread([this] { simulation_.run();});
+                    return "OK";
                 });
 #ifdef LINUX_WV
     });

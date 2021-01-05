@@ -39,7 +39,6 @@ const float TARGET_FPS = 60.f;
 
 const float MIN_WEIGHT = 10.f;
 
-
 class Creature;
 class Neuron;
 class Map;
@@ -49,7 +48,8 @@ namespace sf
     class RenderWindow;
 }
 
-struct SimulationParameters{
+struct SimulationParameters
+{
     unsigned int creaturesNum_;
     float energyThreshhold_;
     float minWeight_;
@@ -62,6 +62,7 @@ struct SimulationParameters{
     float accelerationMultiplier_;
     float maxSpeed_;
 };
+
 
 class Simulation
 {
@@ -94,6 +95,7 @@ public:
     void printAll(std::shared_ptr<sf::RenderWindow>);
     void printClipped_PROTO(std::shared_ptr<sf::RenderWindow> window, sf::View view);
     void printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View view);
-    void setSimulationParameters(SimulationParameters params) {this->parameters_ = params;}
-    SimulationParameters getSimulationParameters(){return parameters_;}
+    void setSimulationParameters(SimulationParameters params)
+    {this->parameters_ = params;}
+    SimulationParameters getSimulationParameters() { return parameters_; }
 };
