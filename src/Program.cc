@@ -1,10 +1,5 @@
 #include <iostream>
-#include <thread>
 #include <cmath>
-
-//SFML stuff.
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
 
 // Webview
 #include "webview.h"
@@ -14,6 +9,7 @@
 #include "Simulation.h"
 #include "Map.h"
 #include "Perlin.h"
+#include "Flags.h"
 
 #include "CreatureFactory.h"
 
@@ -23,33 +19,26 @@ Program::~Program(){};
 
 Program::Program()
 {
-    programWindowPtr_ = make_shared<sf::RenderWindow>(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_NAME);
+    webviewPtr_ = std::make_shared<webview::webview>(zpr_dev_flags::WEBVIEW_DEBUG, nullptr);
+    programWindowPtr_ = std::make_shared<sf::RenderWindow>(sf::VideoMode(zpr_windows::SF_X, zpr_windows::SF_Y), zpr_windows::SF_NAME),
     programWindowPtr_->setVerticalSyncEnabled(true);
-#ifdef LINUX_WV
+    webviewPtr_->set_title(zpr_windows::WV_NAME);
+    webviewPtr_->set_size(zpr_windows::WV_X, zpr_windows::WV_Y, WEBVIEW_HINT_FIXED);
+    webviewPtr_->navigate(zpr_paths::HTTP_PATH);
     webviewThread_ = thread([&] {
-#endif //LINUX_WV
-        webviewPtr_ = make_shared<webview::webview>(true, nullptr);
-        webviewPtr_->set_title("WebView Interface");
-        webviewPtr_->set_size(480, 320, WEBVIEW_HINT_NONE);
-        webviewPtr_->set_size(180, 120, WEBVIEW_HINT_MIN);
-#ifdef LINUX_WV
         webviewPtr_->run();
-#endif //LINUX_WV
-#ifdef LINUX_WV
     });
-#endif //LINUX_WV
-    simulationPtr_ = make_shared<Simulation>();
 }
 
 void Program::run()
 {
+    shared_ptr<Map> mapPtr;
+
     sf::Image image;
     sf::Texture texture;
     sf::Sprite sprite;
 
     sf::View simView;
-
-    shared_ptr<Map> mapPtr;
 
     bool submitted = false;
 
@@ -77,23 +66,13 @@ void Program::run()
                 simView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
                 programWindowPtr_->setView(simView);
                 submitted = true;
-                simulationPtr_->setMap(mapPtr);
-                simulationThread = thread([this] { simulationPtr_->run(); });
+                simulation_.setMap(mapPtr);
+                simulationThread = thread([this] { simulation_.run(); });
                 return "OK";
             });
 #ifdef LINUX_WV
     });
 #endif //LINUX_WV
-
-#ifdef LINUX_WV
-    webviewPtr_->dispatch([&] {
-#endif //LINUX_WV
-        webviewPtr_->navigate("http://127.0.0.1:2137/dashboard/index.html");
-#ifdef LINUX_WV
-    });
-#endif //LINUX_WV
-
-    webviewThread_ = thread([this] { webviewPtr_->run(); });
     unsigned int frameCounter = 0;
     time_t now = time(0);
     time_t newnow;
@@ -169,12 +148,12 @@ void Program::run()
         });
 #endif //LINUX_WV
 
-        simulationPtr_->postVideo();
+        simulation_.postVideo();
 
         programWindowPtr_->clear();
         programWindowPtr_->draw(sprite);
         simView = programWindowPtr_->getView();
-        simulationPtr_->printClipped(programWindowPtr_, simView);
+        simulation_.printClipped(programWindowPtr_, simView);
         programWindowPtr_->display();
     }
 }

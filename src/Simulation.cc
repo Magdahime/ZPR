@@ -171,6 +171,7 @@ void Simulation::updateCreature(int creatureIndex)
     if (birth)
     {
         auto childParams = CreatureFactory::getInstance().createChild(creature);
+        childParams->weight_ = WEIGHT_BIRTH;
         auto neurons = container_.getNeurons(creatureIndex);
         auto childNeurons = NeuronFactory::getInstance().createChild(neurons);
         // std::cout<<"\nStarting birth...\n"; //alert DEBUG COUT
