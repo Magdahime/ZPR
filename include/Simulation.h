@@ -90,6 +90,15 @@ public:
     void iteration_PROTO();
     bool tryNewData();
     void postVideo();
+    void calculateSteer(CreatureParametersSPtr creature, float result);
+    void calculateAcceleration(CreatureParametersSPtr creature, float result);
+    void calculateEating(CreatureParametersSPtr creature, float result);
+    void calculateAttack(CreatureParametersSPtr creature, float result);
+    bool calculateBirth(CreatureParametersSPtr creature, float result);
+    void calculateMovement(CreatureParametersSPtr creature);
+    void calculateAntennas(CreatureParametersSPtr creature);
+    void calculateAge(CreatureParametersSPtr creature);
+    void calculateEnergy(CreatureParametersSPtr creature);
     void setMap(std::shared_ptr<Map> mapPtr);
     void printAll_PROTO(sf::RenderWindow *window);
     void printAll(std::shared_ptr<sf::RenderWindow>);
