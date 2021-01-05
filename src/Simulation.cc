@@ -29,7 +29,7 @@ void Simulation::prepare(unsigned int creatureCount)
 }
 void Simulation::prepare()
 {
-    prepare(CREATURE_COUNT_PROTO);
+    prepare(parameters_.creaturesNum_);
 }
 void Simulation::run()
 {
@@ -86,7 +86,7 @@ void Simulation::updateCreature(int creatureIndex)
     {
         if (results[0] > 0)
         {
-            creature->heading_ += ANGLE_PER_FRAME * 2.f * pi / 360.f;
+            creature->heading_ += parameters_.anglePerFrame_ * 2.f * pi / 360.f;
             creature->heading_ = fmod(creature->heading_ + 2.f * pi, 2.f * pi);
         }
         else
@@ -99,12 +99,12 @@ void Simulation::updateCreature(int creatureIndex)
     {
         if (results[1] > 0)
         {
-            creature->speed_ *= ACCELERATION_MULTIPLIER;
-            creature->speed_ = fmin(creature->speed_, MAX_SPEED);
+            creature->speed_ *= parameters_.accelerationMultiplier_;
+            creature->speed_ = fmin(creature->speed_, parameters_.maxSpeed_);
         }
         else
         {
-            creature->speed_ /= ACCELERATION_MULTIPLIER;
+            creature->speed_ /= parameters_.accelerationMultiplier_;
         }
     }
     if (results[2] > ACTIVATION_THRESHOLD) // EAT
@@ -117,27 +117,27 @@ void Simulation::updateCreature(int creatureIndex)
         creature->energy_ += dist;
     }
     bool birth = false;
-    if (results[4] > ACTIVATION_THRESHOLD && creature->age_ > BIRTH_AGE_THRESHOLD) // BIRTH
+    if (results[4] > ACTIVATION_THRESHOLD && creature->age_ > parameters_.birthAgeThreshhold_) // BIRTH
     {
         thread_local static RandomNumberGenerator<float> rng;
-        if (creature->weight_ + rng.get(0, BIRTH_WEIGHT_THRESHOLD) > BIRTH_WEIGHT_THRESHOLD)
+        if (creature->weight_ + rng.get(0, parameters_.birthWeightThreshhold_) > parameters_.birthWeightThreshhold_)
         {
             birth = true;
-            creature->energy_ -= ENERGY_BIRTH;
-            creature->weight_ -= WEIGHT_BIRTH;
+            creature->energy_ -= parameters_.energyBirth_;
+            creature->weight_ -= parameters_.weightBirth_;
         }
         else
         {
-            creature->energy_ -= ENERGY_BIRTH_FAILED;
+            creature->energy_ -= parameters_.energyBirth__FAILED;
         }
     }
     creature->energy_ -= (1000.f + creature->age_) / 20.f / 200.f; //alert MAGIC // idle energy consumption
     creature->speed_ = fabs(creature->speed_);
     float movement = creature->speed_ * creature->speedMultiplier_;
-    if (creature->energy_ > ENERGY_THRESHOLD)
+    if (creature->energy_ > parameters_.energyThreshhold_)
     {
-        creature->weight_ += (creature->energy_ - ENERGY_THRESHOLD);
-        creature->energy_ = ENERGY_THRESHOLD;
+        creature->weight_ += (creature->energy_ - parameters_.energyThreshhold_);
+        creature->energy_ = parameters_.energyThreshhold_;
     }
     else if (creature->energy_ < 0)
     {
@@ -171,13 +171,13 @@ void Simulation::updateCreature(int creatureIndex)
     if (birth)
     {
         auto childParams = CreatureFactory::getInstance().createChild(creature);
-        childParams->weight_ = WEIGHT_BIRTH;
+        childParams->weight_ = parameters_.weightBirth_;
         auto neurons = container_.getNeurons(creatureIndex);
         auto childNeurons = NeuronFactory::getInstance().createChild(neurons);
         // std::cout<<"\nStarting birth...\n"; //alert DEBUG COUT
         container_.putCreature(childParams, childNeurons);
     }
-    if (creature->weight_ < MIN_WEIGHT)
+    if (creature->weight_ < parameters_.minWeight_)
     {
         container_.deleteCreature(creatureIndex);
     }

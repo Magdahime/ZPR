@@ -70,6 +70,24 @@ void Program::run()
                 simulationThread = thread([this] { simulation_.run(); });
                 return "OK";
             });
+
+            webview_->bind(
+                "setSimulationParameters",
+                [&](std::string s) -> std::string{
+                    SimulationParameters newParams;
+                    newParams.creaturesNum = std::stoi(webview::json_parse(s, "", 0));
+                    newParams.energyThreshhold_ = std::stof(webview::json_parse(s, "", 1));
+                    newParams.minWeight_ = std::stof(webview::json_parse(s, "", 2));
+                    newParams.birthWeightThreshhold_= std::stof(webview::json_parse(s, "", 3));
+                    newParams.energyBirth_= std::stof(webview::json_parse(s, "", 4));
+                    newParams.energyBirthFailed_= std::stof(webview::json_parse(s, "", 5));
+                    newParams. weightBirth_= std::stof(webview::json_parse(s, "", 6));
+                    newParams.birthAgeThreshhold_= std::stof(webview::json_parse(s, "", 7));
+                    newParams.anglePerFrame_= std::stof(webview::json_parse(s, "", 8));
+                    newParams.accelerationMultiplier_= std::stof(webview::json_parse(s, "", 9));
+                    newParams.maxSpeed_= std::stof(webview::json_parse(s, "", 10));
+                    simulation_.setSimulationParameters(newParams);
+                });
 #ifdef LINUX_WV
     });
 #endif //LINUX_WV

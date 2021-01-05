@@ -49,6 +49,20 @@ namespace sf
     class RenderWindow;
 }
 
+struct SimulationParameters{
+    unsigned int creaturesNum_;
+    float energyThreshhold_;
+    float minWeight_;
+    float birthWeightThreshhold_;
+    float energyBirth_;
+    float energyBirthFailed_;
+    float weightBirth_;
+    float birthAgeThreshhold_;
+    float anglePerFrame_;
+    float accelerationMultiplier_;
+    float maxSpeed_;
+};
+
 class Simulation
 {
     std::vector<Creature> creatures_;
@@ -59,6 +73,7 @@ class Simulation
     std::vector<float> data_PROTO_;
 
     CreatureContainer container_;
+    SimulationParameters parameters_;
 
     void populateNeurons();
     void updateCreature(int creatureIndex);
@@ -79,4 +94,6 @@ public:
     void printAll(std::shared_ptr<sf::RenderWindow>);
     void printClipped_PROTO(std::shared_ptr<sf::RenderWindow> window, sf::View view);
     void printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View view);
+    void setSimulationParameters(SimulationParameters params) {this->parameters_ = params;}
+    SimulationParameters getSimulationParameters(){return parameters_;}
 };
