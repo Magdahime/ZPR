@@ -12,6 +12,7 @@
 BOOST_AUTO_TEST_SUITE(NeuronSuite)
 BOOST_AUTO_TEST_CASE(MutateTest)
 {
+    const float mutation = 0.4;
     std::vector<float> randomWeights;
     int iterations = 1000000;
     float min = 0.0;
@@ -32,6 +33,6 @@ BOOST_AUTO_TEST_CASE(MutateTest)
             numberOfMutated++;
         }
     }
-    std::cout << "Mutated: " << numberOfMutated << std::endl;
+    BOOST_CHECK(numberOfMutated <= mutation * iterations);
 }
 BOOST_AUTO_TEST_SUITE_END()

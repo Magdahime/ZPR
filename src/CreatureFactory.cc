@@ -15,15 +15,25 @@ void CreatureFactory::registerFolder(const std::string &pathToFolder)
     }
 }
 
+void CreatureFactory::registerCreature(const std::string &pathToFile)
+{
+    std::filesystem::path path = pathToFile;
+    boost::json::object &obj = JsonParser::getValueFromFile(path);
+    CreatureParametersSPtr csptr = parseCreature(obj);
+    FactoryMap_.insert(std::pair<std::string, CreatureParametersSPtr>(csptr->type_, csptr));
+}
+
 CreatureParametersSPtr CreatureFactory::parseCreature(boost::json::object obj)
 {
-    return std::make_shared<CreatureParameters>(std::string(obj["type"].as_string().c_str()),
-                                                (float)obj["energy"].as_double(),
-                                                (float)obj["weight"].as_double(),
-                                                (float)obj["hue"].as_double(),
-                                                (float)obj["positionX"].as_double(),
-                                                (float)obj["positionY"].as_double(),
-                                                (float)obj["speedMultiplier"].as_double());
+    float energy = obj["energy"].is_double() ? (float)obj["energy"].as_double() : (float)obj["energy"].as_int64();
+    float weight = obj["weight"].is_double() ? (float)obj["weight"].as_double() : (float)obj["weight"].as_int64();
+    float hue = obj["hue"].is_double() ? (float)obj["hue"].as_double() : (float)obj["hue"].as_int64();
+    float positionX = obj["positionX"].is_double() ? (float)obj["positionX"].as_double() : (float)obj["positionX"].as_int64();
+    float positionY = obj["positionY"].is_double() ? (float)obj["positionY"].as_double() : (float)obj["positionY"].as_int64();
+    float speedMultiplier = obj["speedMultiplier"].is_double() ? (float)obj["speedMultiplier"].as_double() : (float)obj["speedMultiplier"].as_int64();
+    return std::make_shared<CreatureParameters>(std::string(obj["type"].as_string().c_str()), energy,
+                                                             weight, hue, positionX, positionY,
+                                                             speedMultiplier);
 }
 
 CreatureFactory &CreatureFactory::getInstance()

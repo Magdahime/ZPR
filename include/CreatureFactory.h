@@ -16,7 +16,7 @@
 const std::string DEFAULT_CONFIGURATION_PATH = ".\\config\\creature";
 const std::string DEFAULT_CREATURE = "default";
 
-const float CREATURE_FACTORY_STDDEV = 0.2;
+const float CREATURE_FACTORY_STDDEV = 2.0;
 const unsigned int PARAMS_PER_CREATURE = 14;
 
 struct CreatureParameters;
@@ -38,7 +38,7 @@ public:
     CreatureParametersSPtr createCreature(const std::string &type);
     CreatureParametersSPtr createChild(CreatureParametersSPtr csptr);
     static CreatureFactory &getInstance();
-    void registerCreature();
+    void registerCreature(const std::string &pathToFile);
     void registerFolder(const std::string &pathToFolder);
     FactoryMap getFactoryMap() { return FactoryMap_; }
     ~CreatureFactory() { FactoryMap_.clear(); }

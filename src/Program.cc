@@ -9,6 +9,7 @@
 #include "Map.h"
 #include "Perlin.h"
 #include "Flags.h"
+#include "JsonParser.h"
 
 #include "CreatureFactory.h"
 
@@ -64,30 +65,55 @@ void Program::run()
                 simView.zoom(.06125f); //alert MAGIC
                 simView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
                 programWindowPtr_->setView(simView);
-                submitted = true;
                 simulation_.setMap(mapPtr);
                 return "OK";
             });
 
-            webviewPtr_->bind(
-                "setSimulationParameters",
-                [&](std::string s) -> std::string{
-                    SimulationParameters newParams;
-                    newParams.creaturesNum_ = std::stoi(webview::json_parse(s, "", 0));
-                    newParams.energyThreshhold_ = std::stof(webview::json_parse(s, "", 1));
-                    newParams.minWeight_ = std::stof(webview::json_parse(s, "", 2));
-                    newParams.birthWeightThreshhold_= std::stof(webview::json_parse(s, "", 3));
-                    newParams.energyBirth_= std::stof(webview::json_parse(s, "", 4));
-                    newParams.energyBirthFailed_= std::stof(webview::json_parse(s, "", 5));
-                    newParams. weightBirth_= std::stof(webview::json_parse(s, "", 6));
-                    newParams.birthAgeThreshhold_= std::stof(webview::json_parse(s, "", 7));
-                    newParams.anglePerFrame_= std::stof(webview::json_parse(s, "", 8));
-                    newParams.accelerationMultiplier_= std::stof(webview::json_parse(s, "", 9));
-                    newParams.maxSpeed_= std::stof(webview::json_parse(s, "", 10));
-                    simulation_.setSimulationParameters(newParams);
-                    simulationThread = thread([this] { simulation_.run();});
+        webviewPtr_->bind(
+            "setSimulationParameters",
+            [&](std::string s) -> std::string {
+                SimulationParameters newParams;
+                newParams.creaturesNum_ = std::stoi(webview::json_parse(s, "", 0));
+                newParams.energyThreshhold_ = std::stof(webview::json_parse(s, "", 1));
+                newParams.minWeight_ = std::stof(webview::json_parse(s, "", 2));
+                newParams.weightGained_ = std::stof(webview::json_parse(s, "", 3));
+                newParams.weightLost_ = std::stof(webview::json_parse(s, "", 4));
+                newParams.birthWeightThreshhold_ = std::stof(webview::json_parse(s, "", 5));
+                newParams.energyBirth_ = std::stof(webview::json_parse(s, "", 6));
+                newParams.energyBirthFailed_ = std::stof(webview::json_parse(s, "", 7));
+                newParams.weightBirth_ = std::stof(webview::json_parse(s, "", 8));
+                newParams.birthAgeThreshhold_ = std::stof(webview::json_parse(s, "", 9));
+                newParams.anglePerFrame_ = std::stof(webview::json_parse(s, "", 10));
+                newParams.accelerationMultiplier_ = std::stof(webview::json_parse(s, "", 11));
+                newParams.maxSpeed_ = std::stof(webview::json_parse(s, "", 12));
+                simulation_.setSimulationParameters(newParams);
+                submitted = true;
+                simulationThread = thread([this] { simulation_.run(); });
+                return "OK";
+            });
+
+        webviewPtr_->bind(
+            "putCreature",
+            [&](std::string s) -> std::string {
+                if (submitted)
+                {
+                    std::string filename = "userDefined";
+                    s = webview::json_parse(s, "", 0);
+                    std::string path = JsonParser::saveJsonToFile(filename, s);
+                    std::cout<<"BEFORE REGISTRATION"<<std::endl;
+                    std::cout<<s<<std::endl;
+                    CreatureFactory::getInstance().registerCreature(path);
+                    std::cout<<CreatureFactory::getInstance().getFactoryMap().size()<<std::endl;
+                    simulation_.putOneCreature(webview::json_parse(s, "type",0));
+                    std::cout<<"After PUT"<<std::endl;
                     return "OK";
-                });
+                }
+                else
+                {
+                    webviewPtr_->eval("NotSubmitted()");
+                    return "NOT OK";
+                }
+            });
 #ifdef LINUX_WV
     });
 #endif //LINUX_WV
@@ -160,8 +186,8 @@ void Program::run()
         now = newnow;
 #ifdef LINUX_WV
         webviewPtr_->dispatch([&] {
-#endif //LINUX_WV
-            webviewPtr_->eval("frameNum(" + to_string(frameCounter) + ");");
+#endif //LINUX_WV \
+       //webviewPtr_->eval("frameNum(" + to_string(frameCounter) + ");");
 #ifdef LINUX_WV
         });
 #endif //LINUX_WV
