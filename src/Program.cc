@@ -98,16 +98,14 @@ void Program::run()
                 if (submitted)
                 {
                     std::string filename = "userDefined";
-                    // std::cout<<s<<std::endl;
                     std::string creatureData = webview::json_parse(s, "", 0);
                     std::string creatureNum = webview::json_parse(s, "", 1);
-                    std::string path = JsonParser::saveJsonToFile(filename, creatureData);
-                    std::cout<<"BEFORE REGISTRATION"<<std::endl;
-                    std::cout<<creatureData<<std::endl;
-                    CreatureFactory::getInstance().registerCreature(path);
-                    std::cout<<CreatureFactory::getInstance().getFactoryMap().size()<<std::endl;
-                    simulation_.putCreature(webview::json_parse(creatureData, "type",0), std::stoi(creatureNum));
-                    std::cout<<"After PUT"<<std::endl;
+                    if (!std::filesystem::exists(JsonParser::SAVE_PATH + webview::json_parse(creatureData, "type", 0)))
+                    {
+                        std::string path = JsonParser::saveJsonToFile(filename, creatureData);
+                        CreatureFactory::getInstance().registerCreature(path);
+                        simulation_.putCreature(webview::json_parse(creatureData, "type", 0), std::stoi(creatureNum));
+                    }
                     return "OK";
                 }
                 else
@@ -116,6 +114,19 @@ void Program::run()
                     return "NOT OK";
                 }
             });
+        webviewPtr_->bind(
+            "getListOfCreatures",
+            [&](std::string s) -> std::string {
+                webviewPtr_->eval("addCreaturesToDropdown(" + CreatureFactory::getInstance().parseKeys() + ");");
+                return "OK";
+            });
+        webviewPtr_->bind("getDataAboutCreature",
+                          [&](std::string s) -> std::string {
+                              std::cout << webview::json_parse(s, "", 0) << std::endl;
+                              webviewPtr_->eval("receiveData(" + CreatureFactory::getInstance().getParsedValues(webview::json_parse(s, "", 0)) + ")");
+                              return "OK";
+                          });
+
 #ifdef LINUX_WV
     });
 #endif //LINUX_WV

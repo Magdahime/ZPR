@@ -38,6 +38,8 @@ public:
     CreatureParametersSPtr createCreature(const std::string &type);
     CreatureParametersSPtr createChild(CreatureParametersSPtr csptr);
     static CreatureFactory &getInstance();
+    std::string parseKeys();
+    std::string getParsedValues(std::string key);
     void registerCreature(const std::string &pathToFile);
     void registerFolder(const std::string &pathToFolder);
     FactoryMap getFactoryMap() { return FactoryMap_; }

@@ -74,6 +74,10 @@
                     <h1 class="h2">Edit Simulation</h1>
                 </div>
                 <h1 id="status">Add new custom Creature!</h1>
+                <select id = "creatureTypes" class ="btn btn-secondary dropdown-toggle" type="button" 
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  onchange="if (this.selectedIndex) getCreature(this.selectedIndex);">
+                <option value="" selected disabled></option>
+                </select>
                 <form action="#" onsubmit="putNewCreature()">
                     <div class="row my-5">
                         <div class="col-lg-3">
@@ -81,7 +85,7 @@
                         </div>
                         <div class="col-lg-5">
                             <input class="form-control" type="text" min="0" step="0.00000001" id="creatureType"
-                                name="creatureType"  required="required">
+                                name="creatureType" required="required">
                         </div>
                     </div>
                     <div class="row my-5">
@@ -159,6 +163,7 @@
                     </div>
                 </form>
                 <script>Submitted()</script>
+                <script>GetListOfCreatures()</script>
                 <script src="/js/bootstrap.bundle.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
                     integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"

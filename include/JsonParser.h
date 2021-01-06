@@ -16,10 +16,8 @@
 
 class JsonParser
 {
-
-    inline static const std::string SAVE_PATH = R"(.\config\creature\)";
-
 public:
+    inline static const std::string SAVE_PATH = R"(.\config\creature\)";
     static std::vector<std::filesystem::path> searchFiles(const std::string &pathToFolder)
     {
         std::vector<std::filesystem::path> filenames;
