@@ -245,3 +245,13 @@ std::vector<float> CreatureContainer::getResult(int index)
     }
     return result;
 }
+
+float CreatureContainer::getCreatureValue(unsigned int index, unsigned int value){
+    if(index*PARAMS_PER_CREATURE + value >= creatureValues_.size() || value > PARAMS_PER_CREATURE){
+        return 0.f;
+    }
+    if(types_[index].c_str()[0] == DELETED_DESIGNATOR.c_str()[0]){
+        return 0.f;
+    }
+    return creatureValues_[index*PARAMS_PER_CREATURE + value];
+};

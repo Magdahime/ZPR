@@ -76,10 +76,19 @@ class Simulation
     CreatureContainer container_;
     SimulationParameters parameters_;
 
+    unsigned int iterationNumber_ = 0;
+    unsigned int populationSize_ = 0;
+    float totalWeight_ = 0.f;
+    float avgAge_ = 0.f;
+
     bool terminate_ = false;
 
     void populateNeurons();
     void updateCreature(int creatureIndex);
+
+    void findClosestCreature(float x, float y);
+
+    unsigned int selectedIndex_ = 0 - 1;
 
 public:
     virtual ~Simulation();
@@ -92,6 +101,7 @@ public:
     void iteration_PROTO();
     bool tryNewData();
     void postVideo();
+
     void calculateSteer(CreatureParametersSPtr creature, float result);
     void calculateAcceleration(CreatureParametersSPtr creature, float result);
     void calculateEating(CreatureParametersSPtr creature, float result);
@@ -101,13 +111,32 @@ public:
     void calculateAntennas(CreatureParametersSPtr creature);
     void calculateAge(CreatureParametersSPtr creature);
     void calculateEnergy(CreatureParametersSPtr creature);
+
     void setMap(std::shared_ptr<Map> mapPtr);
-    void printAll_PROTO(sf::RenderWindow *window);
     void printAll(std::shared_ptr<sf::RenderWindow>);
-    void printClipped_PROTO(std::shared_ptr<sf::RenderWindow> window, sf::View view);
     void printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View view);
     void setSimulationParameters(SimulationParameters params) { this->parameters_ = params; };
+
+    void selectClosestCreature(float x, float y);
+
+    inline unsigned int getSimulationSecond() { return (int)iterationNumber_ / TARGET_FPS; };
+    inline unsigned int getPopulationSize() { return populationSize_; };
+    inline float getTotalWeight() { return totalWeight_; };
+    inline float getAvgAge() { return avgAge_; };
+
+    bool isSelected() { return (selectedIndex_ != 0 - 1); };
+    float getSelectedX();
+    float getSelectedY();
+
     SimulationParameters getSimulationParameters() { return parameters_; };
 
-    void terminate() { terminate_ = true; };
+    void terminate()
+    {
+        terminate_ = true;
+        dataSemaphore_.post();
+        dataSemaphore_.post();
+        dataSemaphore_.post();
+        dataSemaphore_.post();
+        dataSemaphore_.post();
+    };
 };

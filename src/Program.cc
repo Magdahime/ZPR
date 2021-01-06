@@ -1,11 +1,11 @@
 #include <iostream>
 #include <cmath>
 
-// Webview
 #include "webview.h"
 
 #include "Program.h"
 #include "Simulation.h"
+#include "PyWebserver.h"
 #include "Map.h"
 #include "Perlin.h"
 #include "Flags.h"
@@ -16,22 +16,28 @@ using namespace std;
 
 Program::~Program(){};
 
-Program::Program()
+Program::Program() : webviewSemaphore_(0)
 {
-    webviewPtr_ = std::make_shared<webview::webview>(zpr_dev_flags::WEBVIEW_DEBUG, nullptr);
     simulationPtr_ = std::make_shared<Simulation>();
+    webserverPtr_ = std::make_shared<PyWebserver>();
+    webserverPtr_->run();
     programWindowPtr_ = std::make_shared<sf::RenderWindow>(sf::VideoMode(zpr_windows::SF_X, zpr_windows::SF_Y), zpr_windows::SF_NAME),
     programWindowPtr_->setVerticalSyncEnabled(true);
-    webviewPtr_->set_title(zpr_windows::WV_NAME);
-    webviewPtr_->set_size(zpr_windows::WV_X, zpr_windows::WV_Y, WEBVIEW_HINT_FIXED);
-    webviewPtr_->navigate(zpr_paths::HTTP_PATH);
-    webviewThread_ = std::thread(&webview::webview::run, &(*webviewPtr_));
+
+    webviewThread_ = std::thread([this]() {
+        webviewPtr_ = std::make_shared<webview::webview>(zpr_dev_flags::WEBVIEW_DEBUG, nullptr);
+        webviewSemaphore_.post();
+        webviewPtr_->set_title(zpr_windows::WV_NAME);
+        webviewPtr_->set_size(zpr_windows::WV_X, zpr_windows::WV_Y, WEBVIEW_HINT_FIXED);
+        webviewPtr_->navigate(zpr_paths::HTTP_PATH);
+        webviewPtr_->run();
+    });
 }
 
 void Program::run()
 {
-    shared_ptr<Map> mapPtr;
 
+    shared_ptr<Map> mapPtr;
     sf::Image image;
     sf::Texture texture;
     sf::Sprite sprite;
@@ -41,9 +47,11 @@ void Program::run()
     bool submittedMap = false;
     bool submittedParams = false;
 
-#ifdef LINUX_WV
+    webviewSemaphore_.wait();
+
+    statisticsThread_ = std::thread(&Program::runStatistics, this);
+
     webviewPtr_->dispatch([&] {
-#endif //LINUX_WV
         webviewPtr_->bind(
             "setMapSize",
             [&](std::string s) -> std::string {
@@ -90,9 +98,7 @@ void Program::run()
                 simulationThread_ = std::thread(&Simulation::run, &(*simulationPtr_));
                 return "OK";
             });
-#ifdef LINUX_WV
     });
-#endif //LINUX_WV
     unsigned int frameCounter = 0;
     time_t now = time(0);
     time_t newnow;
@@ -100,20 +106,13 @@ void Program::run()
     bool webviewClosed = false;
     sf::Vector2f oldPos;
 
-    statThread_.run();
-
     while (programWindowPtr_->isOpen())
     {
-
         try
         {
-#ifdef LINUX_WV
-            webviewPtr_->dispatch([webviewPtr_, frameCounter] {
-#endif //LINUX_WV
+            webviewPtr_->dispatch([this, frameCounter] {
                 webviewPtr_->eval("frameNum(" + to_string(frameCounter) + ");");
-#ifdef LINUX_WV
             });
-#endif //LINUX_WV
         }
         catch (...)
         {
@@ -126,16 +125,11 @@ void Program::run()
             switch (event.type)
             {
             case sf::Event::Closed:
-                webviewPtr_->terminate();
-                statThread_.terminate();
-                simulationPtr_->terminate();
                 programWindowPtr_->close();
                 break;
             case sf::Event::MouseWheelMoved:
             {
-                webviewPtr_->dispatch([&] {
-                    webviewPtr_->terminate();
-                });
+                webserverPtr_->terminate();
                 simView = programWindowPtr_->getView();
                 simView.zoom(pow(2.0f, event.mouseWheel.delta * 0.5));
                 sf::Vector2i pixelPos = sf::Mouse::getPosition(*programWindowPtr_);
@@ -152,6 +146,12 @@ void Program::run()
                 {
                     moving = true;
                     oldPos = programWindowPtr_->mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+                }
+                else if (event.mouseButton.button == 1)
+                {
+                    auto pos = programWindowPtr_->mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+                    std::cout << "CIPA";
+                    simulationPtr_->selectClosestCreature(pos.x, pos.y);
                 }
                 break;
             case sf::Event::MouseButtonReleased:
@@ -176,6 +176,12 @@ void Program::run()
                 break;
             }
         }
+        if (simulationPtr_->isSelected())
+        {
+            simView = programWindowPtr_->getView();
+            simView.setCenter(sf::Vector2f(simulationPtr_->getSelectedX(), simulationPtr_->getSelectedY()));
+            programWindowPtr_->setView(simView);
+        }
         ++frameCounter;
         newnow = time(0);
         if (newnow != now)
@@ -193,7 +199,56 @@ void Program::run()
         simulationPtr_->printClipped(programWindowPtr_, simView);
         programWindowPtr_->display();
     }
-    statThread_.terminate();
+    terminateStatistics();
     simulationPtr_->terminate();
     programWindowPtr_->close();
+    webviewPtr_->dispatch([this] {
+        webviewPtr_->terminate();
+    });
+
+    webviewThread_.join();
+    std::cout << "\nWebview done\n";
+
+    // webserverPtr_->terminate();
+
+    // simulationThread_.join();
+    std::cout << "\nSim done\n";
+
+    // webserverPtr_->join();
+    // std::cout<<"\nServer done\n";
+}
+
+void Program::callJS(const std::string &javascript)
+{
+    std::cout << "\n"
+              << javascript << "\n";
+    webviewPtr_->dispatch([this, javascript] {
+        webviewPtr_->eval(javascript);
+    });
+}
+
+void Program::runStatistics()
+{
+    auto end = std::chrono::steady_clock::now() + std::chrono::milliseconds(zpr_consts::statistics_sleep_millis);
+    auto increment = std::chrono::milliseconds(zpr_consts::statistics_sleep_millis);
+    while (!terminate_)
+    {
+        std::cout << "Works!";
+        SimulationData data;
+        data.secondNum = simulationPtr_->getSimulationSecond();
+        data.populationSize = simulationPtr_->getPopulationSize();
+        data.totalWeight = simulationPtr_->getTotalWeight();
+        data.avgAge = simulationPtr_->getAvgAge();
+        sendStatistics(data);
+        auto sleeptime = std::chrono::duration_cast<std::chrono::milliseconds>(end - std::chrono::steady_clock::now());
+        end += increment;
+        std::this_thread::sleep_for(sleeptime);
+    }
+}
+
+void Program::sendStatistics(const SimulationData &data)
+{
+    callJS(std::string("newDataPopulationNum(") + std::to_string(data.secondNum) + std::string(", ") + std::to_string(data.populationSize) + std::string(");"));
+    callJS(std::string("newDataWeightNum(") + std::to_string(data.secondNum) + std::string(", ") + std::to_string(data.totalWeight) + std::string(");"));
+    callJS(std::string("newDataAgeNum(") + std::to_string(data.secondNum) + std::string(", ") + std::to_string(data.avgAge) + std::string(");"));
 }

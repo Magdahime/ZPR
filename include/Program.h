@@ -21,21 +21,48 @@
 #include "Simulation.h"
 #include "StatisticsThread.h"
 
-namespace webview {
+namespace webview
+{
     class webview;
 }
 
+class PyWebserver;
+
 class Program
 {
+public:
+    struct SimulationData
+    {
+        unsigned int secondNum;
+        unsigned int populationSize;
+        float totalWeight;
+        float avgAge;
+    };
+
+private:
     std::shared_ptr<sf::RenderWindow> programWindowPtr_;
     std::shared_ptr<webview::webview> webviewPtr_;
     std::shared_ptr<Simulation> simulationPtr_;
+    std::shared_ptr<PyWebserver> webserverPtr_;
     std::thread webviewThread_;
     std::thread simulationThread_;
-    StatisticsThread statThread_;
+    std::thread webserverThread_;
+    std::thread statisticsThread_;
+    // StatisticsThread statThread_;
+    SimulationData statistics_;
+
+    boost::interprocess::interprocess_semaphore webviewSemaphore_;
+
+    bool terminate_ = false;
 
 public:
     Program();
     virtual ~Program();
     void run();
+
+    void callJS(const std::string &javascript);
+
+    void runStatistics();
+    void sendStatistics(const SimulationData &data);
+    void terminateStatistics() { terminate_ = true; };
 };

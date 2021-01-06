@@ -38,30 +38,38 @@ void Simulation::run()
     time_t now = time(0);
     time_t newnow;
     dataSemaphore_.post();
-    int c = 0;
     while (!terminate_)
     {
         dataSemaphore_.wait();
+        if (terminate_)
+            break;
         i++;
         newnow = time(0);
         if (newnow != now)
         {
-            std::cout << "IPS:\t" << i << "\t CCount:\t" << c << "\n";
+            std::cout << "IPS:\t" << i << "\t CCount:\t" << populationSize_ << "\n";
             i = 0;
         }
         now = newnow;
-        c = iteration();
+        populationSize_ = iteration();
     }
 }
 int Simulation::iteration()
 {
-    int counter = 0;
-    // #pragma omp parallel for reduction(+ : counter)
+    ++iterationNumber_;
+    int creatureCounter = 0;
+    float avgAge = 0.f;
+    float totalWeight = 0.f;
+#pragma omp parallel for reduction(+ \
+                                   : creatureCounter, totalWeight, avgAge)
     for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
             continue;
-        ++counter;
+        ++creatureCounter;
+        // if(container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE) > avgAge) avgAge = container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE);
+        avgAge += container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE);
+        totalWeight += container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_WEIGHT);
         container_.populateNeurons(creatureIndex);
         for (unsigned int layerIndex = 0; layerIndex < LAYER_WIDTHS.size(); layerIndex++)
         {
@@ -69,7 +77,9 @@ int Simulation::iteration()
         }
         updateCreature(creatureIndex);
     }
-    return counter;
+    avgAge_ = avgAge / creatureCounter;
+    totalWeight_ = totalWeight;
+    return creatureCounter;
 }
 
 void Simulation::updateCreature(int creatureIndex)
@@ -279,6 +289,14 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
             auto rgbmarker = map_->convert2RGB(hsvmarker);
             marker.setFillColor(sf::Color(rgbmarker.r_, rgbmarker.g_, rgbmarker.b_, 200));
             window->draw(marker);
+            if (creatureIndex == selectedIndex_)
+            {
+                sf::RectangleShape selected;
+                selected.setPosition(creature->positionX_ - 1.f, creature->positionY_ - 1.f);
+                selected.setSize(sf::Vector2f(2.f, 2.f));
+                selected.setFillColor(sf::Color(0, 0, 0, 255));
+                window->draw(selected);
+            }
         }
     }
 }
@@ -299,4 +317,47 @@ void Simulation::postVideo()
 void Simulation::setMap(shared_ptr<Map> mapPtr)
 {
     map_ = mapPtr;
+}
+
+void Simulation::selectClosestCreature(float x, float y)
+{
+    findClosestCreature(x, y);
+    // std::thread thread(&Simulation::findClosestCreature, this, x, y);
+}
+
+void Simulation::findClosestCreature(float x, float y)
+{
+    float minDist = map_->getWidth() * map_->getHeight();
+    int foundIndex = -1;
+    for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
+    {
+        if (container_.isDeleted(creatureIndex))
+            continue;
+        float xDiff = container_.getCreatureX(creatureIndex) - x;
+        float yDiff = container_.getCreatureY(creatureIndex) - y;
+        if (xDiff * xDiff + yDiff * yDiff < minDist)
+        {
+            minDist = xDiff * xDiff + yDiff * yDiff;
+            foundIndex = creatureIndex;
+        }
+    }
+    std::cout << "DUPA " << foundIndex << " DUPA";
+    selectedIndex_ = foundIndex;
+}
+
+float Simulation::getSelectedX()
+{
+    if (isSelected())
+    {
+        return container_.getCreatureValue(selectedIndex_, 3);
+    }
+    return map_->getWidth() / 2;
+}
+float Simulation::getSelectedY()
+{
+    if (isSelected())
+    {
+        return container_.getCreatureValue(selectedIndex_, 4);
+    }
+    return map_->getHeight() / 2;
 }

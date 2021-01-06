@@ -10,7 +10,7 @@
 
 namespace zpr_dev_flags
 {
-    const bool WEBVIEW_DEBUG = true; // if webview allows access to Developer Menu
+    const char WEBVIEW_DEBUG = 1; // if webview allows access to Developer Menu
 }
 namespace zpr_paths
 {

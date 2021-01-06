@@ -9,7 +9,7 @@ void CreatureFactory::registerFolder(const std::string &pathToFolder)
     std::vector<std::filesystem::path> files = JsonParser::searchFiles(pathToFolder);
     for (auto entry : files)
     {
-        boost::json::object &obj = JsonParser::getValueFromFile(entry);
+        boost::json::object obj = JsonParser::getValueFromFile(entry);
         CreatureParametersSPtr csptr = parseCreature(obj);
         FactoryMap_.insert(std::pair<std::string, CreatureParametersSPtr>(csptr->type_, csptr));
     }

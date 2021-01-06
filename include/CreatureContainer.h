@@ -15,6 +15,9 @@
 
 const std::string DELETED_DESIGNATOR = "__DEL__";
 
+const char CONTAINER_SLOT_WEIGHT = 1;
+const char CONTAINER_SLOT_AGE = 6;
+
 class CreatureContainer : public std::enable_shared_from_this<CreatureContainer>
 {
 
@@ -46,5 +49,6 @@ public:
     bool isDeleted(unsigned int index);
     void populateNeurons(unsigned int index);
     void calculateLayer(unsigned int index, unsigned int layer);
+    float getCreatureValue(unsigned int index, unsigned int value);
     std::vector<float> getResult(int index);
 };
