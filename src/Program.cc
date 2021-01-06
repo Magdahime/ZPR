@@ -98,13 +98,15 @@ void Program::run()
                 if (submitted)
                 {
                     std::string filename = "userDefined";
-                    s = webview::json_parse(s, "", 0);
-                    std::string path = JsonParser::saveJsonToFile(filename, s);
+                    // std::cout<<s<<std::endl;
+                    std::string creatureData = webview::json_parse(s, "", 0);
+                    std::string creatureNum = webview::json_parse(s, "", 1);
+                    std::string path = JsonParser::saveJsonToFile(filename, creatureData);
                     std::cout<<"BEFORE REGISTRATION"<<std::endl;
-                    std::cout<<s<<std::endl;
+                    std::cout<<creatureData<<std::endl;
                     CreatureFactory::getInstance().registerCreature(path);
                     std::cout<<CreatureFactory::getInstance().getFactoryMap().size()<<std::endl;
-                    simulation_.putOneCreature(webview::json_parse(s, "type",0));
+                    simulation_.putCreature(webview::json_parse(creatureData, "type",0), std::stoi(creatureNum));
                     std::cout<<"After PUT"<<std::endl;
                     return "OK";
                 }

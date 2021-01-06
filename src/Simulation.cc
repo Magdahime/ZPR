@@ -180,7 +180,7 @@ bool Simulation::calculateBirth(CreatureParametersSPtr creature, float result)
 void Simulation::calculateMovement(CreatureParametersSPtr creature)
 {
     creature->speed_ = fabs(creature->speed_);
-    float movement = creature->speed_ * creature->speedMultiplier_> parameters_.maxSpeed_ ? parameters_.maxSpeed_ : creature->speed_ * creature->speedMultiplier_;
+    float movement = creature->speed_ * creature->speedMultiplier_ > parameters_.maxSpeed_ ? parameters_.maxSpeed_ : creature->speed_ * creature->speedMultiplier_;
     creature->positionX_ += sin(creature->heading_) * movement;
     (creature->positionX_ > map_->getWidth()) ? creature->positionX_ -= map_->getWidth() : ((creature->positionX_ < 0) ? creature->positionX_ += map_->getWidth() : 0);
     creature->positionY_ += cos(creature->heading_) * movement;
@@ -301,6 +301,10 @@ void Simulation::setMap(shared_ptr<Map> mapPtr)
     map_ = mapPtr;
 }
 
-void Simulation::putOneCreature(std::string type){
-    container_.putCreature(type);
+void Simulation::putCreature(std::string type, int creatureNum)
+{
+    for (int i = 0; i < creatureNum; i++)
+    {
+        container_.putCreature(type);
+    }
 }

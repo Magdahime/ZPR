@@ -52,11 +52,13 @@ CreatureParametersSPtr CreatureFactory::createCreature(const std::string &type)
     auto iterator = FactoryMap_.find(type);
     if (iterator != FactoryMap_.end())
     {
+        std::cout<<"NOT DEFASULT"<<std::endl;
         return create(iterator->second);
     }
     else
     {
         CreatureParametersSPtr csptr = FactoryMap_.at(DEFAULT_CREATURE);
+        std::cout<<"DEFASULT"<<std::endl;
         return create(csptr);
     }
 }

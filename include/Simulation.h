@@ -109,5 +109,5 @@ public:
     void setSimulationParameters(SimulationParameters params)
     {this->parameters_ = params;}
     SimulationParameters getSimulationParameters() { return parameters_; }
-    void putOneCreature(std::string type);
+    void putCreature(std::string type, int creatureNum = 1);
 };

@@ -46,9 +46,11 @@ function putNewCreature(){
     var positionXV = document.getElementById("creaturePosX").value;
     var positionYV = document.getElementById("creaturePosY").value;
     var speedMultiplierV = document.getElementById("creatureSpeedMulti").value;
+    var creaturesNum =document.getElementById("creaturesNum").value;
     var object = {type:typeV, energy :parseFloat(energyV),weight: parseFloat(weightV), hue:parseFloat(hueV), 
                 positionX:parseFloat(positionXV), positionY:parseFloat(positionYV), speedMultiplier: parseFloat(speedMultiplierV)};
-    putCreature(object)
+        
+    putCreature(object, creaturesNum)
 }
 
 function NotSubmitted(){
