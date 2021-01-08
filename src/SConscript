@@ -11,14 +11,14 @@ if system == "windows":
 
     env.Append(CPPPATH=['#include',
                         '#lib/SFML-2.5.1-Win/include',
-                        '#lib/webview/include',
+                        '#lib/webview',
                         '#lib/boost_1_75_0',
                         pathlib.Path(os.__file__).parents[1] / 'include' 
                         ])
 
     env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
 
-    env.Append(CXXFLAGS='/EHsc /MD /std:c++17 /openmp:experimental /O2')
+    env.Append(CXXFLAGS='/EHsc /MD /std:c++17 /openmp:experimental /O2 /Wall')
 
     env.Append(LIBPATH=['#lib/SFML-2.5.1-Win/lib',
                         '#lib/webview/lib',
@@ -40,15 +40,16 @@ else:
     env = Environment()
     env.Append(CPPDEFINES=['LINUX_WV'])
     env.Append(CPPPATH=['#include',
-                        '#lib/webview/include'])
-    env.Append(CXXFLAGS='-Wall -std=c++17 -DWEBVIEWGTK')
+                        '#lib/webview',
+                        '#lib/boost'])
+    env.Append(CXXFLAGS='-std=c++17 -DWEBVIEWGTK -Wall -Wextra -O3')
+    env.ParseConfig('pkg-config --cflags --libs python3 gtk+-3.0 webkit2gtk-4.0')
+    boost_json = File('#lib/boost/stage/lib/libboost_json.a')
+    boost_filesystem = File('#lib/boost/stage/lib/libboost_filesystem.a')
     env.Append(LIBS=['sfml-graphics',
                      'sfml-window',
                      'sfml-system',
-                     'gomp'
+                     'gomp', boost_json, boost_filesystem,'python3.8','-ldl'
                      ])
-    env.Append(LIBPATH=['#/lib/SFML-2.5.1/lib'])
-    env.ParseConfig('pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0')
     VariantDir('#/build', '#/src', duplicate=0)
-    resources = Glob("#src/*.cpp")
     env.Program('../bin/CreatureSIM', Glob('*.cc'))
