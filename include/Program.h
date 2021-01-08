@@ -19,7 +19,6 @@
 
 // ZPR
 #include "Simulation.h"
-#include "StatisticsThread.h"
 
 namespace webview
 {

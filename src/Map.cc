@@ -7,14 +7,20 @@
 
 unsigned char *Map::generateMapFromPerlin(Perlin &perlin)
 {
-    float *perlinNoiseR = perlin.generatePerlinNoise();
-    float *perlinNoiseG = perlin.generatePerlinNoise();
-    float *perlinNoiseB = perlin.generatePerlinNoise();
+    float *perlinNoiseH = perlin.generatePerlinNoise();
+    float *perlinNoiseS = perlin.generatePerlinNoise();
+    float *perlinNoiseV = perlin.generatePerlinNoise();
     for (int i = 0; i < width_ * height_ * 4; i += 4)
     {
-        pixels_[i] = perlinNoiseR[i / 4] * 255;
-        pixels_[i + 1] = perlinNoiseG[i / 4] * 255;
-        pixels_[i + 2] = perlinNoiseB[i / 4] * 255;
+        HSVvals hsv(perlinNoiseH[i / 4] * 360, perlinNoiseS[i / 4], perlinNoiseV[i / 4]);
+        HSVpixels_[i] = hsv.h_;
+        HSVpixels_[i + 1] = hsv.s_;
+        HSVpixels_[i + 2] = hsv.v_;
+        HSVpixels_[i + 3] = 255;
+        RGBvals rgb = convert2RGB(hsv);
+        pixels_[i] = rgb.r_;
+        pixels_[i + 1] = rgb.g_;
+        pixels_[i + 2] = rgb.b_;
         pixels_[i + 3] = 255;
     }
 
@@ -31,8 +37,8 @@ unsigned char *Map::generateMapFromPerlin(Perlin &perlin)
 Map::RGBvals Map::convert2RGB(Map::HSVvals &hsv)
 {
     float C = hsv.v_ * hsv.s_;
-    int partial = std::round((hsv.h_ / 60.0));
-    float X = C * (1 - std::abs(partial % 2 - 1));
+    float partial = (hsv.h_ / 60.0);
+    float X = C * (1 - fabs(fmod(partial, 2.f) - 1));
     float m = hsv.v_ - C;
     float R1, G1, B1;
 

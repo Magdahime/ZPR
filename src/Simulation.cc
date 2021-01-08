@@ -7,6 +7,8 @@
 
 #include <chrono>
 
+#include <boost/json.hpp>
+
 #include "Simulation.h"
 #include "Creature.h"
 #include "Neuron.h"
@@ -361,3 +363,43 @@ float Simulation::getSelectedY()
     }
     return map_->getHeight() / 2;
 }
+
+std::string Simulation::getSelectedParametersAsJSON()
+{
+    std::string comma = ", ";
+    std::string quote = R"(")";
+    auto params = container_.getCreatureParameters(selectedIndex_);
+    std::string out = R"('{"data":[)";
+    out += std::to_string(params->age_) + comma;
+    out += std::to_string(params->weight_) + comma;
+    out += std::to_string(params->energy_) + comma;
+    out += std::to_string(params->hue_) + comma;
+    out += quote + std::to_string(params->positionX_) + comma + std::to_string(params->positionY_) + quote + comma;
+    out += std::to_string(params->speed_) + comma;
+    out += std::to_string(params->heading_) + comma;
+    out += std::to_string(params->leftAntennaH_) + comma;
+    out += std::to_string(params->rightAntennaH_) + comma;
+    out += std::to_string(params->bottomAntennaH_);
+    out += R"(]}')";
+    return out;
+};
+
+std::string Simulation::getSelectedNeuronsAsJSON()
+{
+    auto neurons = container_.getNeuronStates(selectedIndex_);
+    std::string out = R"('{"nodes" : [)";
+    for (int i = 0; i < neurons.size(); i++)
+    {
+        for (int j = 0; j < neurons[i].size(); j++)
+        {
+            out += std::string(R"({"label":)");
+            out += std::to_string((neurons[i])[j]);
+            out += std::string(R"(, "layer": )");
+            out += std::to_string(i+1);
+            if (!(i == neurons.size() - 1 && j == neurons[i].size() - 1))
+                out += std::string(R"(},)");
+        }
+    }
+    out += std::string(R"(}]}')");
+    return out;
+};

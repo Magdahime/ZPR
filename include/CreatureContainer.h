@@ -51,4 +51,5 @@ public:
     void calculateLayer(unsigned int index, unsigned int layer);
     float getCreatureValue(unsigned int index, unsigned int value);
     std::vector<float> getResult(int index);
+    std::vector<std::vector<float>> getNeuronStates(int index);
 };

@@ -129,7 +129,6 @@ void Program::run()
                 break;
             case sf::Event::MouseWheelMoved:
             {
-                webserverPtr_->terminate();
                 simView = programWindowPtr_->getView();
                 simView.zoom(pow(2.0f, event.mouseWheel.delta * 0.5));
                 sf::Vector2i pixelPos = sf::Mouse::getPosition(*programWindowPtr_);
@@ -225,6 +224,7 @@ void Program::callJS(const std::string &javascript)
     webviewPtr_->dispatch([this, javascript] {
         webviewPtr_->eval(javascript);
     });
+    
 }
 
 void Program::runStatistics()
@@ -240,6 +240,15 @@ void Program::runStatistics()
         data.totalWeight = simulationPtr_->getTotalWeight();
         data.avgAge = simulationPtr_->getAvgAge();
         sendStatistics(data);
+        if (simulationPtr_->isSelected())
+        {
+            std::string params = simulationPtr_->getSelectedParametersAsJSON();
+            std::string neurons = simulationPtr_->getSelectedNeuronsAsJSON();
+            callJS(
+                std::string("updateDataAboutCreature(") + params + std::string(");"));
+            callJS(
+                std::string("updateDataAboutNetwork(") + neurons + std::string(");"));
+        }
         auto sleeptime = std::chrono::duration_cast<std::chrono::milliseconds>(end - std::chrono::steady_clock::now());
         end += increment;
         std::this_thread::sleep_for(sleeptime);

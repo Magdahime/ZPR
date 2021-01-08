@@ -128,6 +128,9 @@ public:
     float getSelectedX();
     float getSelectedY();
 
+    std::string getSelectedParametersAsJSON();
+    std::string getSelectedNeuronsAsJSON();
+
     SimulationParameters getSimulationParameters() { return parameters_; };
 
     void terminate()

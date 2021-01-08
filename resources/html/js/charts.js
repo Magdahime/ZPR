@@ -171,15 +171,15 @@ function treeMapColorsChart() {
 
 function getDataAboutNetwork(graph) {
     var h1Element = document.getElementById("status");
-    h1Element.innerHTML=''
+    h1Element.innerHTML = ''
     if (graph != undefined) {
         renderNeuralNetowork(graph)
     }
 }
 
 function renderNeuralNetowork(graph) {
-    var width = 960,
-        height = 500,
+    var width = 400,
+        height = 1200,
         nodeSize = 30;
 
     var color = d3.scale.category20();
@@ -246,13 +246,16 @@ function renderNeuralNetowork(graph) {
             return "translate(" + d.x + "," + d.y + ")";
         }
         );
-    var lastLayer = Object.keys(netsize)[Object.keys(netsize).length -1]
+    var lastLayer = Object.keys(netsize)[Object.keys(netsize).length - 1]
     var circle = node.append("circle")
         .attr("class", "node")
         .attr("r", nodeSize)
         .style("fill", function (d) {
-            if (parseInt(d.label) == 1.0 && d.layer == lastLayer) {
+            if (parseFloat(d.label) >= 0.8 && d.layer != 1) {
                 return '#00ff00'
+            }
+            if (parseFloat(d.label) <= -0.8 && d.layer != 1) {
+                return '#ff3300'
             }
             return color(d.layer);
         });
@@ -282,12 +285,12 @@ function updateCellValues(tableName, data) {
 
 function updateDataAboutCreature(data) {
     var h1Element = document.getElementById("status");
-    h1Element.innerHTML=''
+    h1Element.innerHTML = ''
     data = JSON.parse(data)
     updateCellValues("CreatureTable", data.data)
 }
 
-function creatureDead(){
+function creatureDead() {
     var h1Element = document.getElementById("status");
-    h1Element.innerHTML='CREATURE IS DEAD. SELECT ANOTHER'
+    h1Element.innerHTML = 'CREATURE IS DEAD. SELECT ANOTHER'
 }

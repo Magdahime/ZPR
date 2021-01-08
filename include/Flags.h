@@ -23,8 +23,8 @@ namespace zpr_windows
 {
     const std::string SF_NAME = "CreatureSim";
     const std::string WV_NAME = "CreatureSim Webview";
-    const int WV_X = 800;
-    const int WV_Y = 600;
+    const int WV_X = 1200;
+    const int WV_Y = 800;
     const int SF_X = 800;
     const int SF_Y = 800;
 } // namespace zpr_windows
