@@ -1,9 +1,9 @@
 {
     "type": "default",
-    "energy": 10.0,
+    "energy": 50.0,
     "weight": 1000.0,
     "hue": 118.0,
-    "positionX": 100.0,
-    "positionY": 100.0,
-    "speedMultiplier": 1.25
+    "positionX": 110.0,
+    "positionY": 110.0,
+    "speedMultiplier": 1.0
 }

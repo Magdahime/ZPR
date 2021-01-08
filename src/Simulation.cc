@@ -192,7 +192,7 @@ bool Simulation::calculateBirth(CreatureParametersSPtr creature, float result)
 void Simulation::calculateMovement(CreatureParametersSPtr creature)
 {
     creature->speed_ = fabs(creature->speed_);
-    float movement = creature->speed_ * creature->speedMultiplier_;
+    float movement = creature->speed_ * creature->speedMultiplier_ > parameters_.maxSpeed_ ? parameters_.maxSpeed_ : creature->speed_ * creature->speedMultiplier_;
     creature->positionX_ += sin(creature->heading_) * movement;
     (creature->positionX_ > map_->getWidth()) ? creature->positionX_ -= map_->getWidth() : ((creature->positionX_ < 0) ? creature->positionX_ += map_->getWidth() : 0);
     creature->positionY_ += cos(creature->heading_) * movement;
@@ -228,13 +228,13 @@ void Simulation::calculateEnergy(CreatureParametersSPtr creature)
     creature->energy_ -= (1000.f + creature->age_) / 20.f / 200.f; //alert MAGIC // idle energy consumption
     if (creature->energy_ > parameters_.energyThreshhold_)
     {
-        creature->weight_ += (creature->energy_ - parameters_.energyThreshhold_);
-        creature->energy_ = parameters_.energyThreshhold_;
+        creature->weight_ += parameters_.weightGained_;
+        creature->energy_ = 0.0f;
     }
     else if (creature->energy_ < 0)
     {
-        creature->weight_ -= fabs(creature->energy_);
-        creature->energy_ = 0;
+        creature->weight_ -= parameters_.weightLost_;
+        creature->energy_ = 0.0f;
     }
 }
 
@@ -403,3 +403,10 @@ std::string Simulation::getSelectedNeuronsAsJSON()
     out += std::string(R"(}]}')");
     return out;
 };
+void Simulation::putCreature(std::string type, int creatureNum)
+{
+    for (int i = 0; i < creatureNum; i++)
+    {
+        container_.putCreature(type);
+    }
+}

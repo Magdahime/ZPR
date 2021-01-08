@@ -20,10 +20,10 @@ unsigned int CreatureContainer::getSize()
     return types_.size();
 }
 
-void CreatureContainer::putCreature()
+void CreatureContainer::putCreature(std::string type)
 {
     putCreature(
-        CreatureFactory::getInstance().createCreature(DEFAULT_CREATURE),
+        CreatureFactory::getInstance().createCreature(type),
         NeuronFactory::getInstance().createNeuronSet());
 }
 NeuronSetSPtr CreatureContainer::getNeurons(unsigned int index)

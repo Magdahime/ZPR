@@ -38,7 +38,7 @@ class CreatureContainer : public std::enable_shared_from_this<CreatureContainer>
 public:
     CreatureContainer();
     unsigned int getSize();
-    void putCreature();
+    void putCreature(std::string type = DEFAULT_CREATURE);
     NeuronSetSPtr getNeurons(unsigned int index);
     void putCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons);
     void updateCreatureParameters(unsigned int index, CreatureParametersSPtr params);

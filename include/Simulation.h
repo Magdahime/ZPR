@@ -54,6 +54,8 @@ struct SimulationParameters
     unsigned int creaturesNum_;
     float energyThreshhold_;
     float minWeight_;
+    float weightGained_;
+    float weightLost_;
     float birthWeightThreshhold_;
     float energyBirth_;
     float energyBirthFailed_;
@@ -142,4 +144,8 @@ public:
         dataSemaphore_.post();
         dataSemaphore_.post();
     };
+    void setSimulationParameters(SimulationParameters params)
+    {this->parameters_ = params;}
+    SimulationParameters getSimulationParameters() { return parameters_; }
+    void putCreature(std::string type, int creatureNum = 1);
 };

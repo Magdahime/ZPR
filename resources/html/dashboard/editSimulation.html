@@ -26,6 +26,7 @@
 
     <!-- Custom styles for this template -->
     <link href="dashboard.css" rel="stylesheet">
+    <script type="text/javascript" src='../js/settings.js'></script>
 </head>
 
 <body onload="">
@@ -72,9 +73,97 @@
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Edit Simulation</h1>
                 </div>
-
-                <h1>Tralalala</h1>
-
+                <h1 id="status">Add new custom Creature!</h1>
+                <select id = "creatureTypes" class ="btn btn-secondary dropdown-toggle" type="button" 
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  onchange="if (this.selectedIndex) getCreature(this.selectedIndex);">
+                <option value="" selected disabled></option>
+                </select>
+                <form action="#" onsubmit="putNewCreature()">
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="creatureType">Name of the new Creature</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="text" min="0" step="0.00000001" id="creatureType"
+                                name="creatureType" required="required">
+                        </div>
+                    </div>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="creatureEnergy">Primary energy of the new Creature</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="creatureEnergy"
+                                name="creatureEnergy" value="50.0">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="creatureWeight">Primary weight of the new Creature</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="creatureWeight"
+                                name="creatureWeight" value="1000.0">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="creatureColor">Color of the new Creature (HUE)</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="creatureColor"
+                                name="creatureColor" value="255.0">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="creaturePosX">Position X on the map</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="creaturePosX"
+                                name="creaturePosX" value="110.0">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="creaturePosY">Position Y on the map</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="creaturePosY"
+                                name="creaturePosY" value="110.0">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="creatureSpeedMulti">Speed multiplier of the creature</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="creatureSpeedMulti"
+                                name="creatureSpeedMulti" value="1.0">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row my-5">
+                        <div class="col-lg-3">
+                            <label for="creaturesNum">How many of these creatures do you want?</label>
+                        </div>
+                        <div class="col-lg-5">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="creaturesNum"
+                                name="creaturesNum" value="100">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mx-auto my-5" style="width: 200px;">
+                        <button class="btn btn-primary btn-lg" type="submit" id="button">Put Creature</button>
+                    </div>
+                </form>
+                <script>Submitted()</script>
+                <script>GetListOfCreatures()</script>
                 <script src="/js/bootstrap.bundle.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
                     integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"

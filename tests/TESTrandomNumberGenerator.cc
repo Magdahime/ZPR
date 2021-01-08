@@ -30,19 +30,19 @@ BOOST_AUTO_TEST_CASE(getIntTest)
         BOOST_CHECK(fabs(percentage - (testArray[i] / factor)) <= difference);
     }
 }
-BOOST_AUTO_TEST_CASE(getNormalTest)
-{
-    double min = 0;
-    double max = 9;
-    RandomNumberGenerator<int> rng(min, max);
-    std::map<int, int> hist{};
-    for (int n = 0; n < 10000; ++n)
-    {
-        ++hist[std::round(rng.getNormal())];
-    }
-    for (auto p : hist)
-    {
-        std::cout << p.first << ' ' << std::string(p.second / 200, '*') << '\n';
-    }
-}
+// BOOST_AUTO_TEST_CASE(getNormalTest)
+// {
+//     double min = 0;
+//     double max = 9;
+//     RandomNumberGenerator<int> rng(min, max);
+//     std::map<int, int> hist{};
+//     for (int n = 0; n < 10000; ++n)
+//     {
+//         ++hist[std::round(rng.getNormal())];
+//     }
+//     for (auto p : hist)
+//     {
+//         std::cout << p.first << ' ' << std::string(p.second / 200, '*') << '\n';
+//     }
+// }
 BOOST_AUTO_TEST_SUITE_END()

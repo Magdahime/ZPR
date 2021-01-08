@@ -9,6 +9,7 @@
 #include "Map.h"
 #include "Perlin.h"
 #include "Flags.h"
+#include "JsonParser.h"
 
 #include "CreatureFactory.h"
 
@@ -86,18 +87,56 @@ void Program::run()
                 newParams.creaturesNum_ = std::stoi(webview::json_parse(s, "", 0));
                 newParams.energyThreshhold_ = std::stof(webview::json_parse(s, "", 1));
                 newParams.minWeight_ = std::stof(webview::json_parse(s, "", 2));
-                newParams.birthWeightThreshhold_ = std::stof(webview::json_parse(s, "", 3));
-                newParams.energyBirth_ = std::stof(webview::json_parse(s, "", 4));
-                newParams.energyBirthFailed_ = std::stof(webview::json_parse(s, "", 5));
-                newParams.weightBirth_ = std::stof(webview::json_parse(s, "", 6));
-                newParams.birthAgeThreshhold_ = std::stof(webview::json_parse(s, "", 7));
-                newParams.anglePerFrame_ = std::stof(webview::json_parse(s, "", 8));
-                newParams.accelerationMultiplier_ = std::stof(webview::json_parse(s, "", 9));
-                newParams.maxSpeed_ = std::stof(webview::json_parse(s, "", 10));
+                newParams.weightGained_ = std::stof(webview::json_parse(s, "", 3));
+                newParams.weightLost_ = std::stof(webview::json_parse(s, "", 4));
+                newParams.birthWeightThreshhold_ = std::stof(webview::json_parse(s, "", 5));
+                newParams.energyBirth_ = std::stof(webview::json_parse(s, "", 6));
+                newParams.energyBirthFailed_ = std::stof(webview::json_parse(s, "", 7));
+                newParams.weightBirth_ = std::stof(webview::json_parse(s, "", 8));
+                newParams.birthAgeThreshhold_ = std::stof(webview::json_parse(s, "", 9));
+                newParams.anglePerFrame_ = std::stof(webview::json_parse(s, "", 10));
+                newParams.accelerationMultiplier_ = std::stof(webview::json_parse(s, "", 11));
+                newParams.maxSpeed_ = std::stof(webview::json_parse(s, "", 12));
                 simulationPtr_->setSimulationParameters(newParams);
-                simulationThread_ = std::thread(&Simulation::run, &(*simulationPtr_));
+                submittedParams = true;
+                simulationThread_ = thread([this] { simulationPtr_->run(); });
                 return "OK";
             });
+
+        webviewPtr_->bind(
+            "putCreature",
+            [&](std::string s) -> std::string {
+                if (submittedParams)
+                {
+                    std::string filename = "userDefined";
+                    std::string creatureData = webview::json_parse(s, "", 0);
+                    std::string creatureNum = webview::json_parse(s, "", 1);
+                    if (!std::filesystem::exists(JsonParser::SAVE_PATH + webview::json_parse(creatureData, "type", 0)))
+                    {
+                        std::string path = JsonParser::saveJsonToFile(filename, creatureData);
+                        CreatureFactory::getInstance().registerCreature(path);
+                        simulationPtr_->putCreature(webview::json_parse(creatureData, "type", 0), std::stoi(creatureNum));
+                    }
+                    return "OK";
+                }
+                else
+                {
+                    webviewPtr_->eval("NotSubmitted()");
+                    return "NOT OK";
+                }
+            });
+        webviewPtr_->bind(
+            "getListOfCreatures",
+            [&](std::string s) -> std::string {
+                webviewPtr_->eval("addCreaturesToDropdown(" + CreatureFactory::getInstance().parseKeys() + ");");
+                return "OK";
+            });
+        webviewPtr_->bind("getDataAboutCreature",
+                          [&](std::string s) -> std::string {
+                              std::cout << webview::json_parse(s, "", 0) << std::endl;
+                              webviewPtr_->eval("receiveData(" + CreatureFactory::getInstance().getParsedValues(webview::json_parse(s, "", 0)) + ")");
+                              return "OK";
+                          });
     });
     unsigned int frameCounter = 0;
     time_t now = time(0);
