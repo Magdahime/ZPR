@@ -8,13 +8,18 @@
 /////////////////////////////////////////////////////////
 #pragma once
 
-#include <Python.h>
-
-#include <boost/dll/runtime_symbol_info.hpp>
+#pragma warning (push, 0)
 
 #include <thread>
 #include <iostream>
 #include <chrono>
+
+#include <Python.h>
+
+#include <boost/dll/runtime_symbol_info.hpp>
+
+#pragma warning (pop)
+
 #include "Flags.h"
 
 class PyWebserver

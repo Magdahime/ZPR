@@ -1,14 +1,19 @@
-#pragma once
 /////////////////////////////////////////////////////////////////
 ///     Author: Magdalena Majkowska                           ///
 ///     Definition of map that will be used in simulation     ///
 ///     It will be generated using Perlin noise generator     ///
 ///     as hsv values later to be converted to rgb            ///
 /////////////////////////////////////////////////////////////////
+#pragma once
+
+#pragma warning(push, 0)
 
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
+
+#pragma warning(pop)
+
 #include "Perlin.h"
 
 const int DEGREES = 360;

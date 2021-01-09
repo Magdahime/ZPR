@@ -8,6 +8,8 @@
 /////////////////////////////////////////////////////////
 #pragma once
 
+#pragma warning(push, 0)
+
 //C++ Standard Library stuff.
 #include <memory>
 #include <string>
@@ -16,6 +18,8 @@
 //SFML
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+
+#pragma warning(pop)
 
 // ZPR
 #include "Simulation.h"

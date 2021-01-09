@@ -4,15 +4,20 @@
 ///     serialize and deserialize objects in our      ///
 ///     project in JSON format                        ///
 /////////////////////////////////////////////////////////
-
 #pragma once
+
+#pragma warning (push, 0)
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <filesystem>
 #include <string>
 #include <vector>
+
 #include <boost/json.hpp>
+
+#pragma warning (pop)
 
 class JsonParser
 {

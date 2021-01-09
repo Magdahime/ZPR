@@ -2,11 +2,14 @@
 ///     Author: Magdalena Majkowska                   ///
 ///     Definition of simple neuron class             ///
 /////////////////////////////////////////////////////////
-
 #pragma once
+
+#pragma warning(push, 0)
 
 #include <iostream>
 #include <vector>
+
+#pragma warning(pop)
 
 const unsigned short int NEURONINPUTSNUM = 8;
 const float MUTATIONSTRENGTH = 0.2f;

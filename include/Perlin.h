@@ -4,7 +4,12 @@
 /////////////////////////////////////////////////////////
 #pragma once
 
+#pragma warning(push, 0)
+
 #include <iostream>
+
+#pragma warning(pop)
+
 #include "RandomNumberGenerator.h"
 
 const int OCTAVESNUMBER = 7;

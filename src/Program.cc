@@ -1,7 +1,12 @@
+
+#pragma warning(push, 0)
+
 #include <iostream>
 #include <cmath>
 
 #include "webview.h"
+
+#pragma warning(pop)
 
 #include "Program.h"
 #include "Simulation.h"
@@ -10,7 +15,6 @@
 #include "Perlin.h"
 #include "Flags.h"
 #include "JsonParser.h"
-
 #include "CreatureFactory.h"
 
 using namespace std;

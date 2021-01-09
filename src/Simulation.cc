@@ -1,13 +1,17 @@
+#pragma warning(push, 0)
+
 #include <iostream>
 #include <cmath>
-#include <omp.h>
+#include <chrono>
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-#include <chrono>
-
 #include <boost/json.hpp>
+
+#pragma warning(pop)
+
+#include <omp.h>
 
 #include "Simulation.h"
 #include "Creature.h"

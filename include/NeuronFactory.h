@@ -4,13 +4,17 @@
 ///                                                   ///
 ///                                                   ///
 /////////////////////////////////////////////////////////
-
 #pragma once
+
+#pragma warning(push, 0)
+
 #include <iostream>
 #include <map>
 #include <vector>
 #include <string>
 #include <memory>
+
+#pragma warning(pop)
 
 #include "RandomNumberGenerator.h"
 

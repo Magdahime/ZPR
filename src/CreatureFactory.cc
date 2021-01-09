@@ -1,4 +1,9 @@
+#pragma warning(push, 0)
+
 #include <filesystem>
+
+#pragma warning(pop)
+
 #include "CreatureFactory.h"
 #include "JsonParser.h"
 #include "RandomNumberGenerator.h"
@@ -72,8 +77,8 @@ CreatureParametersSPtr CreatureFactory::create(CreatureParametersSPtr csptr)
     csptrCopy->positionX_ = rng.getNormal(csptr->positionX_, CREATURE_FACTORY_STDDEV);
     csptrCopy->positionY_ = rng.getNormal(csptr->positionY_, CREATURE_FACTORY_STDDEV);
     csptrCopy->speedMultiplier_ = fabs(rng.getNormal(csptr->speedMultiplier_, CREATURE_FACTORY_STDDEV));
-    csptrCopy->heading_ = rng.get(MIN_CREATURE_HEADING, MAX_CREATURE_HEADING);
-    csptrCopy->speed_ = rng.get(MIN_CREATURE_SPEED, MAX_CREATURE_SPEED);
+    csptrCopy->heading_ = fmod(rng.getNormal(csptr->heading_, CREATURE_FACTORY_STDDEV) + 360.f, 360.f);
+    csptrCopy->speed_ = fabs(rng.getNormal(csptr->speed_, CREATURE_FACTORY_STDDEV));
     return csptrCopy;
 }
 

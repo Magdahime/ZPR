@@ -18,7 +18,7 @@ if system == "windows":
 
     env.Append(LINKFLAGS='/SUBSYSTEM:CONSOLE')
 
-    env.Append(CXXFLAGS='/EHsc /MD /std:c++17 /openmp:experimental /O2 /Wall')
+    env.Append(CXXFLAGS='/EHsc /MD /std:c++17 /openmp:experimental /O2')
 
     env.Append(LIBPATH=['#lib/SFML-2.5.1-Win/lib',
                         '#lib/webview/lib',

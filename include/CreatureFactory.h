@@ -4,14 +4,20 @@
 ///                                                   ///
 ///                                                   ///
 /////////////////////////////////////////////////////////
-
 #pragma once
+
+#pragma warning (push, 0)
+
 #include <iostream>
 #include <map>
 #include <string>
 #include <memory>
-#include "Creature.h"
+
 #include <boost/json.hpp>
+
+#pragma warning (pop)
+
+#include "Creature.h"
 
 const std::string DEFAULT_CONFIGURATION_PATH = ".\\config\\creature";
 const std::string DEFAULT_CREATURE = "default";
@@ -65,7 +71,7 @@ struct CreatureParameters
     std::string type_;
 
     CreatureParameters(
-        std::string type,
+        const std::string& type,
         float energy,
         float weight,
         float hue,
@@ -79,8 +85,7 @@ struct CreatureParameters
         float rightAntennaH = .0f,
         float rearAntennaH = .0f,
         float bottomAntennaH = .0f,
-        float popDensity = .0f) : type_(type),
-                                  energy_(energy),
+        float popDensity = .0f) : energy_(energy),
                                   weight_(weight),
                                   hue_(hue),
                                   positionX_(positionX),
@@ -93,5 +98,6 @@ struct CreatureParameters
                                   rightAntennaH_(rightAntennaH),
                                   rearAntennaH_(rearAntennaH),
                                   bottomAntennaH_(bottomAntennaH),
-                                  popDensity_(popDensity){};
+                                  popDensity_(popDensity),
+                                  type_(type){};
 };

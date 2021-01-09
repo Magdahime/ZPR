@@ -9,12 +9,16 @@
 ///     cross-compatibility.                          ///
 ///                                                   ///
 /////////////////////////////////////////////////////////
-
 #pragma once
+
+#pragma warning (push, 0)
 
 #include <vector>
 #include <memory>
+
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
+
+#pragma warning (pop)
 
 #include "CreatureContainer.h"
 
@@ -144,8 +148,6 @@ public:
         dataSemaphore_.post();
         dataSemaphore_.post();
     };
-    void setSimulationParameters(SimulationParameters params)
-    {this->parameters_ = params;}
-    SimulationParameters getSimulationParameters() { return parameters_; }
+
     void putCreature(std::string type, int creatureNum = 1);
 };

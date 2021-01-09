@@ -5,9 +5,12 @@
 ///     return random integers and floats             ///
 /////////////////////////////////////////////////////////
 #pragma once
-#pragma warning (disable: 4003)
 
+#pragma warning (push, 0)
 #include <random>
+#pragma warning (pop)
+
+#pragma warning (disable: 4003)
 
 template <typename Numeric, typename RealOnlyNumeric = float>
 class RandomNumberGenerator

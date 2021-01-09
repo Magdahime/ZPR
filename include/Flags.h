@@ -6,7 +6,12 @@
 ///                                                   ///
 /////////////////////////////////////////////////////////
 #pragma once
+
+#pragma warning (push, 0)
+
 #include <string>
+
+#pragma warning (pop)
 
 namespace zpr_dev_flags
 {
