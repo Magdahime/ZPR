@@ -16,12 +16,20 @@
 /**
  * \author Magdalena Majkowska
  * 
- * JSONParser helps serialize and deserialize JSON objects in our project
+ * JSONParser helps serialize and deserialize JSON objects in our project. All of the 
+ * methods are static because they do not require access to any fields of the class.
+ * 
  */
 class JsonParser
 {
 public:
     inline static const std::string SAVE_PATH = R"(.\config\creature\)";
+
+    /**
+     * Method to retrieve all of the files from specified folder.
+     * \param pathToFolder - path to folder that we want to search
+     * \return - vector of std::filesystem::path objects
+     */
     static std::vector<std::filesystem::path> searchFiles(const std::string &pathToFolder)
     {
         std::vector<std::filesystem::path> filenames;
@@ -35,7 +43,11 @@ public:
         }
         return filenames;
     }
-
+    /**
+     * Method to read JSON file and creates a boost::json::object for further processing. 
+     * \param path - path to JSON file (std::filesystem::path not string)
+     * \return - boost::json::object that we can easily read to get data
+     */
     static boost::json::object getValueFromFile(std::filesystem::path path)
     {
         std::ifstream stream;
@@ -45,7 +57,13 @@ public:
         boost::json::value jv = boost::json::parse(buffer.str());
         return jv.as_object();
     }
-
+    /**
+     * Method to save a prepared beforehand string to file. 
+     * Used for saving a new user-defined specimens in webview.  
+     * \param filename - name for the file, that will store new Creature Parameters
+     * \param jsonToSave - JSON string
+     * \return - full path to this filenam (only for purposes of testing)
+     */
     static std::string saveJsonToFile(std::string filename, std::string jsonToSave)
     {
         int index = 0;

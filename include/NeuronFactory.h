@@ -1,9 +1,3 @@
-/////////////////////////////////////////////////////////
-///     Author: Bartłomiej Janowski                   ///
-///     Singleton NeuronParameters Factory            ///
-///                                                   ///
-///                                                   ///
-/////////////////////////////////////////////////////////
 #pragma once
 
 #pragma warning(push, 0)
