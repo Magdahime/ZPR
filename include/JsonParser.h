@@ -1,6 +1,6 @@
 #pragma once
 
-#pragma warning (push, 0)
+#pragma warning(push, 0)
 
 #include <iostream>
 #include <fstream>
@@ -11,7 +11,7 @@
 
 #include <boost/json.hpp>
 
-#pragma warning (pop)
+#pragma warning(pop)
 
 /**
  * \author Magdalena Majkowska
@@ -22,6 +22,12 @@
  */
 class JsonParser
 {
+private:
+    JsonParser(const JsonParser &) = delete;
+    JsonParser(JsonParser &&) = delete;
+    JsonParser &operator=(JsonParser &&) = delete;
+    JsonParser &operator=(const JsonParser &) = delete;
+
 public:
     inline static const std::string SAVE_PATH = R"(.\config\creature\)";
 

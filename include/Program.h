@@ -31,6 +31,13 @@ namespace webview
 
 class PyWebserver;
 
+/**
+ * \author Bartłomiej Janowski
+ * 
+ * This is the main class of the Program. It stores all needed pointers to other segments of the app.
+ * 
+ * Program also manages the threads that are used across the application.
+ */
 class Program
 {
 public:
@@ -51,12 +58,16 @@ private:
     std::thread simulationThread_;
     std::thread webserverThread_;
     std::thread statisticsThread_;
-    // StatisticsThread statThread_;
     SimulationData statistics_;
 
     boost::interprocess::interprocess_semaphore webviewSemaphore_;
 
     bool terminate_ = false;
+
+    Program(const Program &) = delete;
+    Program(Program &&) = delete;
+    Program &operator=(Program &&) = delete;
+    Program &operator=(const Program &) = delete;
 
 public:
     Program();

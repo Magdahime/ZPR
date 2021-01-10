@@ -23,9 +23,14 @@ class Perlin
     const int width_;
     const int height_;
     float *primaryNoise_;
-
+    Perlin() = delete;
+    Perlin(const Perlin &) = delete;
+    Perlin(Perlin &&) = delete;
+    Perlin &operator=(Perlin &&) = delete;
+    Perlin &operator=(const Perlin &) = delete;
 public:
     Perlin(int width, int height);
+    ~Perlin();
     void generateWhiteNoise();
     float *generateSmoothNoise(int octave);
     float cosineInterpolation(float value1, float value2, float alpha);
