@@ -22,7 +22,7 @@ using namespace std;
 
 Simulation::~Simulation(){};
 
-Simulation::Simulation() : dataSemaphore_(1){};
+Simulation::Simulation() : dataSemaphore_(1), videoSemaphore_(0){};
 
 void Simulation::prepare(unsigned int creatureCount)
 {
@@ -43,7 +43,6 @@ void Simulation::run()
     int i = 0;
     time_t now = time(0);
     time_t newnow;
-    dataSemaphore_.post();
     while (!terminate_)
     {
         dataSemaphore_.wait();
@@ -58,6 +57,7 @@ void Simulation::run()
         }
         now = newnow;
         populationSize_ = iteration();
+        videoSemaphore_.post();
     }
 }
 int Simulation::iteration()
@@ -65,30 +65,36 @@ int Simulation::iteration()
     std::lock_guard<std::mutex> lockGuard(iterationMutex_);
     ++iterationNumber_;
     int creatureCounter = 0;
-    float avgAge = 0.f;
+    float totalAge = 0.f;
     float totalWeight = 0.f;
-#pragma omp parallel for reduction(+ : creatureCounter, totalWeight, avgAge)
+    std::cout<<"\nEntering"; // alert DEBUG
+#pragma omp parallel for reduction(+ : creatureCounter, totalWeight, totalAge)
     for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
             continue;
         ++creatureCounter;
-        // if(container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE) > avgAge) avgAge = container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE);
-        avgAge += container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE);
+        // if(container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE) > totalAge) totalAge = container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE);
+        totalAge += container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE);
         totalWeight += container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_WEIGHT);
         container_.populateNeurons(creatureIndex);
         for (unsigned int layerIndex = 0; layerIndex < LAYER_WIDTHS.size(); layerIndex++)
         {
             container_.calculateLayer(creatureIndex, layerIndex);
         }
+        // if(creatureIndex == 0)
+            // std::cout<<"\nPast calculate"; // alert DEBUG
         updateCreature(creatureIndex);
+        // if(creatureIndex == 0)
+            // std::cout<<"\nPast update"; // alert DEBUG
     }
-    avgAge_ = avgAge / creatureCounter;
+    std::cout<<"\nPast all";
+    avgAge_ = totalAge / creatureCounter;
     totalWeight_ = totalWeight;
-    container_.printCapacities();
-    std::cout<<"\n\nQueue size before:\t"<<container_.putQueue_.size()<<"\tContainer size before:\t"<<container_.getSize()<<"\n";
+    // container_.printCapacities(); // alert DEBUG
+    // std::cout<<"\n\nQueue size before:\t"<<container_.putQueue_.size()<<"\tContainer size before:\t"<<container_.getSize()<<"\n"; // alert DEBUG
     container_.putQueue();
-    std::cout<<"\n\nQueue size after:\t"<<container_.putQueue_.size()<<"\n";
+    // std::cout<<"\n\nQueue size after:\t"<<container_.putQueue_.size()<<"\tContainer size after:\t"<<container_.getSize()<<"\n"; // alert DEBUG
     return creatureCounter;
 }
 
@@ -118,7 +124,7 @@ void Simulation::updateCreature(int creatureIndex)
         childParams->weight_ = parameters_.weightBirth_;
         auto neurons = container_.getNeurons(creatureIndex);
         auto childNeurons = NeuronFactory::getInstance().createChild(neurons);
-        std::cout<<"\nStarting birth... "<<iterationNumber_<<"\n"; //alert DEBUG COUT
+        // std::cout<<"\nStarting birth... "<<iterationNumber_<<"\n"; //alert DEBUG COUT
         container_.delayPutCreature(childParams, childNeurons);
     }
     if (creature->weight_ < parameters_.minWeight_)
@@ -272,6 +278,7 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
     xMax = view.getCenter().x + view.getSize().x / 2.f;
     yMin = view.getCenter().y - view.getSize().y / 2.f;
     yMax = view.getCenter().y + view.getSize().y / 2.f;
+    std::cout<<"\nStart print\n";
     for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
@@ -309,6 +316,7 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
             }
         }
     }
+    std::cout<<"\nEnd print\n";
 }
 
 bool Simulation::tryNewData()
@@ -318,10 +326,12 @@ bool Simulation::tryNewData()
 
 void Simulation::postVideo()
 {
-    while (dataSemaphore_.try_wait())
-    {
-    }
     dataSemaphore_.post();
+}
+
+void Simulation::waitVideo()
+{
+    videoSemaphore_.wait();
 }
 
 void Simulation::setMap(shared_ptr<Map> mapPtr)

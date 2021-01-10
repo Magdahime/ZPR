@@ -25,8 +25,8 @@ constexpr int INVALID_COORDS = -1;
  */
 class Map
 {
-    int width_;
-    int height_;
+    unsigned int width_;
+    unsigned int height_;
     unsigned char *pixels_;
     unsigned char *HSVpixels_;
     void scalePerlin(float *perlinH, float *perlinS, float *perlinV);
@@ -73,16 +73,16 @@ public:
     bool compareFloat(float float1, float float2, float epsilon = 0.01f);
     inline int getWidth() { return width_; };
     inline int getHeight() { return height_; };
-    inline int getPixel(int x, int y, unsigned int offset)
+    inline int getPixel(unsigned int x, unsigned int y, unsigned int offset)
     {
         if (x < width_ && y < height_ && x >= 0 && y >= 0 && offset < 4)
             return pixels_[width_ * y * 4 + x * 4 + offset];
         return INVALID_COORDS;
     }
-    inline int getPixelH(int x, int y)
+    inline int getPixelH(unsigned int x, unsigned int y, unsigned char offset = 0)
     {
-        if (x < width_ && y < height_ && x >= 0 && y >= 0)
-            return HSVpixels_[width_ * y * 4 + x * 4];
+        if (x < width_ && y < height_ && x >= 0 && y >= 0 && offset < 4)
+            return HSVpixels_[width_ * y * 4 + x * 4 + offset];
         return INVALID_COORDS;
     }
 };

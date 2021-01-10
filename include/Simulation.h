@@ -77,6 +77,7 @@ class Simulation
     std::vector<float> weights_;
     std::shared_ptr<Map> map_;
     boost::interprocess::interprocess_semaphore dataSemaphore_;
+    boost::interprocess::interprocess_semaphore videoSemaphore_;
     std::vector<float> data_PROTO_;
 
     CreatureContainer container_;
@@ -109,6 +110,7 @@ public:
     void iteration_PROTO();
     bool tryNewData();
     void postVideo();
+    void waitVideo();
 
     void calculateSteer(CreatureParametersSPtr creature, float result);
     void calculateAcceleration(CreatureParametersSPtr creature, float result);
@@ -127,7 +129,7 @@ public:
 
     void selectClosestCreature(float x, float y);
 
-    inline unsigned int getSimulationSecond() { return (int)iterationNumber_ / TARGET_FPS; };
+    inline unsigned int getSimulationSecond() { return static_cast<int>(iterationNumber_ / TARGET_FPS); };
     inline unsigned int getPopulationSize() { return populationSize_; };
     inline float getTotalWeight() { return totalWeight_; };
     inline float getAvgAge() { return avgAge_; };
@@ -145,10 +147,15 @@ public:
     {
         terminate_ = true;
         dataSemaphore_.post();
+        videoSemaphore_.post();
         dataSemaphore_.post();
+        videoSemaphore_.post();
         dataSemaphore_.post();
+        videoSemaphore_.post();
         dataSemaphore_.post();
+        videoSemaphore_.post();
         dataSemaphore_.post();
+        videoSemaphore_.post();
     };
 
     void putCreature(std::string type, int creatureNum = 1);

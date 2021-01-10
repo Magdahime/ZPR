@@ -67,7 +67,7 @@ void CreatureContainer::putCreature(CreatureParametersSPtr params, NeuronSetSPtr
         neuronsSize += layerWidths[i] + layerWidths[i - 1] * layerWidths[i];
     }
     size_t index;
-    if (availableIndexes_.empty() || true)
+    if (availableIndexes_.empty())
     {
         index = types_.size();
         types_.resize(types_.size() + 1);
@@ -77,8 +77,11 @@ void CreatureContainer::putCreature(CreatureParametersSPtr params, NeuronSetSPtr
     }
     else
     {
-        index = availableIndexes_.front();
-        availableIndexes_.pop();
+        if (!availableIndexes_.pop(index))
+        {
+            std::cout << "\nunsuccesful pop\n"; // alert DEBUG
+            return;                             //unsuccesful pop
+        }
     }
 
     unsigned int neuronsInitial = index * neuronsSize;
@@ -140,12 +143,13 @@ void CreatureContainer::delayPutCreature(CreatureParametersSPtr params, NeuronSe
 
 void CreatureContainer::putQueue()
 {
+    // std::lock_guard<std::mutex> lockGuard(mutex_);
     while (!putQueue_.empty())
     {
-        // std::lock_guard<std::mutex> lockGuard(mutex_);
-        auto params = std::get<0>(putQueue_.front());
-        auto neurons = std::get<1>(putQueue_.front());
-        putQueue_.pop();
+        auto val = putQueue_.front();
+        auto params = std::get<0>(val);
+        auto neurons = std::get<1>(val);
+        putQueue_.pop(); // only pop-spot, thus "thread-safe" (at least safe enough)
         putCreature(params, neurons);
     }
 }
@@ -199,7 +203,6 @@ const float CreatureContainer::getCreatureY(size_t index)
 
 void CreatureContainer::deleteCreature(size_t index)
 {
-    // std::lock_guard<std::mutex> lockGuard(mutex);
     try
     {
         if (types_[index] == DELETED_DESIGNATOR)
@@ -212,7 +215,8 @@ void CreatureContainer::deleteCreature(size_t index)
         return;
     }
     types_[index] = DELETED_DESIGNATOR;
-    availableIndexes_.push(index);
+    if (availableIndexes_.push(index))
+        std::cout << "\npush failed\n"; // alert DEBUG
 };
 
 bool CreatureContainer::isDeleted(size_t index)
