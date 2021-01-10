@@ -247,27 +247,27 @@ void Program::run()
     webviewPtr_->dispatch([this] {
         webviewPtr_->terminate();
     });
+    webviewPtr_->terminate();
 
     webviewThread_.join();
     std::cout << "\nWebview done\n";
 
-    // webserverPtr_->terminate();
-
-    // simulationThread_.join();
+    simulationThread_.join();
     std::cout << "\nSim done\n";
 
-    // webserverPtr_->join();
-    // std::cout<<"\nServer done\n";
+    webserverPtr_->terminate();
+    std::cout << "\nServer terminate done\n";
+    webserverPtr_->join();
+    std::cout << "\nServer done\n";
 }
 
 void Program::callJS(const std::string &javascript)
 {
-    std::cout << "\n"
-              << javascript << "\n";
+    // std::cout << "\n"
+    //           << javascript << "\n";
     webviewPtr_->dispatch([this, javascript] {
         webviewPtr_->eval(javascript);
     });
-    
 }
 
 void Program::runStatistics()

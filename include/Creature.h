@@ -20,11 +20,11 @@ class Creature
 {
     std::weak_ptr<CreatureContainer> creatureContainerPtr_;
     std::vector<unsigned int> layerWidths_;
-    unsigned int neuronBegin_;
-    unsigned int neuronEnd_;
-    unsigned int attributesBegin_;
-    unsigned int attributesEnd_;
-    unsigned int index_;
+    size_t neuronBegin_;
+    size_t neuronEnd_;
+    size_t attributesBegin_;
+    size_t attributesEnd_;
+    size_t index_;
 
     Creature() = delete;
     Creature(const Creature &) = delete;
@@ -38,11 +38,11 @@ public:
     Creature(
         std::weak_ptr<CreatureContainer> creatureContainerPtr,
         const std::vector<unsigned int> &layerWidths,
-        unsigned int neuronBegin,
-        unsigned int neuronEnd,
-        unsigned int attributesBegin,
-        unsigned int attributesEnd,
-        unsigned int index) : creatureContainerPtr_(creatureContainerPtr),
+        size_t neuronBegin,
+        size_t neuronEnd,
+        size_t attributesBegin,
+        size_t attributesEnd,
+        size_t index) : creatureContainerPtr_(creatureContainerPtr),
                               layerWidths_(layerWidths),
                               neuronBegin_(neuronBegin),
                               neuronEnd_(neuronEnd),

@@ -1,9 +1,3 @@
-/////////////////////////////////////////////////////////
-///     Author: Magdalena Majkowska                   ///
-///     Definition of JsonParser - class that helps   ///
-///     serialize and deserialize objects in our      ///
-///     project in JSON format                        ///
-/////////////////////////////////////////////////////////
 #pragma once
 
 #pragma warning (push, 0)
@@ -19,6 +13,11 @@
 
 #pragma warning (pop)
 
+/**
+ * \author Magdalena Majkowska
+ * 
+ * JSONParser helps serialize and deserialize JSON objects in our project
+ */
 class JsonParser
 {
 public:

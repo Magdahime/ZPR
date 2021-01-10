@@ -17,8 +17,7 @@
 #pragma warning(pop)
 
 #include "RandomNumberGenerator.h"
-
-const float STDDEV_NEURON = 0.5f;
+#include "structs/NeuronParameters.h"
 
 const std::vector<unsigned int> LAYER_WIDTHS = {
     10,
@@ -29,46 +28,14 @@ const std::vector<unsigned int> LAYER_OFFSETS{
     130,
     202};
 
-struct NeuronParameters;
 
-using NeuronParametersSPtr = std::shared_ptr<NeuronParameters>;
-using NeuronLayer = std::vector<NeuronParameters>;
-using NeuronLayerSPtr = std::shared_ptr<NeuronLayer>;
-using NeuronSet = std::vector<NeuronLayerSPtr>;
-using NeuronSetSPtr = std::shared_ptr<NeuronSet>;
-
-struct NeuronParameters
-{
-    unsigned int inputsNo;
-    unsigned int layerNo;
-    std::vector<float> weights;
-
-    inline thread_local static RandomNumberGenerator<float> rng = RandomNumberGenerator<float>(-1.f, 1.f, 0.f, STDDEV_NEURON);
-
-    NeuronParameters(
-        unsigned int inputsNo,
-        unsigned int layerNo) : inputsNo(inputsNo), layerNo(layerNo)
-    {
-        for (int i = 0; i < inputsNo; i++)
-        {
-            weights.push_back(rng.get());
-        }
-        // std::cout<<"Ino Lno I:\t"<<inputsNo<<"\t"<<layerNo<<"\t"<<i<<"\n";
-    }
-
-    NeuronParameters() = default;
-
-    NeuronParameters getChild()
-    {
-        NeuronParameters child(inputsNo, layerNo);
-        for (int i = 0; i < inputsNo; i++)
-        {
-            child.weights[i] = weights[i] + rng.getNormal(0, 0.02); //alert MAGIC
-        }
-        return child;
-    }
-};
-
+/**
+ * \author Bartłomiej Janowski
+ * 
+ * This is the singleton Neuron Factory, which allows for creation of respective NeuronParameters
+ * at random or based on parents' neurons. NeuronParameters are later inputted into
+ * \link CreatureContainer and used in the Simulation
+ */
 class NeuronFactory
 {
     NeuronFactory() = default;

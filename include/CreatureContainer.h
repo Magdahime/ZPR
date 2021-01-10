@@ -1,11 +1,11 @@
 #pragma once
 
-#pragma warning (push, 0)
+#pragma warning(push, 0)
 
 #include <vector>
 #include <queue>
 
-#pragma warning (pop)
+#pragma warning(pop)
 
 #include "Creature.h"
 #include "CreatureFactory.h"
@@ -19,12 +19,15 @@ const std::string DELETED_DESIGNATOR = "__DEL__";
 
 const char CONTAINER_SLOT_WEIGHT = 1;
 const char CONTAINER_SLOT_AGE = 6;
+
+using FullParams = std::tuple<std::shared_ptr<CreatureParameters>, std::shared_ptr<NeuronSet>>;
+
 /**
  * \author Bartłomiej Janowski
  * 
  * CreatureContainer is the main container for simulation data.
- * It stores data of all creatures in stadard Vectors, but maps unused space from deletions
- * with a Queue, allowing for decreased memory cost of running simulation for longer.
+ * It stores data of all creatures in stadard library Vectors, but maps unused space from deletions
+ * with a Queue, allowing for a decreased memory cost of running simulation for longer.
  * 
  * \note 
  * The design of this class, i.e. the usage of plain float value vectors stems from the initial
@@ -45,7 +48,9 @@ class CreatureContainer : public std::enable_shared_from_this<CreatureContainer>
      */
     std::queue<unsigned int> availableIndexes_;
 
-    std::mutex mutex;
+    // std::queue<FullParams> putQueue_;
+
+    std::mutex mutex_;
 
     unsigned int paramsPerCreature_;
     unsigned int neuronsPerCreature_;
@@ -57,20 +62,29 @@ class CreatureContainer : public std::enable_shared_from_this<CreatureContainer>
     CreatureContainer &operator=(const CreatureContainer &) = delete;
 
 public:
+    void printCapacities()
+    {
+        std::cout << "\ncreatures:\t" << creatureValues_.size() << "\t" << creatureValues_.capacity();
+        std::cout << "\nneurons:\t" << neuronValues_.size() << "\t" << neuronValues_.capacity();
+        std::cout << "\ntypes:\t" << types_.size() << "\t" << types_.capacity();
+    }
+    std::queue<FullParams> putQueue_;
     CreatureContainer();
     unsigned int getSize();
     void putCreature(std::string type = DEFAULT_CREATURE);
-    NeuronSetSPtr getNeurons(unsigned int index);
+    NeuronSetSPtr getNeurons(size_t index);
     void putCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons);
-    void updateCreatureParameters(unsigned int index, CreatureParametersSPtr params);
-    const CreatureParametersSPtr getCreatureParameters(unsigned int index);
-    const float getCreatureX(unsigned int index);
-    const float getCreatureY(unsigned int index);
-    void deleteCreature(unsigned int index);
-    bool isDeleted(unsigned int index);
-    void populateNeurons(unsigned int index);
-    void calculateLayer(unsigned int index, unsigned int layer);
-    float getCreatureValue(unsigned int index, unsigned int value);
-    std::vector<float> getResult(int index);
-    std::vector<std::vector<float>> getNeuronStates(int index);
+    void delayPutCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons);
+    void putQueue();
+    void updateCreatureParameters(size_t index, CreatureParametersSPtr params);
+    const CreatureParametersSPtr getCreatureParameters(size_t index);
+    const float getCreatureX(size_t index);
+    const float getCreatureY(size_t index);
+    void deleteCreature(size_t index);
+    bool isDeleted(size_t index);
+    void populateNeurons(size_t index);
+    void calculateLayer(size_t index, unsigned int layer);
+    float getCreatureValue(size_t index, unsigned int value);
+    std::vector<float> getResult(size_t index);
+    std::vector<std::vector<float>> getNeuronStates(size_t index);
 };

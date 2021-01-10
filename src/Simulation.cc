@@ -62,12 +62,12 @@ void Simulation::run()
 }
 int Simulation::iteration()
 {
+    std::lock_guard<std::mutex> lockGuard(iterationMutex_);
     ++iterationNumber_;
     int creatureCounter = 0;
     float avgAge = 0.f;
     float totalWeight = 0.f;
-#pragma omp parallel for reduction(+ \
-                                   : creatureCounter, totalWeight, avgAge)
+#pragma omp parallel for reduction(+ : creatureCounter, totalWeight, avgAge)
     for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
@@ -85,6 +85,10 @@ int Simulation::iteration()
     }
     avgAge_ = avgAge / creatureCounter;
     totalWeight_ = totalWeight;
+    container_.printCapacities();
+    std::cout<<"\n\nQueue size before:\t"<<container_.putQueue_.size()<<"\tContainer size before:\t"<<container_.getSize()<<"\n";
+    container_.putQueue();
+    std::cout<<"\n\nQueue size after:\t"<<container_.putQueue_.size()<<"\n";
     return creatureCounter;
 }
 
@@ -114,8 +118,8 @@ void Simulation::updateCreature(int creatureIndex)
         childParams->weight_ = parameters_.weightBirth_;
         auto neurons = container_.getNeurons(creatureIndex);
         auto childNeurons = NeuronFactory::getInstance().createChild(neurons);
-        // std::cout<<"\nStarting birth...\n"; //alert DEBUG COUT
-        container_.putCreature(childParams, childNeurons);
+        std::cout<<"\nStarting birth... "<<iterationNumber_<<"\n"; //alert DEBUG COUT
+        container_.delayPutCreature(childParams, childNeurons);
     }
     if (creature->weight_ < parameters_.minWeight_)
     {

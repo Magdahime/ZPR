@@ -1,7 +1,3 @@
-/////////////////////////////////////////////////////////
-///     Author: Magdalena Majkowska                   ///
-///     Definition of simple neuron class             ///
-/////////////////////////////////////////////////////////
 #pragma once
 
 #pragma warning(push, 0)
@@ -17,6 +13,12 @@ const float MUTATIONLOWERBOUND = 0.0f;
 const float MUTATIONUPPERBOUND = 1.0f;
 const float MUTATIONTHRESHHOLD = 0.35f;
 
+/**
+ * \author Magdalena Majkowska
+ * 
+ * Neuron class, supposed to be used as an abstract for accessing specimen data.
+ * It is left unused as CreatureContainer provides faster access to any needed parameters, sadly leaving the project without real data abstraction layer.
+ */
 class Neuron
 {
     std::vector<float>::iterator inputsBegin_;

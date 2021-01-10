@@ -26,7 +26,7 @@ void CreatureContainer::putCreature(std::string type)
         CreatureFactory::getInstance().createCreature(type),
         NeuronFactory::getInstance().createNeuronSet());
 }
-NeuronSetSPtr CreatureContainer::getNeurons(unsigned int index)
+NeuronSetSPtr CreatureContainer::getNeurons(size_t index)
 {
     std::vector<unsigned int> layerWidths;
     {
@@ -56,7 +56,7 @@ NeuronSetSPtr CreatureContainer::getNeurons(unsigned int index)
 }
 void CreatureContainer::putCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons)
 {
-    std::lock_guard<std::mutex> lockGuard(mutex);
+    std::lock_guard<std::mutex> lockGuard(mutex_);
     std::vector<unsigned int> layerWidths;
     {
         layerWidths = LAYER_WIDTHS;
@@ -66,8 +66,8 @@ void CreatureContainer::putCreature(CreatureParametersSPtr params, NeuronSetSPtr
     {
         neuronsSize += layerWidths[i] + layerWidths[i - 1] * layerWidths[i];
     }
-    unsigned int index;
-    if (availableIndexes_.empty())
+    size_t index;
+    if (availableIndexes_.empty() || true)
     {
         index = types_.size();
         types_.resize(types_.size() + 1);
@@ -130,7 +130,27 @@ void CreatureContainer::putCreature(CreatureParametersSPtr params, NeuronSetSPtr
     //         creatureValues_.size() - 1,
     //         types_.size() - 1));
 };
-void CreatureContainer::updateCreatureParameters(unsigned int index, CreatureParametersSPtr params)
+
+void CreatureContainer::delayPutCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons)
+{
+    std::lock_guard<std::mutex> lockGuard(mutex_);
+    auto data = std::make_tuple(params, neurons);
+    putQueue_.push(data);
+};
+
+void CreatureContainer::putQueue()
+{
+    while (!putQueue_.empty())
+    {
+        // std::lock_guard<std::mutex> lockGuard(mutex_);
+        auto params = std::get<0>(putQueue_.front());
+        auto neurons = std::get<1>(putQueue_.front());
+        putQueue_.pop();
+        putCreature(params, neurons);
+    }
+}
+
+void CreatureContainer::updateCreatureParameters(size_t index, CreatureParametersSPtr params)
 {
     creatureValues_[index * PARAMS_PER_CREATURE + 0] = params->energy_;
     creatureValues_[index * PARAMS_PER_CREATURE + 1] = params->weight_;
@@ -147,7 +167,7 @@ void CreatureContainer::updateCreatureParameters(unsigned int index, CreaturePar
     creatureValues_[index * PARAMS_PER_CREATURE + 12] = params->bottomAntennaH_;
     creatureValues_[index * PARAMS_PER_CREATURE + 13] = params->popDensity_;
 }
-const CreatureParametersSPtr CreatureContainer::getCreatureParameters(unsigned int index)
+const CreatureParametersSPtr CreatureContainer::getCreatureParameters(size_t index)
 {
     CreatureParametersSPtr parameters = std::make_shared<CreatureParameters>(CreatureParameters{
         types_[index],
@@ -168,16 +188,16 @@ const CreatureParametersSPtr CreatureContainer::getCreatureParameters(unsigned i
     return parameters;
 };
 
-const float CreatureContainer::getCreatureX(unsigned int index)
+const float CreatureContainer::getCreatureX(size_t index)
 {
     return creatureValues_[index * PARAMS_PER_CREATURE + 3];
 };
-const float CreatureContainer::getCreatureY(unsigned int index)
+const float CreatureContainer::getCreatureY(size_t index)
 {
     return creatureValues_[index * PARAMS_PER_CREATURE + 4];
 };
 
-void CreatureContainer::deleteCreature(unsigned int index)
+void CreatureContainer::deleteCreature(size_t index)
 {
     // std::lock_guard<std::mutex> lockGuard(mutex);
     try
@@ -195,12 +215,12 @@ void CreatureContainer::deleteCreature(unsigned int index)
     availableIndexes_.push(index);
 };
 
-bool CreatureContainer::isDeleted(unsigned int index)
+bool CreatureContainer::isDeleted(size_t index)
 {
     return (types_[index].c_str()[0] == '_');
 }
 
-void CreatureContainer::populateNeurons(unsigned int index)
+void CreatureContainer::populateNeurons(size_t index)
 {
     neuronValues_[index * neuronSize_] = creatureValues_[index * PARAMS_PER_CREATURE] / 100.f;          // energy //alert MAGIC
     neuronValues_[index * neuronSize_ + 1] = creatureValues_[index * PARAMS_PER_CREATURE + 1] / 100.f;  // weight //alert MAGIC
@@ -214,7 +234,7 @@ void CreatureContainer::populateNeurons(unsigned int index)
     neuronValues_[index * neuronSize_ + 9] = creatureValues_[index * PARAMS_PER_CREATURE + 13];         // popDensity
 }
 
-void CreatureContainer::calculateLayer(unsigned int index, unsigned int layer)
+void CreatureContainer::calculateLayer(size_t index, unsigned int layer)
 {
     if (layer > LAYER_WIDTHS.size() - 1 || layer < 1)
         return;
@@ -235,7 +255,7 @@ void CreatureContainer::calculateLayer(unsigned int index, unsigned int layer)
     }
 }
 
-std::vector<float> CreatureContainer::getResult(int index)
+std::vector<float> CreatureContainer::getResult(size_t index)
 {
     std::vector<float> result;
     unsigned int offset = neuronSize_ * index + LAYER_OFFSETS.back();
@@ -246,7 +266,7 @@ std::vector<float> CreatureContainer::getResult(int index)
     return result;
 }
 
-float CreatureContainer::getCreatureValue(unsigned int index, unsigned int value)
+float CreatureContainer::getCreatureValue(size_t index, unsigned int value)
 {
     if (index * PARAMS_PER_CREATURE + value >= creatureValues_.size() || value > PARAMS_PER_CREATURE)
     {
@@ -259,7 +279,7 @@ float CreatureContainer::getCreatureValue(unsigned int index, unsigned int value
     return creatureValues_[index * PARAMS_PER_CREATURE + value];
 };
 
-std::vector<std::vector<float>> CreatureContainer::getNeuronStates(int index)
+std::vector<std::vector<float>> CreatureContainer::getNeuronStates(size_t index)
 {
     std::vector<std::vector<float>> out = {};
     unsigned int neuronValuesIndex = neuronSize_ * index;

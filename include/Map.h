@@ -16,9 +16,13 @@
 
 #include "Perlin.h"
 
-const int DEGREES = 360;
-const int INVALID_COORDS = -1;
-
+constexpr int DEGREES = 360;
+constexpr int INVALID_COORDS = -1;
+/**
+ * \author Magdalena Majkowska
+ * 
+ * Map class, holding the pixel data of the simulation as a simple 1D array.
+ */
 class Map
 {
     int width_;
@@ -29,14 +33,24 @@ class Map
     float max3(float float1, float float2, float float3);
     float min3(float float1, float float2, float float3);
 
+    Map(const Map &) = delete;
+    Map(Map &&) = delete;
+    Map &operator=(Map &&) = delete;
+    Map &operator=(const Map &) = delete;
+    Map() = delete;
+
 public:
     Map(int width, int height) : width_(width), height_(height)
     {
         pixels_ = new unsigned char[width_ * height_ * 4];
         HSVpixels_ = new unsigned char[width_ * height_ * 4];
-    }
-    Map(int width, int height, unsigned char *pixels) : width_(width), height_(height), pixels_(pixels) {}
-    Map() {}
+    };
+    ~Map()
+    {
+        delete[] pixels_;
+        delete[] HSVpixels_;
+    };
+    Map(int width, int height, unsigned char *pixels) : width_(width), height_(height), pixels_(pixels){};
     struct RGBvals
     {
         float r_;
@@ -59,10 +73,15 @@ public:
     bool compareFloat(float float1, float float2, float epsilon = 0.01f);
     inline int getWidth() { return width_; };
     inline int getHeight() { return height_; };
-    inline int getPixel(int x, int y, int offset) { return pixels_[width_ * y * 4 + x * 4 + offset]; }
+    inline int getPixel(int x, int y, unsigned int offset)
+    {
+        if (x < width_ && y < height_ && x >= 0 && y >= 0 && offset < 4)
+            return pixels_[width_ * y * 4 + x * 4 + offset];
+        return INVALID_COORDS;
+    }
     inline int getPixelH(int x, int y)
     {
-        if (x < width_ && y < height_ && x >= 0 && y>= 0)
+        if (x < width_ && y < height_ && x >= 0 && y >= 0)
             return HSVpixels_[width_ * y * 4 + x * 4];
         return INVALID_COORDS;
     }

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////
-///     Author: Magdalena Majkowska                   ///
-///     Singleton Creature Factory                    ///
+///     Author:                    ///
+///                         ///
 ///                                                   ///
 ///                                                   ///
 /////////////////////////////////////////////////////////
@@ -29,17 +29,26 @@ struct CreatureParameters;
 
 using CreatureParametersSPtr = std::shared_ptr<CreatureParameters>;
 using FactoryMap = std::map<std::string, CreatureParametersSPtr>;
-
+/**
+ * \author Magdalena Majkowska
+ * 
+ * This is the singleton Creature Factory, which allows for creation of respective CreatureParameters
+ * based on the registered JSON configurations. CreatureParameters are later inputted into
+ * \link CreatureContainer and used in the Simulation
+ */
 class CreatureFactory
 {
     FactoryMap FactoryMap_;
 
     CreatureFactory();
+
     CreatureFactory(const CreatureFactory &) = delete;
+    CreatureFactory(CreatureFactory &&) = delete;
+    CreatureFactory &operator=(CreatureFactory &&) = delete;
     CreatureFactory &operator=(const CreatureFactory &) = delete;
+
     CreatureParametersSPtr parseCreature(boost::json::object obj);
     CreatureParametersSPtr create(CreatureParametersSPtr csptr);
-
 public:
     CreatureParametersSPtr createCreature(const std::string &type);
     CreatureParametersSPtr createChild(CreatureParametersSPtr csptr);
@@ -52,6 +61,10 @@ public:
     ~CreatureFactory() { FactoryMap_.clear(); }
 };
 
+/**
+ * CreatureParameters represent the complete set of features that define a single specimen.
+ * They are also used as templates for CreatureFactory
+ */
 struct CreatureParameters
 {
     float energy_;

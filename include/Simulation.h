@@ -96,6 +96,8 @@ class Simulation
 
     unsigned int selectedIndex_ = 0 - 1;
 
+    std::mutex iterationMutex_;
+
 public:
     virtual ~Simulation();
     Simulation();
