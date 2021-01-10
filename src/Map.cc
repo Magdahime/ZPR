@@ -103,21 +103,21 @@ Map::HSVvals Map::convert2HSV(Map::RGBvals &rgb)
 
     hsv.v_ = Cmax;
 
-    if (compareFloat(Cmax, 0.0f))
+    if (Cmax == 0.f / 255)
         hsv.s_ = 0.0f;
     else
         hsv.s_ = (delta / Cmax);
 
-    if (compareFloat(delta, 0.0f))
+    if (delta == 0.f / 255)
         hsv.h_ = 0.0f;
-    else if (compareFloat(Cmax, R1))
+    else if (Cmax == R1)
     {
         int partial = std::round((G1 - B1) / delta);
         hsv.h_ = partial % 6;
     }
-    else if (compareFloat(Cmax, G1))
+    else if (Cmax == G1)
         hsv.h_ = ((B1 - R1) / delta) + 2.0;
-    else if (compareFloat(Cmax, B1))
+    else if (Cmax == B1)
         hsv.h_ = ((R1 - G1) / delta) + 4.0;
 
     hsv.h_ *= 60;
@@ -136,7 +136,7 @@ Map::HSVvals Map::convert2HSV(Map::RGBvals &rgb)
  */
 float Map::max3(float float1, float float2, float float3)
 {
-    return std::max(float1, float2, float3);
+    return std::max({float1, float2, float3});
 }
 
 /**
@@ -146,5 +146,5 @@ float Map::max3(float float1, float float2, float float3)
 
 float Map::min3(float float1, float float2, float float3)
 {
-    return std::min(float1, float2, float3);
+    return std::min({float1, float2, float3});
 }

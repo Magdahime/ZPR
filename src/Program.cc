@@ -17,7 +17,6 @@
 #include "JsonParser.h"
 #include "CreatureFactory.h"
 
-using namespace std;
 
 Program::~Program(){};
 
@@ -42,7 +41,7 @@ Program::Program() : webviewSemaphore_(0)
 void Program::run()
 {
 
-    shared_ptr<Map> mapPtr;
+    std::shared_ptr<Map> mapPtr;
     sf::Image image;
     sf::Texture texture;
     sf::Sprite sprite;
@@ -65,7 +64,7 @@ void Program::run()
                 submittedMap = true;
                 auto windowWidth = std::stoi(webview::json_parse(s, "", 0));
                 auto windowHeight = std::stoi(webview::json_parse(s, "", 1));
-                mapPtr = make_shared<Map>(windowWidth, windowHeight);
+                mapPtr = std::make_shared<Map>(windowWidth, windowHeight);
                 auto perlin = Perlin(windowWidth, windowHeight);
                 auto pixels = mapPtr->generateMapFromPerlin(perlin);
                 image.create(windowWidth, windowHeight, pixels);
@@ -103,7 +102,7 @@ void Program::run()
                 newParams.maxSpeed_ = std::stof(webview::json_parse(s, "", 12));
                 simulationPtr_->setSimulationParameters(newParams);
                 submittedParams = true;
-                simulationThread_ = thread([this] { simulationPtr_->run(); });
+                simulationThread_ = std::thread([this] { simulationPtr_->run(); });
                 return "OK";
             });
 
@@ -112,9 +111,9 @@ void Program::run()
             [&](std::string s) -> std::string {
                 if (submittedParams)
                 {
-                    std::string filename = webview::json_parse(creatureData, "type", 0);
                     std::string creatureData = webview::json_parse(s, "", 0);
                     std::string creatureNum = webview::json_parse(s, "", 1);
+                    std::string filename = webview::json_parse(creatureData, "type", 0);
                     if (!std::filesystem::exists(JsonParser::SAVE_PATH + webview::json_parse(creatureData, "type", 0)))
                     {
                         std::string path = JsonParser::saveJsonToFile(filename, creatureData);
@@ -154,7 +153,7 @@ void Program::run()
         try
         {
             webviewPtr_->dispatch([this, frameCounter] {
-                webviewPtr_->eval("frameNum(" + to_string(frameCounter) + ");");
+                webviewPtr_->eval("frameNum(" + std::to_string(frameCounter) + ");");
             });
         }
         catch (...)

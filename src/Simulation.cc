@@ -18,8 +18,6 @@
 #include "Neuron.h"
 #include "Map.h"
 
-using namespace std;
-
 Simulation::~Simulation(){};
 
 Simulation::Simulation() : dataSemaphore_(1), videoSemaphore_(0){};
@@ -334,7 +332,7 @@ void Simulation::waitVideo()
     videoSemaphore_.wait();
 }
 
-void Simulation::setMap(shared_ptr<Map> mapPtr)
+void Simulation::setMap(std::shared_ptr<Map> mapPtr)
 {
     map_ = mapPtr;
 }
