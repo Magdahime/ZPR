@@ -1,14 +1,17 @@
-/////////////////////////////////////////////////////////
-///     Author: Magdalena Majkowska                   ///
-///     Source code of Perlin noise generator         ///
-/////////////////////////////////////////////////////////
-
 #include "Perlin.h"
 
+/**
+ * Standard constructor of Perlin Noise Generator. 
+ * \param width - width of the target map
+ * \param height - height of the target map
+ */
 Perlin::Perlin(int width, int height) : width_(width), height_(height)
 {
     primaryNoise_ = new float[width * height];
 }
+/**
+ * Generates target array of random numbers from 0.0 to 1.0 
+ */
 void Perlin::generateWhiteNoise()
 {
     RandomNumberGenerator<float, float> rng(0.0, 1.0);
@@ -16,6 +19,15 @@ void Perlin::generateWhiteNoise()
         primaryNoise_[i] = rng.get();
 }
 
+/**
+ * To interpolates the values of layers of Perlin noise.
+ * We decided to test two methods and choose the one with better
+ * results.
+ * \param value1 - first value we want to interpolate
+ * \param value2 - second value we want to interpolate
+ * \param alpha - relative distance betwwen the point represented by value1 and the other point - value2
+ * \return - the interpolated value
+ */
 float Perlin::cosineInterpolation(float value1, float value2, float alpha)
 {
     float angle = alpha * PI;
@@ -23,17 +35,28 @@ float Perlin::cosineInterpolation(float value1, float value2, float alpha)
     return value1 * (1 - perc) + value2 * perc;
 }
 
+
+/**
+ * Standard linear interpolation.
+ * \param value1 - first value we want to interpolate
+ * \param value2 - second value we want to interpolate
+ * \param alpha - relative distance betwwen the point represented by value1 and the other point - value2
+ * \return - the interpolated value
+ */
 float Perlin::linearInterpolation(float value1, float value2, float alpha)
 {
     return value1 * (1 - alpha) + value2 * alpha;
 }
 
+/**
+ * Creates one layer of Perlin noise.
+ * \param octave - parameter that defines how fine the Perlin noise will be.
+ * \return - array of pseudorandom numbers from 0.0 to 1.0
+ */
 float *Perlin::generateSmoothNoise(int octave)
 {
-    std::cout << octave << std::endl;
     float *smoothNoise = new float[width_ * height_];
     int samplePeriod = 1 << octave;
-    std::cout << samplePeriod << std::endl;
     float frequency = 1.0f / samplePeriod;
 
     for (int i = 0; i < width_ * height_; i++)
@@ -55,6 +78,11 @@ float *Perlin::generateSmoothNoise(int octave)
     return smoothNoise;
 }
 
+/**
+ * Full Perlin Noise algorithm. It generates layers of thicker and thicker noise
+ * and at the end sums up the results and normalizes the target array.
+ * \return ready to use array of Perlin Noise
+ */
 float *Perlin::generatePerlinNoise()
 {
     generateWhiteNoise();

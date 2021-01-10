@@ -1,9 +1,3 @@
-/////////////////////////////////////////////////////////////////
-///     Author: Magdalena Majkowska                           ///
-///     Definition of map that will be used in simulation     ///
-///     It will be generated using Perlin noise generator     ///
-///     as hsv values later to be converted to rgb            ///
-/////////////////////////////////////////////////////////////////
 #pragma once
 
 #pragma warning(push, 0)
@@ -51,6 +45,11 @@ public:
         delete[] HSVpixels_;
     };
     Map(int width, int height, unsigned char *pixels) : width_(width), height_(height), pixels_(pixels){};
+
+    /**
+    * RGBvals are used to store the RGB values of one pixel on the map.
+    * They are used during converting colours from HSV to RGB and the other way round.
+    */
     struct RGBvals
     {
         float r_;
@@ -59,6 +58,10 @@ public:
         RGBvals(float r, float g, float b) : r_(r), g_(g), b_(b) {}
         RGBvals() {}
     };
+    /**
+    * HSVvals are used to store the HSV values of one pixel on the map.
+    * They are used during converting colours from HSV to RGB and the other way round.
+    */
     struct HSVvals
     {
         float h_;
@@ -70,15 +73,28 @@ public:
     unsigned char *generateMapFromPerlin(Perlin &perlin);
     HSVvals convert2HSV(RGBvals &rgb);
     RGBvals convert2RGB(HSVvals &hsv);
-    bool compareFloat(float float1, float float2, float epsilon = 0.01f);
     inline int getWidth() { return width_; };
     inline int getHeight() { return height_; };
+    /**
+    * Gets value of the selected pixel from the RGB version of the map
+    * \param x - x coordinate on the map
+    * \param y - y coordinate on the map
+    * \param offset - used to acces the certain value of colour 0 - red, 1 - green, 2 - blue
+    * \return value of the pixel
+    */
     inline int getPixel(int x, int y, unsigned int offset)
     {
         if (x < width_ && y < height_ && x >= 0 && y >= 0 && offset < 4)
             return pixels_[width_ * y * 4 + x * 4 + offset];
         return INVALID_COORDS;
     }
+    /**
+    * Gets value of the selected pixel from the HSV version of the map
+    * \param x - x coordinate on the map
+    * \param y - y coordinate on the map
+    * \param offset - used to acces the certain value of colour 0 - red, 1 - green, 2 - blue
+    * \return value of the pixel
+    */
     inline int getPixelH(int x, int y)
     {
         if (x < width_ && y < height_ && x >= 0 && y >= 0)

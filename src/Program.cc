@@ -112,7 +112,7 @@ void Program::run()
             [&](std::string s) -> std::string {
                 if (submittedParams)
                 {
-                    std::string filename = "userDefined";
+                    std::string filename = webview::json_parse(creatureData, "type", 0);
                     std::string creatureData = webview::json_parse(s, "", 0);
                     std::string creatureNum = webview::json_parse(s, "", 1);
                     if (!std::filesystem::exists(JsonParser::SAVE_PATH + webview::json_parse(creatureData, "type", 0)))

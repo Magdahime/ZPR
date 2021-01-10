@@ -9,6 +9,10 @@
 #include "RandomNumberGenerator.h"
 
 namespace fs = std::filesystem;
+/**
+* Method used to register an entire folder with JSON files, that defines new creature parameters.
+* \param pathToFolder - path to folder
+*/
 void CreatureFactory::registerFolder(const std::string &pathToFolder)
 {
     std::vector<std::filesystem::path> files = JsonParser::searchFiles(pathToFolder);
@@ -19,7 +23,11 @@ void CreatureFactory::registerFolder(const std::string &pathToFolder)
         FactoryMap_.insert(std::pair<std::string, CreatureParametersSPtr>(csptr->type_, csptr));
     }
 }
-
+/**
+* Similar method to registerFolder but it permits you to register only one creature. It is necessary for
+* runtime adding new types of creatures. 
+* \param pathToFile - path to JSON file
+*/
 void CreatureFactory::registerCreature(const std::string &pathToFile)
 {
     std::filesystem::path path = pathToFile;
@@ -27,31 +35,50 @@ void CreatureFactory::registerCreature(const std::string &pathToFile)
     CreatureParametersSPtr csptr = parseCreature(obj);
     FactoryMap_.insert(std::pair<std::string, CreatureParametersSPtr>(csptr->type_, csptr));
 }
-
+/**
+* Parses creature's parameters from JSON files. It uses a BOOST JSON library, that was released in 1.75.0
+* BOOST version. As we can see here there was a little problem with parsing doubles - numbers without a
+* fractional part was not read correctly fom object, so we had to use the casting methods. 
+* \param obj - BOOST JSON object
+*/
 CreatureParametersSPtr CreatureFactory::parseCreature(boost::json::object obj)
 {
-    float energy = obj["energy"].is_double() ? (float)obj["energy"].as_double() : (float)obj["energy"].as_int64();
-    float weight = obj["weight"].is_double() ? (float)obj["weight"].as_double() : (float)obj["weight"].as_int64();
-    float hue = obj["hue"].is_double() ? (float)obj["hue"].as_double() : (float)obj["hue"].as_int64();
-    float positionX = obj["positionX"].is_double() ? (float)obj["positionX"].as_double() : (float)obj["positionX"].as_int64();
-    float positionY = obj["positionY"].is_double() ? (float)obj["positionY"].as_double() : (float)obj["positionY"].as_int64();
-    float speedMultiplier = obj["speedMultiplier"].is_double() ? (float)obj["speedMultiplier"].as_double() : (float)obj["speedMultiplier"].as_int64();
+    float energy = obj["energy"].is_double() ? std::static_cast<float>(obj["energy"].as_double()) : std::static_cast<float>(obj["energy"].as_int64());
+    float weight = obj["weight"].is_double() ? std::static_cast<float>(obj["weight"].as_double()) : std::static_cast<float>(obj["weight"].as_int64());
+    float hue = obj["hue"].is_double() ? std::static_cast<float>(obj["hue"].as_double()) : std::static_cast<float>(obj["hue"].as_int64());
+    float positionX = obj["positionX"].is_double() ? std::static_cast<float>(obj["positionX"].as_double()) : std::static_cast<float>(obj["positionX"].as_int64());
+    float positionY = obj["positionY"].is_double() ? std::static_cast<float>(obj["positionY"].as_double()) : std::static_cast<float>(obj["positionY"].as_int64());
+    float speedMultiplier = obj["speedMultiplier"].is_double() ? std::static_cast<float>(obj["speedMultiplier"].as_double()) : std::static_cast<float>(obj["speedMultiplier"].as_int64());
     return std::make_shared<CreatureParameters>(std::string(obj["type"].as_string().c_str()), energy,
                                                 weight, hue, positionX, positionY,
                                                 speedMultiplier);
 }
-
+/**
+* Method of getting an instance of CreatureFactory.
+* \return - a static instance of CreatureFactory
+*/
 CreatureFactory &CreatureFactory::getInstance()
 {
     static CreatureFactory instance;
     return instance;
 }
 
+/**
+* Constructor of CreatureFactory - it automatically registers all creatures from default path
+* as set in DEFAULT_CONFIGURATION_PATH.
+*/
+
 CreatureFactory::CreatureFactory()
 {
     registerFolder(DEFAULT_CONFIGURATION_PATH);
 }
 
+/**
+* Public method for creating a Creature. Firstly it checks the map if this specimen is registered,
+* if it's not it creates a default creature. Otherwise it creates the one specified in the type 
+* parameter.
+*\param type - unique string that defines a specimen of a creature
+*/
 CreatureParametersSPtr CreatureFactory::createCreature(const std::string &type)
 {
     auto iterator = FactoryMap_.find(type);
@@ -65,7 +92,11 @@ CreatureParametersSPtr CreatureFactory::createCreature(const std::string &type)
         return create(csptr);
     }
 }
-
+/**
+* Private method for creating a creature. It takes all of the parameters of the specimen 
+* and changes them accordingly with normal distribution around this value. 
+*\return - shared pointer to the new CreatureParameters
+*/
 CreatureParametersSPtr CreatureFactory::create(CreatureParametersSPtr csptr)
 {
     CreatureParametersSPtr csptrCopy = std::make_shared<CreatureParameters>(*csptr);
@@ -81,11 +112,21 @@ CreatureParametersSPtr CreatureFactory::create(CreatureParametersSPtr csptr)
     csptrCopy->speed_ = fabs(rng.getNormal(csptr->speed_, CREATURE_FACTORY_STDDEV));
     return csptrCopy;
 }
-
+/**
+* It creates a child creature based on the parameters of the parent.
+*\param csptr - shared pointer to the parent parameters 
+*\return - shared pointer to the new CreatureParameters
+*/
 CreatureParametersSPtr CreatureFactory::createChild(CreatureParametersSPtr csptr)
 {
     return create(csptr);
 }
+
+/**
+* Method to create a JSON string, containing all the available specimens. 
+* Used for communication between webview and C++ programme.
+*\return - JSON string with the names of the specimens.
+*/
 std::string CreatureFactory::parseKeys()
 {
     std::string parsedKeys = "['";
@@ -101,7 +142,12 @@ std::string CreatureFactory::parseKeys()
     parsedKeys += "]";
     return parsedKeys;
 }
-
+/**
+* Method to create a JSON string, containing all of the information
+* about selected specimen. 
+* Used for communication between webview and C++ programme.
+*\return - JSON string with the data about specimen.
+*/
 std::string CreatureFactory::getParsedValues(std::string key)
 {
     CreatureParametersSPtr csptr = FactoryMap_[key];
