@@ -35,8 +35,8 @@ BOOST_AUTO_TEST_CASE(saveJsonToFile)
     }
     BOOST_CHECK(JsonParser::searchFiles(".\\config\\creature").size() == 102);
     for(int i =0; i<100; i++){
-        std::filesystem::remove(".\\config\\creature\\" + filename + std::to_string(i) + ".txt");
+        std::filesystem::remove(".\\config\\creature\\" + filename + std::to_string(i) + ".json");
     }
-    std::filesystem::remove(".\\config\\creature\\" + filename + ".txt");
+    std::filesystem::remove(".\\config\\creature\\" + filename + ".json");
 }
 BOOST_AUTO_TEST_SUITE_END()

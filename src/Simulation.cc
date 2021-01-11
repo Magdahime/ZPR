@@ -258,8 +258,8 @@ void Simulation::printAll(std::shared_ptr<sf::RenderWindow> window)
         sf::CircleShape circle;
         circle.setPosition(creature->positionX_ - creature->weight_ / 2.0f, creature->positionY_ - creature->weight_ / 2.0f);
         circle.setRadius(creature->weight_ / 2.0f);
-        Map::HSVvals hsv(creature->hue_, 1, 1);
-        auto rgb = map_->convert2RGB(hsv);
+        HSVvals hsv(creature->hue_, 1, 1);
+        auto rgb = convert2RGB(hsv);
         // if (creatureIndex == 0)
         // {
         //     std::cout << "Index x y w r g b a s\t" << creatureIndex << "\t" << creature->positionX_ << "\t" << creature->positionY_ << "\t" << creature->weight_ << "\t" << rgb.r_ << "\t" << rgb.g_ << "\t" << rgb.b_ << "\tAGE: " << creature->age_ << "\t" << creature->speed_ << "\n";
@@ -290,8 +290,8 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
             float radius = creature->weight_ / 200.f; //alert MAGIC
             circle.setPosition(creature->positionX_ - radius, creature->positionY_ - radius);
             circle.setRadius(radius);
-            Map::HSVvals hsv(creature->hue_, 1, 1);
-            auto rgb = map_->convert2RGB(hsv);
+            HSVvals hsv(creature->hue_, 1, 1);
+            auto rgb = convert2RGB(hsv);
             circle.setFillColor(sf::Color(rgb.r_, rgb.g_, rgb.b_, 200));
             window->draw(circle);
             sf::CircleShape marker;
@@ -299,9 +299,9 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
                 creature->positionX_ + radius * sin(creature->heading_) - radius / 10.f, //alert MAGIC
                 creature->positionY_ + radius * cos(creature->heading_) - radius / 10.f);
             marker.setRadius(radius / 10.f); //alert MAGIC
-            Map::HSVvals hsvmarker(creature->hue_, 1, 1);
+            HSVvals hsvmarker(creature->hue_, 1, 1);
             hsvmarker.h_ = fmod(hsvmarker.h_ + 180.f, 360.f);
-            auto rgbmarker = map_->convert2RGB(hsvmarker);
+            auto rgbmarker = convert2RGB(hsvmarker);
             marker.setFillColor(sf::Color(rgbmarker.r_, rgbmarker.g_, rgbmarker.b_, 200));
             window->draw(marker);
             if (creatureIndex == selectedIndex_)
