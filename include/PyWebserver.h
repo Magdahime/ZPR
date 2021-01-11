@@ -43,13 +43,13 @@ class PyWebserver
         PyModule_AddStringConstant(py_main, "executablePath", executablePath.c_str());
         PyRun_SimpleString(zpr_consts::PYTHON_SERVER.c_str());
     }
-
     PyWebserver(const PyWebserver &) = delete;
     PyWebserver(PyWebserver &&) = delete;
     PyWebserver &operator=(PyWebserver &&) = delete;
     PyWebserver &operator=(const PyWebserver &) = delete;
 
 public:
+    PyWebserver() = default;
     void run()
     {
         pyServerThread_ = std::thread(&PyWebserver::serve, this);
