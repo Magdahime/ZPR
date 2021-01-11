@@ -82,12 +82,12 @@ public:
     * \param offset - used to acces the certain value of colour 0 - red, 1 - green, 2 - blue
     * \return value of the pixel
     */
-    inline int getPixel(int x, int y, unsigned int offset)
+    inline short getPixel(unsigned int x, unsigned int y, unsigned int offset)
     {
         if (x < width_ && y < height_ && x >= 0 && y >= 0 && offset < 4)
             return pixels_[width_ * y * 4 + x * 4 + offset];
         return INVALID_COORDS;
-    }
+    };
     /**
     * Gets value of the selected pixel from the HSV version of the map
     * \param x - x coordinate on the map
@@ -95,7 +95,7 @@ public:
     * \param offset - used to acces the certain value of colour 0 - red, 1 - green, 2 - blue
     * \return value of the pixel
     */
-    inline int getPixelH(int x, int y)
+    inline short getPixelH(unsigned int x, unsigned int y, unsigned int offset = 0)
     {
         if (x < width_ && y < height_ && x >= 0 && y >= 0 && offset < 4)
             return HSVpixels_[width_ * y * 4 + x * 4 + offset];

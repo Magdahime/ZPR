@@ -26,6 +26,11 @@ private:
     distributionType distribution_;
     std::normal_distribution<RealOnlyNumeric> normalDistribution_;
 
+    RandomNumberGenerator(const RandomNumberGenerator &) = delete;
+    RandomNumberGenerator(RandomNumberGenerator &&) = delete;
+    RandomNumberGenerator &operator=(RandomNumberGenerator &&) = delete;
+    RandomNumberGenerator &operator=(const RandomNumberGenerator &) = delete;
+
 public:
     /**
     * Constructor of this class. 

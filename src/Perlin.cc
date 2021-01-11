@@ -9,6 +9,11 @@ Perlin::Perlin(int width, int height) : width_(width), height_(height)
 {
     primaryNoise_ = new float[width * height];
 }
+
+Perlin::~Perlin(){
+    delete[] primaryNoise_;
+}
+
 /**
  * Generates target array of random numbers from 0.0 to 1.0 
  */

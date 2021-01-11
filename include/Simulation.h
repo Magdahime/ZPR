@@ -99,6 +99,11 @@ class Simulation
 
     std::mutex iterationMutex_;
 
+    Simulation(const Simulation &) = delete;
+    Simulation(Simulation &&) = delete;
+    Simulation &operator=(Simulation &&) = delete;
+    Simulation &operator=(const Simulation &) = delete;
+
 public:
     virtual ~Simulation();
     Simulation();

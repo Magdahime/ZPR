@@ -43,12 +43,12 @@ void CreatureFactory::registerCreature(const std::string &pathToFile)
 */
 CreatureParametersSPtr CreatureFactory::parseCreature(boost::json::object obj)
 {
-    float energy = obj["energy"].is_double() ? std::static_cast<float>(obj["energy"].as_double()) : std::static_cast<float>(obj["energy"].as_int64());
-    float weight = obj["weight"].is_double() ? std::static_cast<float>(obj["weight"].as_double()) : std::static_cast<float>(obj["weight"].as_int64());
-    float hue = obj["hue"].is_double() ? std::static_cast<float>(obj["hue"].as_double()) : std::static_cast<float>(obj["hue"].as_int64());
-    float positionX = obj["positionX"].is_double() ? std::static_cast<float>(obj["positionX"].as_double()) : std::static_cast<float>(obj["positionX"].as_int64());
-    float positionY = obj["positionY"].is_double() ? std::static_cast<float>(obj["positionY"].as_double()) : std::static_cast<float>(obj["positionY"].as_int64());
-    float speedMultiplier = obj["speedMultiplier"].is_double() ? std::static_cast<float>(obj["speedMultiplier"].as_double()) : std::static_cast<float>(obj["speedMultiplier"].as_int64());
+    float energy = obj["energy"].is_double() ? static_cast<float>(obj["energy"].as_double()) : static_cast<float>(obj["energy"].as_int64());
+    float weight = obj["weight"].is_double() ? static_cast<float>(obj["weight"].as_double()) : static_cast<float>(obj["weight"].as_int64());
+    float hue = obj["hue"].is_double() ? static_cast<float>(obj["hue"].as_double()) : static_cast<float>(obj["hue"].as_int64());
+    float positionX = obj["positionX"].is_double() ? static_cast<float>(obj["positionX"].as_double()) : static_cast<float>(obj["positionX"].as_int64());
+    float positionY = obj["positionY"].is_double() ? static_cast<float>(obj["positionY"].as_double()) : static_cast<float>(obj["positionY"].as_int64());
+    float speedMultiplier = obj["speedMultiplier"].is_double() ? static_cast<float>(obj["speedMultiplier"].as_double()) : static_cast<float>(obj["speedMultiplier"].as_int64());
     return std::make_shared<CreatureParameters>(std::string(obj["type"].as_string().c_str()), energy,
                                                 weight, hue, positionX, positionY,
                                                 speedMultiplier);

@@ -22,7 +22,6 @@ const std::vector<unsigned int> LAYER_OFFSETS{
     130,
     202};
 
-
 /**
  * \author Bartłomiej Janowski
  * 
@@ -34,6 +33,8 @@ class NeuronFactory
 {
     NeuronFactory() = default;
     NeuronFactory(const NeuronFactory &) = delete;
+    NeuronFactory(NeuronFactory &&) = delete;
+    NeuronFactory &operator=(NeuronFactory &&) = delete;
     NeuronFactory &operator=(const NeuronFactory &) = delete;
 
     NeuronSetSPtr createNeuronSet(const std::vector<unsigned int> &layersWidths)
@@ -80,7 +81,7 @@ public:
                 // std::cout << " c ";
                 ++i;
                 //     0;
-                    set->back()->emplace_back(neuron.getChild());
+                set->back()->emplace_back(neuron.getChild());
             }
         }
         // std::cout << " I: " << i;

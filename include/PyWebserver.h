@@ -44,6 +44,11 @@ class PyWebserver
         PyRun_SimpleString(zpr_consts::PYTHON_SERVER.c_str());
     }
 
+    PyWebserver(const PyWebserver &) = delete;
+    PyWebserver(PyWebserver &&) = delete;
+    PyWebserver &operator=(PyWebserver &&) = delete;
+    PyWebserver &operator=(const PyWebserver &) = delete;
+
 public:
     void run()
     {
