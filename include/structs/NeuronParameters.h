@@ -29,11 +29,12 @@ struct NeuronParameters
         unsigned int inputsNo,
         unsigned int layerNo) : inputsNo(inputsNo), layerNo(layerNo)
     {
+        float lowerBound = (-1) / sqrt(inputsNo);
+        float upperBound = 1 / sqrt(inputsNo);
         for (int i = 0; i < inputsNo; i++)
         {
-            weights.push_back(rng.get());
+            weights.push_back(rng.get(lowerBound, upperBound));
         }
-        // std::cout<<"Ino Lno I:\t"<<inputsNo<<"\t"<<layerNo<<"\t"<<i<<"\n";
     }
 
     NeuronParameters() = delete;
