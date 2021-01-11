@@ -5,6 +5,8 @@
 #include <vector>
 #include <queue>
 
+#include <boost/lockfree/queue.hpp>
+
 #pragma warning(pop)
 
 #include "Creature.h"
@@ -46,9 +48,9 @@ class CreatureContainer : public std::enable_shared_from_this<CreatureContainer>
      * Queue of the indexes that are allocated in the vector, but remain free
      * as they were emptied by dead/removed creatures
      */
-    std::queue<unsigned int> availableIndexes_;
+    boost::lockfree::queue<size_t, boost::lockfree::capacity<0>> availableIndexes_;
 
-    // std::queue<FullParams> putQueue_;
+    std::queue<FullParams> putQueue_;
 
     std::mutex mutex_;
 
@@ -62,13 +64,12 @@ class CreatureContainer : public std::enable_shared_from_this<CreatureContainer>
     CreatureContainer &operator=(const CreatureContainer &) = delete;
 
 public:
-    void printCapacities()
+    void printCapacities() // alert DEBUG
     {
         std::cout << "\ncreatures:\t" << creatureValues_.size() << "\t" << creatureValues_.capacity();
         std::cout << "\nneurons:\t" << neuronValues_.size() << "\t" << neuronValues_.capacity();
         std::cout << "\ntypes:\t" << types_.size() << "\t" << types_.capacity();
     }
-    std::queue<FullParams> putQueue_;
     CreatureContainer();
     unsigned int getSize();
     void putCreature(std::string type = DEFAULT_CREATURE);
@@ -76,6 +77,12 @@ public:
     void putCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons);
     void delayPutCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons);
     void putQueue();
+    const size_t getPutQueueSize() { return putQueue_.size(); };
+    void allocate(size_t size){
+        creatureValues_.reserve(creatureValues_.size() + paramsPerCreature_ * size);
+        neuronValues_.reserve(neuronValues_.size() + neuronsPerCreature_ * size);
+        types_.reserve(types_.size() + size);
+    }
     void updateCreatureParameters(size_t index, CreatureParametersSPtr params);
     const CreatureParametersSPtr getCreatureParameters(size_t index);
     const float getCreatureX(size_t index);

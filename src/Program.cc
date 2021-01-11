@@ -232,14 +232,16 @@ void Program::run()
             frameCounter = 0;
         }
         now = newnow;
-
-        simulationPtr_->postVideo();
+        
+        simulationPtr_ -> waitVideo();
 
         programWindowPtr_->clear();
         programWindowPtr_->draw(sprite);
         simView = programWindowPtr_->getView();
         simulationPtr_->printClipped(programWindowPtr_, simView);
         programWindowPtr_->display();
+
+        simulationPtr_->postVideo();
     }
     terminateStatistics();
     simulationPtr_->terminate();
