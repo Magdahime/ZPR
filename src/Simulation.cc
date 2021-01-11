@@ -18,8 +18,6 @@
 #include "Neuron.h"
 #include "Map.h"
 
-Simulation::~Simulation(){};
-
 Simulation::Simulation() : dataSemaphore_(1), videoSemaphore_(0){};
 
 void Simulation::prepare(unsigned int creatureCount)
@@ -41,6 +39,7 @@ void Simulation::run()
     time_t newnow;
     while (!terminate_)
     {
+        container_.setDivisors(parameters_.energyThreshhold_ / 2.f, fmax(1.f, avgWeight_), fmax(1.f, avgAge_), parameters_.energyThreshhold_ / 2.f);
         dataSemaphore_.wait();
         if (terminate_)
             break;
@@ -64,7 +63,8 @@ int Simulation::iteration()
     float totalAge = 0.f;
     float totalWeight = 0.f;
     // std::cout<<"\nEntering"; // alert DEBUG
-#pragma omp parallel for reduction(+ : creatureCounter, totalWeight, totalAge)
+#pragma omp parallel for reduction(+ \
+                                   : creatureCounter, totalWeight, totalAge)
     for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
@@ -79,14 +79,14 @@ int Simulation::iteration()
             container_.calculateLayer(creatureIndex, layerIndex);
         }
         // if(creatureIndex == 0)
-            // std::cout<<"\nPast calculate"; // alert DEBUG
+        // std::cout<<"\nPast calculate"; // alert DEBUG
         updateCreature(creatureIndex);
         // if(creatureIndex == 0)
-            // std::cout<<"\nPast update"; // alert DEBUG
+        // std::cout<<"\nPast update"; // alert DEBUG
     }
     // std::cout<<"\nPast all"; //alert DEBUG
     avgAge_ = totalAge / creatureCounter;
-    totalWeight_ = totalWeight;
+    avgWeight_ = totalWeight / creatureCounter;
     // container_.printCapacities(); // alert DEBUG
     // std::cout<<"\n\nQueue size before:\t"<<container_.putQueue_.size()<<"\tContainer size before:\t"<<container_.getSize()<<"\n"; // alert DEBUG
     container_.putQueue();
@@ -119,8 +119,9 @@ void Simulation::updateCreature(int creatureIndex)
         auto before = creature->speed_;
         auto childParams = CreatureFactory::getInstance().createChild(creature);
         auto after = childParams->speed_;
-        if(after == INFINITY){
-            std::cout<<"\no cie balon\t"<<before<<"\t"<<after<<"\n";
+        if (after == INFINITY)
+        {
+            std::cout << "\no cie balon\t" << before << "\t" << after << "\n";
         }
         childParams->weight_ = parameters_.weightBirth_;
         auto neurons = container_.getNeurons(creatureIndex);
@@ -322,11 +323,6 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
     // std::cout<<"\nEnd print\n"; // alert DEBUG
 }
 
-bool Simulation::tryNewData()
-{
-    return dataSemaphore_.try_wait();
-}
-
 void Simulation::postVideo()
 {
     dataSemaphore_.post();
@@ -352,7 +348,7 @@ void Simulation::selectClosestCreature(float x, float y)
 void Simulation::findClosestCreature(float x, float y)
 {
     float minDist = map_->getWidth() * map_->getHeight();
-    int foundIndex = -1;
+    unsigned int foundIndex = 0 - 1;
     for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
@@ -368,7 +364,7 @@ void Simulation::findClosestCreature(float x, float y)
     selectedIndex_ = foundIndex;
 }
 
-float Simulation::getSelectedX()
+const float Simulation::getSelectedX()
 {
     if (isSelected())
     {
@@ -376,7 +372,7 @@ float Simulation::getSelectedX()
     }
     return map_->getWidth() / 2;
 }
-float Simulation::getSelectedY()
+const float Simulation::getSelectedY()
 {
     if (isSelected())
     {
@@ -416,7 +412,7 @@ std::string Simulation::getSelectedNeuronsAsJSON()
             out += std::string(R"({"label":)");
             out += std::to_string((neurons[i])[j]);
             out += std::string(R"(, "layer": )");
-            out += std::to_string(i+1);
+            out += std::to_string(i + 1);
             if (!(i == neurons.size() - 1 && j == neurons[i].size() - 1))
                 out += std::string(R"(},)");
         }

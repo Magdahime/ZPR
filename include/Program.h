@@ -45,7 +45,7 @@ public:
     {
         float secondNum;
         unsigned int populationSize;
-        float totalWeight;
+        float avgWeight;
         float avgAge;
     };
 
@@ -63,23 +63,25 @@ private:
     boost::interprocess::interprocess_semaphore webviewSemaphore_;
     boost::interprocess::interprocess_semaphore sfmlWindowSemaphore_;
 
-    bool terminate_ = false;
+    bool terminated_ = false;
+    bool toTerminate_ = false;
+    bool pausedSimulation_ = false;
 
     Program(const Program &) = delete;
     Program(Program &&) = delete;
     Program &operator=(Program &&) = delete;
     Program &operator=(const Program &) = delete;
+    void terminate();
 
 public:
     Program();
-    virtual ~Program();
+    ~Program() = default;
     void run();
 
     void callJS(const std::string &javascript);
 
-    void terminate();
+    void callTerminate();
 
     void runStatistics();
     void sendStatistics(const SimulationData &data);
-    void terminateStatistics() { terminate_ = true; };
 };

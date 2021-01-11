@@ -229,16 +229,16 @@ bool CreatureContainer::isDeleted(size_t index)
 
 void CreatureContainer::populateNeurons(size_t index)
 {
-    neuronValues_[index * neuronSize_] = creatureValues_[index * PARAMS_PER_CREATURE] / 100.f;          // energy //alert MAGIC
-    neuronValues_[index * neuronSize_ + 1] = creatureValues_[index * PARAMS_PER_CREATURE + 1] / 100.f;  // weight //alert MAGIC
-    neuronValues_[index * neuronSize_ + 2] = creatureValues_[index * PARAMS_PER_CREATURE + 2] / 360.f;  // hue
-    neuronValues_[index * neuronSize_ + 3] = creatureValues_[index * PARAMS_PER_CREATURE + 6] / 100.f;  // age //alert MAGIC
-    neuronValues_[index * neuronSize_ + 4] = creatureValues_[index * PARAMS_PER_CREATURE + 8];          // speed
-    neuronValues_[index * neuronSize_ + 5] = creatureValues_[index * PARAMS_PER_CREATURE + 9] / 360.f;  // leftAntennaH
-    neuronValues_[index * neuronSize_ + 6] = creatureValues_[index * PARAMS_PER_CREATURE + 10] / 360.f; // rightAntennaH
-    neuronValues_[index * neuronSize_ + 7] = creatureValues_[index * PARAMS_PER_CREATURE + 11] / 360.f; // rearAntennaH
-    neuronValues_[index * neuronSize_ + 8] = creatureValues_[index * PARAMS_PER_CREATURE + 12] / 360.f; // bottomAntennaH
-    neuronValues_[index * neuronSize_ + 9] = creatureValues_[index * PARAMS_PER_CREATURE + 13];         // popDensity
+    neuronValues_[index * neuronSize_] = creatureValues_[index * PARAMS_PER_CREATURE] / energyDivisor_ - 1.f;         // energy
+    neuronValues_[index * neuronSize_ + 1] = creatureValues_[index * PARAMS_PER_CREATURE + 1] / weightDivisor_ - 1.f; // weight
+    neuronValues_[index * neuronSize_ + 2] = creatureValues_[index * PARAMS_PER_CREATURE + 2] / 180.f - 1.f;          // hue
+    neuronValues_[index * neuronSize_ + 3] = creatureValues_[index * PARAMS_PER_CREATURE + 6] / ageDivisor_ - 1.f;    // age
+    neuronValues_[index * neuronSize_ + 4] = creatureValues_[index * PARAMS_PER_CREATURE + 8] / speedDivisor_ - 1.f;  // speed
+    neuronValues_[index * neuronSize_ + 5] = creatureValues_[index * PARAMS_PER_CREATURE + 9] / 180.f - 1.f;          // leftAntennaH
+    neuronValues_[index * neuronSize_ + 6] = creatureValues_[index * PARAMS_PER_CREATURE + 10] / 180.f - 1.f;         // rightAntennaH
+    neuronValues_[index * neuronSize_ + 7] = creatureValues_[index * PARAMS_PER_CREATURE + 11] / 180.f - 1.f;         // rearAntennaH
+    neuronValues_[index * neuronSize_ + 8] = creatureValues_[index * PARAMS_PER_CREATURE + 12] / 180.f - 1.f;         // bottomAntennaH
+    neuronValues_[index * neuronSize_ + 9] = creatureValues_[index * PARAMS_PER_CREATURE + 13];                       // popDensity
 }
 
 void CreatureContainer::calculateLayer(size_t index, unsigned int layer)

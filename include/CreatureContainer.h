@@ -52,11 +52,27 @@ class CreatureContainer : public std::enable_shared_from_this<CreatureContainer>
 
     std::queue<FullParams> putQueue_;
 
+    /**
+     * Mutex at which inputting creatures is synchronised
+     */
     std::mutex mutex_;
 
     unsigned int paramsPerCreature_;
     unsigned int neuronsPerCreature_;
     unsigned int neuronSize_;
+
+    /**
+     * Following values are used for normalization of input values in the neural network. 
+     * As MSVC does not allow for reducing max/min functions in OpenMP loops, we are normalizing
+     * linearly with average value as 0.
+     * 
+     * Default values only hold for the first frame of simulation, when the respective values are not
+     * yet known. 
+     */
+    float energyDivisor_ = 1.f;
+    float weightDivisor_ = 1.f;
+    float ageDivisor_ = 1.f;
+    float speedDivisor_ = 1.f;
 
     CreatureContainer(const CreatureContainer &) = delete;
     CreatureContainer(CreatureContainer &&) = delete;
@@ -64,34 +80,75 @@ class CreatureContainer : public std::enable_shared_from_this<CreatureContainer>
     CreatureContainer &operator=(const CreatureContainer &) = delete;
 
 public:
-    void printCapacities() // alert DEBUG
-    {
-        std::cout << "\ncreatures:\t" << creatureValues_.size() << "\t" << creatureValues_.capacity();
-        std::cout << "\nneurons:\t" << neuronValues_.size() << "\t" << neuronValues_.capacity();
-        std::cout << "\ntypes:\t" << types_.size() << "\t" << types_.capacity();
-    }
     CreatureContainer();
     unsigned int getSize();
     void putCreature(std::string type = DEFAULT_CREATURE);
-    NeuronSetSPtr getNeurons(size_t index);
-    void putCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons);
-    void delayPutCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons);
-    void putQueue();
-    const size_t getPutQueueSize() { return putQueue_.size(); };
-    void allocate(size_t size){
-        creatureValues_.reserve(creatureValues_.size() + paramsPerCreature_ * size);
-        neuronValues_.reserve(neuronValues_.size() + neuronsPerCreature_ * size);
-        types_.reserve(types_.size() + size);
-    }
-    void updateCreatureParameters(size_t index, CreatureParametersSPtr params);
     const CreatureParametersSPtr getCreatureParameters(size_t index);
+    NeuronSetSPtr getNeurons(size_t index);
+
+    /**
+     * Method that puts creature defined by params and neurons into the container
+     * \note
+     * May wait at mutex_
+     */
+    void putCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons);
+    
+    /**
+     * Method that puts and neurons into the putQueue_, with the putting into the container delayed
+     * until putQueue()
+     */
+    void delayPutCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons);
+
+    /**
+     * Method putting all the entries from putQueue_ into the container
+     */
+    void putQueue();
+
+    const size_t getPutQueueSize() { return putQueue_.size(); };
+
+    /**
+     * Method replacing creatureValues_ entry for creature at index with values from params
+     */
+    void updateCreatureParameters(size_t index, CreatureParametersSPtr params);
+
     const float getCreatureX(size_t index);
     const float getCreatureY(size_t index);
+
     void deleteCreature(size_t index);
     bool isDeleted(size_t index);
+
+    /**
+     * Method populating neurons (i.e. copying and normalizing values from creatureValues_)
+     * for the creature at set index if applicable (in bound and not deleted).
+     */
     void populateNeurons(size_t index);
+    
+    /**
+     * Method calculating neuron outputs for the set creature at set layer.
+     */
     void calculateLayer(size_t index, unsigned int layer);
+
+    /**
+     * Method returning n'th value from creatureValues_ for the creature at index
+     * \param value - position of the value to be retrieved (0 to paramsPerCreature_)
+     */
     float getCreatureValue(size_t index, unsigned int value);
+
+    /**
+     * Method for retrieving the result (i.e. output of the last layer of the NN) of Neural Network
+     * for the set creature.
+     */
     std::vector<float> getResult(size_t index);
+
+    /**
+     * Method for retrieving of all layers of of Neural Network for the set creature.
+     */
     std::vector<std::vector<float>> getNeuronStates(size_t index);
+
+    void setDivisors(float energyDivisor, float weightDivisor, float ageDivisor, float speedDivisor){
+        energyDivisor_ = energyDivisor;
+        weightDivisor_ = weightDivisor;
+        ageDivisor_ = ageDivisor;
+        speedDivisor_ = speedDivisor;
+    }
 };

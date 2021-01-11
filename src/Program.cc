@@ -17,8 +17,6 @@
 #include "JsonParser.h"
 #include "CreatureFactory.h"
 
-Program::~Program(){};
-
 Program::Program() : webviewSemaphore_(0), sfmlWindowSemaphore_(0)
 {
     simulationPtr_ = std::make_shared<Simulation>();
@@ -32,7 +30,7 @@ Program::Program() : webviewSemaphore_(0), sfmlWindowSemaphore_(0)
         webviewPtr_->set_size(zpr_windows::WV_X, zpr_windows::WV_Y, WEBVIEW_HINT_FIXED);
         webviewPtr_->navigate(zpr_paths::HTTP_PATH);
         webviewPtr_->run();
-        terminate();
+        callTerminate(); // This is to ensure shutdown on WebView window closing
     });
 }
 
@@ -48,7 +46,6 @@ void Program::run()
 
     bool submittedMap = false;
     bool submittedParams = false;
-    bool pausedSimulation = false;
 
     webviewSemaphore_.wait();
 
@@ -132,7 +129,7 @@ void Program::run()
         webviewPtr_->bind(
             "pauseResume",
             [&](std::string s) -> std::string {
-                pausedSimulation = !pausedSimulation;
+                pausedSimulation_ = !pausedSimulation_;
                 return "OK";
             });
         webviewPtr_->bind(
@@ -152,7 +149,7 @@ void Program::run()
     sfmlWindowSemaphore_.wait();
 
     programWindowPtr_ = std::make_shared<sf::RenderWindow>(sf::VideoMode(zpr_windows::SF_X, zpr_windows::SF_Y), zpr_windows::SF_NAME),
-    programWindowPtr_->setVerticalSyncEnabled(true);
+    programWindowPtr_->setVerticalSyncEnabled(false);
     programWindowPtr_->setView(simView);
 
     unsigned int frameCounter = 0;
@@ -162,7 +159,7 @@ void Program::run()
     bool webviewClosed = false;
     sf::Vector2f oldPos;
 
-    while (programWindowPtr_->isOpen())
+    while (programWindowPtr_->isOpen() && !(terminated_ || toTerminate_))
     {
         sf::Event event;
         while (programWindowPtr_->pollEvent(event))
@@ -235,7 +232,7 @@ void Program::run()
         }
         now = newnow;
 
-        if (!pausedSimulation)
+        if (!pausedSimulation_)
             simulationPtr_->waitVideo();
 
         programWindowPtr_->clear();
@@ -244,37 +241,61 @@ void Program::run()
         simulationPtr_->printClipped(programWindowPtr_, simView);
         programWindowPtr_->display();
 
-        if (!pausedSimulation)
+        if (!pausedSimulation_)
             simulationPtr_->postVideo();
     }
-    terminateStatistics();
-    programWindowPtr_->close();
-
-    webviewPtr_->dispatch([this] {
-        webviewPtr_->terminate();
-    });
-    webviewPtr_->terminate();
-
-    webviewThread_.join();
-    std::cout << "\nWebview done\n";
-
-    simulationPtr_->terminate();
-    simulationThread_.join();
-    std::cout << "\nSim done\n";
-
-    webserverPtr_->terminate();
-    webserverThread_.join();
-    std::cout << "\nServer done\n";
+    terminate();
 }
 
-void Program::terminate(){
-    std::cout<<"\n\n\n\nTERMIANTE CALLED\n\n\n\n";
+void Program::terminate()
+{
+    pausedSimulation_ = false;
+    if (terminated_)
+        return;
+
+    terminated_ = true;
+
+    // if (programWindowPtr_)
+    // programWindowPtr_->close();
+
+    std::cout << "\nTerminating.\n";
+
+    if (simulationPtr_)
+        simulationPtr_->terminate();
+    std::cout << "\nTerminating..\n";
+
+    if (webviewPtr_)
+    {
+        webviewPtr_->dispatch([this] {
+            webviewPtr_->terminate();
+        });
+        webviewPtr_->terminate();
+    }
+    std::cout << "\nTerminating...\n";
+
+    if (webserverPtr_)
+        webserverPtr_->terminate();
+    std::cout << "\nTerminating....\n";
+
+    webviewThread_.join();
+    std::cout << "\nTerminating.....\n";
+    simulationThread_.join();
+    std::cout << "\nTerminating......\n";
+    webserverThread_.join();
+    std::cout << "\nTerminating.......\n";
+    statisticsThread_.join();
+    std::cout << "\nTerminating........\n";
+}
+
+void Program::callTerminate()
+{
+    toTerminate_ = true;
+    if (simulationPtr_)
+        simulationPtr_->unlockSFML();
 }
 
 void Program::callJS(const std::string &javascript)
 {
-    // std::cout << "\n"
-    //           << javascript << "\n";
     webviewPtr_->dispatch([this, javascript] {
         webviewPtr_->eval(javascript);
     });
@@ -284,13 +305,13 @@ void Program::runStatistics()
 {
     auto end = std::chrono::steady_clock::now() + std::chrono::milliseconds(zpr_consts::statistics_sleep_millis);
     auto increment = std::chrono::milliseconds(zpr_consts::statistics_sleep_millis);
-    while (!terminate_)
+    while (!(terminated_ || toTerminate_))
     {
         std::cout << "Works!";
         SimulationData data;
         data.secondNum = simulationPtr_->getSimulationSecond();
         data.populationSize = simulationPtr_->getPopulationSize();
-        data.totalWeight = simulationPtr_->getTotalWeight();
+        data.avgWeight = simulationPtr_->getAvgWeight();
         data.avgAge = simulationPtr_->getAvgAge();
         sendStatistics(data);
         if (simulationPtr_->isSelected())
@@ -311,6 +332,6 @@ void Program::runStatistics()
 void Program::sendStatistics(const SimulationData &data)
 {
     callJS(std::string("newDataPopulationNum(") + std::to_string(data.secondNum) + std::string(", ") + std::to_string(data.populationSize) + std::string(");"));
-    callJS(std::string("newDataWeightNum(") + std::to_string(data.secondNum) + std::string(", ") + std::to_string(data.totalWeight) + std::string(");"));
+    callJS(std::string("newDataWeightNum(") + std::to_string(data.secondNum) + std::string(", ") + std::to_string(data.avgWeight) + std::string(");"));
     callJS(std::string("newDataAgeNum(") + std::to_string(data.secondNum) + std::string(", ") + std::to_string(data.avgAge) + std::string(");"));
 }

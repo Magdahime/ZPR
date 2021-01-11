@@ -70,34 +70,52 @@ struct SimulationParameters
     float accelerationMultiplier_;
     float maxSpeed_;
 };
-
+/**
+ * Simulation class that holds (mostly via CreatureContainer instance) all Simulation data
+ */
 class Simulation
 {
-    std::vector<Creature> creatures_;
-    std::vector<Neuron> neurons_;
-    std::vector<float> weights_;
-    std::shared_ptr<Map> map_;
-    boost::interprocess::interprocess_semaphore dataSemaphore_;
-    boost::interprocess::interprocess_semaphore videoSemaphore_;
-    std::vector<float> data_PROTO_;
-
     CreatureContainer container_;
+    
+    /**
+     * Base simulation parameters common to all species used when calculating any data.
+     */
     SimulationParameters parameters_;
+
+    std::shared_ptr<Map> map_;
+
+    /**
+     * Semaphore at which Simulation thread waits for SFML thread to finish accessing container_
+     */
+    boost::interprocess::interprocess_semaphore dataSemaphore_;
+
+    /**
+     * Semaphore at which Program (SFML) thread waits for Simulation to finish calculations for a frame.
+     */
+    boost::interprocess::interprocess_semaphore videoSemaphore_;
 
     unsigned int iterationNumber_ = 0;
     unsigned int populationSize_ = 0;
-    float totalWeight_ = 0.f;
+    float avgWeight_ = 0.f;
     float avgAge_ = 0.f;
 
     bool terminate_ = false;
 
-    void populateNeurons();
+    /**
+     * Method for calculating passing of a single frame for the set creature
+     */
     void updateCreature(int creatureIndex);
 
+    /**
+     * Method for finding and selecting the closest creature to a set point.
+     */
     void findClosestCreature(float x, float y);
 
     unsigned int selectedIndex_ = 0 - 1;
 
+    /**
+     * Mutex guarding for only one iteration to run at the same time
+     */
     std::mutex iterationMutex_;
 
     Simulation(const Simulation &) = delete;
@@ -106,63 +124,151 @@ class Simulation
     Simulation &operator=(const Simulation &) = delete;
 
 public:
-    virtual ~Simulation();
     Simulation();
+    ~Simulation() = default;
+    
+    /**
+     * Spawns initial default species.
+     */
     void prepare();
+
+    /**
+     * Spawns creatureCount of default species.
+     */
     void prepare(unsigned int creatureCount);
+
+    /**
+     * Puts creatureNum of creautures as specified by type (if registered in CreatureFactory)
+     */
+    void putCreature(std::string type, int creatureNum = 1);
+
+    /**
+     * Starts the simulation run, internally running iteration() in infinite loop.
+     */
     void run();
+
+    /**
+     * Runs a single iteration of the simulation on the exisiting container_.
+     */
     int iteration();
-    void run_PROTO();
-    void iteration_PROTO();
-    bool tryNewData();
+    
+    /**
+     * Informs the run() thread that rendering has been finished and container_ can be accessed again.
+     * Internally performs post() at dataSemaphore_
+     */
     void postVideo();
+
+    /**
+     * Waits at dataSemaphore_ for iteration() to finish
+     */
     void waitVideo();
 
+    /**
+     * Calculates and performs steer (change of heading) for the creature based on NN result. 
+     */
     void calculateSteer(CreatureParametersSPtr creature, float result);
+
+    /**
+     * Calculates and performs steer (change of speed) for the creature based on NN result. 
+     */
     void calculateAcceleration(CreatureParametersSPtr creature, float result);
+
+    /**
+     * Calculates and performs eating for the creature based on NN result. 
+     */
     void calculateEating(CreatureParametersSPtr creature, float result);
+
+    /**
+     * Calculates and performs attack for the creature based on NN result. 
+     * \note
+     * Unimplemented
+     */
     void calculateAttack(CreatureParametersSPtr creature, float result);
+
+    /**
+     * Calculates and, if applicable, performs delayed birth for the creature based on NN result.
+     */
     bool calculateBirth(CreatureParametersSPtr creature, float result);
+
+    /**
+     * Calculates and performs movement for the creature based on NN result.
+     */
     void calculateMovement(CreatureParametersSPtr creature);
+
+    /**
+     * Retrieves Hue values from map_ and populates data slots for creature's antennae.
+     */
     void calculateAntennas(CreatureParametersSPtr creature);
+
+    /**
+     * Increases the creature age based on simulation settings.
+     */
     void calculateAge(CreatureParametersSPtr creature);
+
+    /**
+     * Calculates remaining energy for a creature based on current value an weight.
+     */
     void calculateEnergy(CreatureParametersSPtr creature);
 
-    void setMap(std::shared_ptr<Map> mapPtr);
-    void printAll(std::shared_ptr<sf::RenderWindow>);
-    void printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View view);
-    void setSimulationParameters(SimulationParameters params) { this->parameters_ = params; };
+    /**
+     * Prints all non-deleted creatures from container_ onto window.
+     */
+    void printAll(std::shared_ptr<sf::RenderWindow> window);
 
+    /**
+     * Prints all non-deleted creatures that fit in view from container_ onto window.
+     */
+    void printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View view);
+
+    void setMap(std::shared_ptr<Map> mapPtr);
+    void setSimulationParameters(SimulationParameters params) { this->parameters_ = params; };
+    SimulationParameters getSimulationParameters() { return parameters_; };
+
+    /**
+     * Set the creature closest to set cooridinates as the selected one (if exists).
+     * Internally calls findClosestCreature() on a new thread to minimize overhead.
+     */
     void selectClosestCreature(float x, float y);
+    const float getSelectedX();
+    const float getSelectedY();
+
+    /**
+     * Informs whether a creature is selected at the moment
+     */
+    bool isSelected() { return (selectedIndex_ != 0 - 1); };
+
+    /**
+     * Returns a JSON string of selected creature's parameters as accepted by JS frontend.
+     */
+    std::string getSelectedParametersAsJSON();
+
+    /**
+     * Returns a JSON string of selected creature's Neural Network values as accepted by JS frontend.
+     */
+    std::string getSelectedNeuronsAsJSON();
+
 
     inline float getSimulationSecond() { return (iterationNumber_ / TARGET_FPS); };
     inline unsigned int getPopulationSize() { return populationSize_; };
-    inline float getTotalWeight() { return totalWeight_; };
+    inline float getAvgWeight() { return avgWeight_; };
     inline float getAvgAge() { return avgAge_; };
 
-    bool isSelected() { return (selectedIndex_ != 0 - 1); };
-    float getSelectedX();
-    float getSelectedY();
 
-    std::string getSelectedParametersAsJSON();
-    std::string getSelectedNeuronsAsJSON();
+    /**
+     * Unlocks SFML thread if waiting for simulation data.
+     * Useful on termination
+     */
+    void unlockSFML(){
+        videoSemaphore_.post();
+    }
 
-    SimulationParameters getSimulationParameters() { return parameters_; };
-
+    /**
+     * Allows for clean termination of thread running run()
+     */
     void terminate()
     {
         terminate_ = true;
         dataSemaphore_.post();
         videoSemaphore_.post();
-        dataSemaphore_.post();
-        videoSemaphore_.post();
-        dataSemaphore_.post();
-        videoSemaphore_.post();
-        dataSemaphore_.post();
-        videoSemaphore_.post();
-        dataSemaphore_.post();
-        videoSemaphore_.post();
     };
-
-    void putCreature(std::string type, int creatureNum = 1);
 };
