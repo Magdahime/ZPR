@@ -27,8 +27,6 @@ class PyWebserver
 
     std::string executablePath = boost::dll::program_location().parent_path().string();
 
-    std::thread pyServerThread_;
-
     unsigned long threadId_;
 
     void serve()
@@ -50,17 +48,16 @@ class PyWebserver
     PyWebserver &operator=(const PyWebserver &) = delete;
 
 public:
+    PyWebserver() = default;
     void run()
     {
-        pyServerThread_ = std::thread(&PyWebserver::serve, this);
+        serve();
     }
     void terminate(){
         auto terminatingEx = PyExc_Exception;
-        PyGILState_Ensure();
+        PyGILState_STATE gstate;
+        gstate = PyGILState_Ensure();
         PyThreadState_SetAsyncExc(threadId_, terminatingEx);
-    }
-
-    void join(){
-        pyServerThread_.join();
+        PyGILState_Release(gstate);
     }
 };

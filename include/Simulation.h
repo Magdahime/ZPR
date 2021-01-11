@@ -34,8 +34,9 @@ const float ENERGY_BIRTH_FAILED = 20.f;
 const float WEIGHT_BIRTH = 20.f;
 
 const float ANGLE_PER_FRAME = 2.0f;
-const float ACCELERATION_MULTIPLIER = 0.05f;
+const float ACCELERATION_MULTIPLIER = 1.05f;
 const float MAX_SPEED = 0.05f;
+const float MIN_SPEED = 0.00001f;
 
 const float BIRTH_AGE_THRESHOLD = 1.f;
 
@@ -134,7 +135,7 @@ public:
 
     void selectClosestCreature(float x, float y);
 
-    inline unsigned int getSimulationSecond() { return static_cast<int>(iterationNumber_ / TARGET_FPS); };
+    inline float getSimulationSecond() { return (iterationNumber_ / TARGET_FPS); };
     inline unsigned int getPopulationSize() { return populationSize_; };
     inline float getTotalWeight() { return totalWeight_; };
     inline float getAvgAge() { return avgAge_; };

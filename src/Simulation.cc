@@ -27,8 +27,6 @@ void Simulation::prepare(unsigned int creatureCount)
     for (int i = 0; i < creatureCount; i++)
     {
         container_.putCreature();
-        if (i % 1000 == 0)
-            std::cout << "i:\t" << i << "\n";
     }
 }
 void Simulation::prepare()
@@ -65,7 +63,7 @@ int Simulation::iteration()
     int creatureCounter = 0;
     float totalAge = 0.f;
     float totalWeight = 0.f;
-    std::cout<<"\nEntering"; // alert DEBUG
+    // std::cout<<"\nEntering"; // alert DEBUG
 #pragma omp parallel for reduction(+ : creatureCounter, totalWeight, totalAge)
     for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
@@ -86,7 +84,7 @@ int Simulation::iteration()
         // if(creatureIndex == 0)
             // std::cout<<"\nPast update"; // alert DEBUG
     }
-    std::cout<<"\nPast all";
+    // std::cout<<"\nPast all"; //alert DEBUG
     avgAge_ = totalAge / creatureCounter;
     totalWeight_ = totalWeight;
     // container_.printCapacities(); // alert DEBUG
@@ -118,7 +116,12 @@ void Simulation::updateCreature(int creatureIndex)
 
     if (birth)
     {
+        auto before = creature->speed_;
         auto childParams = CreatureFactory::getInstance().createChild(creature);
+        auto after = childParams->speed_;
+        if(after == INFINITY){
+            std::cout<<"\no cie balon\t"<<before<<"\t"<<after<<"\n";
+        }
         childParams->weight_ = parameters_.weightBirth_;
         auto neurons = container_.getNeurons(creatureIndex);
         auto childNeurons = NeuronFactory::getInstance().createChild(neurons);
@@ -162,7 +165,9 @@ void Simulation::calculateAcceleration(CreatureParametersSPtr creature, float re
         else
         {
             creature->speed_ /= parameters_.accelerationMultiplier_;
+            creature->speed_ = fmin(creature->speed_, parameters_.maxSpeed_);
         }
+        creature->speed_ = fmax(creature->speed_, MIN_SPEED);
     }
 }
 
@@ -276,7 +281,7 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
     xMax = view.getCenter().x + view.getSize().x / 2.f;
     yMin = view.getCenter().y - view.getSize().y / 2.f;
     yMax = view.getCenter().y + view.getSize().y / 2.f;
-    std::cout<<"\nStart print\n";
+    // std::cout<<"\nStart print\n"; // alert DEBUG
     for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
@@ -314,7 +319,7 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
             }
         }
     }
-    std::cout<<"\nEnd print\n";
+    // std::cout<<"\nEnd print\n"; // alert DEBUG
 }
 
 bool Simulation::tryNewData()
@@ -339,8 +344,9 @@ void Simulation::setMap(std::shared_ptr<Map> mapPtr)
 
 void Simulation::selectClosestCreature(float x, float y)
 {
-    findClosestCreature(x, y);
-    // std::thread thread(&Simulation::findClosestCreature, this, x, y);
+    // findClosestCreature(x, y);
+    std::thread thread(&Simulation::findClosestCreature, this, x, y);
+    thread.detach();
 }
 
 void Simulation::findClosestCreature(float x, float y)
@@ -359,7 +365,6 @@ void Simulation::findClosestCreature(float x, float y)
             foundIndex = creatureIndex;
         }
     }
-    std::cout << "DUPA " << foundIndex << " DUPA";
     selectedIndex_ = foundIndex;
 }
 

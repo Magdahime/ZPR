@@ -43,7 +43,7 @@ class Program
 public:
     struct SimulationData
     {
-        unsigned int secondNum;
+        float secondNum;
         unsigned int populationSize;
         float totalWeight;
         float avgAge;
@@ -61,6 +61,7 @@ private:
     SimulationData statistics_;
 
     boost::interprocess::interprocess_semaphore webviewSemaphore_;
+    boost::interprocess::interprocess_semaphore sfmlWindowSemaphore_;
 
     bool terminate_ = false;
 
@@ -75,6 +76,8 @@ public:
     void run();
 
     void callJS(const std::string &javascript);
+
+    void terminate();
 
     void runStatistics();
     void sendStatistics(const SimulationData &data);

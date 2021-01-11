@@ -17,16 +17,13 @@
 #include "JsonParser.h"
 #include "CreatureFactory.h"
 
-
 Program::~Program(){};
 
-Program::Program() : webviewSemaphore_(0)
+Program::Program() : webviewSemaphore_(0), sfmlWindowSemaphore_(0)
 {
     simulationPtr_ = std::make_shared<Simulation>();
     webserverPtr_ = std::make_shared<PyWebserver>();
-    webserverPtr_->run();
-    programWindowPtr_ = std::make_shared<sf::RenderWindow>(sf::VideoMode(zpr_windows::SF_X, zpr_windows::SF_Y), zpr_windows::SF_NAME),
-    programWindowPtr_->setVerticalSyncEnabled(true);
+    webserverThread_ = std::thread(&PyWebserver::run, &(*webserverPtr_));
 
     webviewThread_ = std::thread([this]() {
         webviewPtr_ = std::make_shared<webview::webview>(zpr_dev_flags::WEBVIEW_DEBUG, nullptr);
@@ -35,6 +32,7 @@ Program::Program() : webviewSemaphore_(0)
         webviewPtr_->set_size(zpr_windows::WV_X, zpr_windows::WV_Y, WEBVIEW_HINT_FIXED);
         webviewPtr_->navigate(zpr_paths::HTTP_PATH);
         webviewPtr_->run();
+        terminate();
     });
 }
 
@@ -50,6 +48,7 @@ void Program::run()
 
     bool submittedMap = false;
     bool submittedParams = false;
+    bool pausedSimulation = false;
 
     webviewSemaphore_.wait();
 
@@ -75,8 +74,9 @@ void Program::run()
                 simView.setSize(windowWidth, windowHeight);
                 simView.zoom(.06125f); //alert MAGIC
                 simView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
-                programWindowPtr_->setView(simView);
+                // programWindowPtr_->setView(simView);
                 simulationPtr_->setMap(mapPtr);
+                sfmlWindowSemaphore_.post();
                 return "OK";
             });
 
@@ -128,6 +128,13 @@ void Program::run()
                     return "NOT OK";
                 }
             });
+
+        webviewPtr_->bind(
+            "pauseResume",
+            [&](std::string s) -> std::string {
+                pausedSimulation = !pausedSimulation;
+                return "OK";
+            });
         webviewPtr_->bind(
             "getListOfCreatures",
             [&](std::string s) -> std::string {
@@ -141,6 +148,13 @@ void Program::run()
                               return "OK";
                           });
     });
+
+    sfmlWindowSemaphore_.wait();
+
+    programWindowPtr_ = std::make_shared<sf::RenderWindow>(sf::VideoMode(zpr_windows::SF_X, zpr_windows::SF_Y), zpr_windows::SF_NAME),
+    programWindowPtr_->setVerticalSyncEnabled(true);
+    programWindowPtr_->setView(simView);
+
     unsigned int frameCounter = 0;
     time_t now = time(0);
     time_t newnow;
@@ -150,17 +164,6 @@ void Program::run()
 
     while (programWindowPtr_->isOpen())
     {
-        try
-        {
-            webviewPtr_->dispatch([this, frameCounter] {
-                webviewPtr_->eval("frameNum(" + std::to_string(frameCounter) + ");");
-            });
-        }
-        catch (...)
-        {
-            webviewClosed = true;
-            break;
-        }
         sf::Event event;
         while (programWindowPtr_->pollEvent(event))
         {
@@ -231,8 +234,9 @@ void Program::run()
             frameCounter = 0;
         }
         now = newnow;
-        
-        simulationPtr_ -> waitVideo();
+
+        if (!pausedSimulation)
+            simulationPtr_->waitVideo();
 
         programWindowPtr_->clear();
         programWindowPtr_->draw(sprite);
@@ -240,11 +244,12 @@ void Program::run()
         simulationPtr_->printClipped(programWindowPtr_, simView);
         programWindowPtr_->display();
 
-        simulationPtr_->postVideo();
+        if (!pausedSimulation)
+            simulationPtr_->postVideo();
     }
     terminateStatistics();
-    simulationPtr_->terminate();
     programWindowPtr_->close();
+
     webviewPtr_->dispatch([this] {
         webviewPtr_->terminate();
     });
@@ -253,13 +258,17 @@ void Program::run()
     webviewThread_.join();
     std::cout << "\nWebview done\n";
 
+    simulationPtr_->terminate();
     simulationThread_.join();
     std::cout << "\nSim done\n";
 
     webserverPtr_->terminate();
-    std::cout << "\nServer terminate done\n";
-    webserverPtr_->join();
+    webserverThread_.join();
     std::cout << "\nServer done\n";
+}
+
+void Program::terminate(){
+    std::cout<<"\n\n\n\nTERMIANTE CALLED\n\n\n\n";
 }
 
 void Program::callJS(const std::string &javascript)

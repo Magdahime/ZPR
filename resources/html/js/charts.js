@@ -190,6 +190,7 @@ function renderNeuralNetowork(graph) {
 
     var color = d3.scale.category20();
 
+    console.log(graph)
     graph = JSON.parse(graph)
     var nodes = graph.nodes;
 

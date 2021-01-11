@@ -67,6 +67,9 @@ void CreatureContainer::putCreature(CreatureParametersSPtr params, NeuronSetSPtr
         neuronsSize += layerWidths[i] + layerWidths[i - 1] * layerWidths[i];
     }
     size_t index;
+    /** The following checks if the creature should be added at the end of the vector,
+     * or if there is free space available between existing entries
+     */
     if (availableIndexes_.empty())
     {
         index = types_.size();
@@ -216,7 +219,7 @@ void CreatureContainer::deleteCreature(size_t index)
     }
     types_[index] = DELETED_DESIGNATOR;
     if (availableIndexes_.push(index))
-        std::cout << "\npush failed\n"; // alert DEBUG
+        std::cerr << "\nPush failed - memory in CreatureContainer may be lost\n"; // alert DEBUG
 };
 
 bool CreatureContainer::isDeleted(size_t index)
@@ -245,7 +248,7 @@ void CreatureContainer::calculateLayer(size_t index, unsigned int layer)
     unsigned int inputs = LAYER_WIDTHS[layer - 1];
     unsigned int outputs = LAYER_WIDTHS[layer];
     unsigned int offset = neuronSize_ * index;
-    //std::cout<<"I L O S:\t"<<index<<"\t"<<layer<<"\t"<<offset<<"\t"<<neuronValues_.size()<<"\n";
+    //std::cout<<"I L O S:\t"<<index<<"\t"<<layer<<"\t"<<offset<<"\t"<<neuronValues_.size()<<"\n"; //alert DEBUG
     for (int i = 0; i < LAYER_WIDTHS[layer]; i++)
     {
         neuronValues_[offset + LAYER_OFFSETS[layer] + i] = 0.f;

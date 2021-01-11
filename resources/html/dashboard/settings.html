@@ -66,6 +66,11 @@
                                 Statistics
                             </a>
                         </li>
+                        <li>
+                          <a class="nav-link">
+                            <button type="button" class="btn btn-warning" onclick="pauseResume()">Pause/resume simulation</button>
+                          </a>
+                        </li>
                     </ul>
             </nav>
 
@@ -216,7 +221,7 @@
                             <label for="accelerationMultiplier">Acceleration multiplier</label>
                         </div>
                         <div class="col-lg-5">
-                            <input class="form-control" type="number" min="0" step="0.00000001" id="accelerationMultiplier" name="accelerationMultiplier" value="0.05">
+                            <input class="form-control" type="number" min="0" step="0.00000001" id="accelerationMultiplier" name="accelerationMultiplier" value="1.05">
                         </div>
                     </div>
                     <hr>
