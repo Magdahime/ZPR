@@ -7,6 +7,9 @@
 #include <boost/test/unit_test.hpp>
 #include "structs/RgbHsv.h"
 namespace utf = boost::unit_test;
+
+using namespace zpr;
+
 BOOST_AUTO_TEST_SUITE(RgbHsvSuite)
 BOOST_AUTO_TEST_CASE(Convert2HSVTest, *utf::tolerance(0.01))
 {

@@ -1,8 +1,11 @@
-/////////////////////////////////////////////////////////
-///     Author: Bartłomiej Janowski                   ///
-/////////////////////////////////////////////////////////
+/**
+ * \file
+ * \author Bartłomiej Janowski
+ */
 
 #include "CreatureContainer.h"
+
+using namespace zpr;
 
 CreatureContainer::CreatureContainer()
 {

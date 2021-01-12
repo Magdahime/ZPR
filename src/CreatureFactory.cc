@@ -14,6 +14,8 @@
 #include "JsonParser.h"
 #include "RandomNumberGenerator.h"
 
+using namespace zpr;
+
 namespace fs = std::filesystem;
 void CreatureFactory::registerFolder(const std::string &pathToFolder)
 {

@@ -1,6 +1,5 @@
 /**
  * \file
- * 
  * \author Bartlomiej Janowski
  * 
  * Flags.h includes constants used across the program, incl. flags changing application behavior.

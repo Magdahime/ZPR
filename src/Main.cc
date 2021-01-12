@@ -10,6 +10,8 @@
 
 #include "Program.h"
 
+using namespace zpr;
+
 int main()
 {
     Program program;

@@ -6,9 +6,10 @@
 //#define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 #include <array>
-#include "Main.h"
 #include "Neuron.h"
 #include "RandomNumberGenerator.h"
+
+using namespace zpr;
 
 BOOST_AUTO_TEST_SUITE(randomNumberGeneratorSuite)
 BOOST_AUTO_TEST_CASE(getIntTest)

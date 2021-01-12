@@ -8,6 +8,8 @@
 #include "Neuron.h"
 #include "RandomNumberGenerator.h"
 
+using namespace zpr;
+
 BOOST_AUTO_TEST_SUITE(NeuronSuite)
 BOOST_AUTO_TEST_CASE(MutateTest)
 {

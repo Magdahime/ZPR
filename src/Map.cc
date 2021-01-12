@@ -1,6 +1,8 @@
 #include "Map.h"
 
-unsigned char *Map::generateMapFromPerlin(Perlin &perlin)
+using namespace zpr;
+
+void Map::generateMapFromPerlin(Perlin &perlin)
 {
     std::vector<float> perlinNoiseH = perlin.generatePerlinNoise();
     std::vector<float> perlinNoiseS = perlin.generatePerlinNoise();
@@ -18,7 +20,5 @@ unsigned char *Map::generateMapFromPerlin(Perlin &perlin)
         pixels_[i + 2] = rgb.b_;
         pixels_[i + 3] = 255;
     }
-
-    return pixels_;
 }
 

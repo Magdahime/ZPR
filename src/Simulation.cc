@@ -23,6 +23,8 @@
 #include "Neuron.h"
 #include "Map.h"
 
+using namespace zpr;
+
 Simulation::Simulation() : dataSemaphore_(1), videoSemaphore_(0){};
 
 void Simulation::prepare(size_t creatureCount)

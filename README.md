@@ -55,3 +55,6 @@ The resulting executable will be located at *bin/CreatureSIM*. Before running pl
 OMP_WAIT_POLICY="PASSIVE"
 ./bin/CreatureSIM
 ```
+
+# Auto-generated documentation
+Doxygen-generated docs are available at [zpr.janowski.xyz](https://zpr.janowski.xyz/)

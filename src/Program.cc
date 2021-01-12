@@ -21,6 +21,8 @@
 #include "JsonParser.h"
 #include "CreatureFactory.h"
 
+using namespace zpr;
+
 Program::Program() : webviewSemaphore_(0), sfmlWindowSemaphore_(0)
 {
     simulationPtr_ = std::make_shared<Simulation>();
@@ -71,7 +73,8 @@ void Program::run()
                 auto windowHeight = std::stoi(webview::json_parse(s, "", 1));
                 mapPtr = std::make_shared<Map>(windowWidth, windowHeight);
                 auto perlin = Perlin(windowWidth, windowHeight);
-                auto pixels = mapPtr->generateMapFromPerlin(perlin);
+                mapPtr->generateMapFromPerlin(perlin);
+                auto pixels = mapPtr->getPixels();
                 image.create(windowWidth, windowHeight, pixels);
                 texture.create(windowWidth, windowHeight);
                 texture.update(image);

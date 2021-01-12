@@ -1,6 +1,8 @@
 #include "structs/RgbHsv.h"
 
-RGBvals convert2RGB(HSVvals &hsv)
+using namespace zpr;
+
+RGBvals zpr::convert2RGB(HSVvals &hsv)
 {
     float C = hsv.v_ * hsv.s_;
     float partial = (hsv.h_ / 60.0);
@@ -47,7 +49,7 @@ RGBvals convert2RGB(HSVvals &hsv)
     return RGBvals(std::round((R1 + m) * 255), std::round((G1 + m) * 255), std::round((B1 + m) * 255));
 }
 
-HSVvals convert2HSV(RGBvals &rgb)
+HSVvals zpr::convert2HSV(RGBvals &rgb)
 {
     HSVvals hsv;
     float R1 = rgb.r_ / 255;

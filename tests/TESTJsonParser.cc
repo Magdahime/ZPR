@@ -7,6 +7,9 @@
 #include "JsonParser.h"
 #include "CreatureFactory.h"
 namespace utf = boost::unit_test;
+
+using namespace zpr;
+
 BOOST_AUTO_TEST_SUITE(JsonParserSuite)
 BOOST_AUTO_TEST_CASE(searchFilesTest)
 {

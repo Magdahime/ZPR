@@ -1,10 +1,12 @@
-/////////////////////////////////////////////////////////
-///     Author: Magdalena Majkowska                   ///
-///     Source code of simple neuron class            ///
-/////////////////////////////////////////////////////////
+/**
+ * \file
+ * \author Magdalena Majkowska
+ */
 
 #include "Neuron.h"
 #include "RandomNumberGenerator.h"
+
+using namespace zpr;
 
 Neuron::Neuron(const std::vector<float>::iterator weightsBegin, const std::vector<float>::iterator weightsEnd) : weightsBegin_(weightsBegin), weightsEnd_(weightsEnd){};
 

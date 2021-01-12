@@ -1,5 +1,7 @@
 #include "Perlin.h"
 
+using namespace zpr;
+
 Perlin::Perlin(int width, int height) : width_(width), height_(height)
 {
     primaryNoise_ = std::vector<float>(width_ * height_);
@@ -70,13 +72,13 @@ std::vector<float> Perlin::generatePerlinNoise()
 }
 
 
-float cosineInterpolation(float value1, float value2, float alpha)
+float zpr::cosineInterpolation(float value1, float value2, float alpha)
 {
     float angle = alpha * PI;
     float perc = (1 - std::cos(angle)) * 0.5f;
     return value1 * (1 - perc) + value2 * perc;
 }
-float linearInterpolation(float value1, float value2, float alpha)
+float zpr::linearInterpolation(float value1, float value2, float alpha)
 {
     return value1 * (1 - alpha) + value2 * alpha;
 }

@@ -7,6 +7,8 @@
 #include <boost/test/unit_test.hpp>
 #include "Perlin.h"
 
+using namespace zpr;
+
 BOOST_AUTO_TEST_SUITE(PerlinSuite)
 BOOST_AUTO_TEST_CASE(LinearInterpolationTest)
 {
