@@ -2,6 +2,7 @@ build/*
 lib/*
 bin/*
 doc/*
+dl/*
 .*
 .sconsign*
 src/*.obj
