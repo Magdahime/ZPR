@@ -25,6 +25,17 @@ struct HSVvals
     HSVvals(float h, float s, float v) : h_(h), s_(s), v_(v) {}
     HSVvals() {}
 };
-
+/**
+ * Converter from hsv values to rgb
+ * It is an implementation of algorithm found on the internet
+ * https://www.rapidtables.com/convert/color/hsv-to-rgb.html 
+ * \return RGB values of the provided HSV
+ */
 RGBvals convert2RGB(HSVvals &hsv);
+/**
+ * Converter from rgb values to  hsv
+ * It is an implementation of algorithm found on the internet
+ * https://www.rapidtables.com/convert/color/rgb-to-hsv.html
+ * \return HSV values of the provided RGB
+ */
 HSVvals convert2HSV(RGBvals &rgb);

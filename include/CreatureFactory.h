@@ -40,6 +40,9 @@ class CreatureFactory
 {
     FactoryMap FactoryMap_;
 
+    /**
+    * Constructor of CreatureFactory - it automatically registers all creatures from default path.
+    */
     CreatureFactory();
 
     CreatureFactory(const CreatureFactory &) = delete;
@@ -47,17 +50,64 @@ class CreatureFactory
     CreatureFactory &operator=(CreatureFactory &&) = delete;
     CreatureFactory &operator=(const CreatureFactory &) = delete;
 
+    /**
+    * Private method for creating a creature. It takes all of the parameters of the specimen 
+    * and changes them accordingly with normal distribution around this value. 
+    *\return shared pointer to the new CreatureParameters
+    */
     CreatureParametersSPtr create(CreatureParametersSPtr csptr);
 
     std::string configurationPath_;
+
 public:
+    /**
+    * Parses creature's parameters from JSON files. It uses a BOOST JSON library, that was released in 1.75.0
+    * BOOST version. As we can see here there was a little problem with parsing doubles - numbers without a
+    * fractional part was not read correctly fom object, so we had to use the casting methods. 
+    * \param obj BOOST JSON object
+    */
     CreatureParametersSPtr parseCreature(boost::json::object obj);
+    /**
+    * Public method for creating a Creature. Firstly it checks the map if this specimen is registered,
+    * if it's not it creates a default creature. Otherwise it creates the one specified in the type 
+    * parameter.
+    *\param type unique string that defines a specimen of a creature
+    */
     CreatureParametersSPtr createCreature(const std::string &type);
+    /**
+    * It creates a child creature based on the parameters of the parent.
+    *\param csptr shared pointer to the parent parameters 
+    *\return shared pointer to the new CreatureParameters
+    */
     CreatureParametersSPtr createChild(CreatureParametersSPtr csptr);
+    /**
+    * Method of getting an instance of CreatureFactory.
+    * \return a static instance of CreatureFactory
+    */
     static CreatureFactory &getInstance();
+    /**
+    * Method to create a JSON string, containing all the available specimens. 
+    * Used for communication between webview and C++ programme.
+    *\return JSON string with the names of the specimens.
+    */
     std::string parseKeys();
+    /**
+    * Method to create a JSON string, containing all of the information
+    * about selected specimen. 
+    * Used for communication between webview and C++ programme.
+    *\return JSON string with the data about specimen.
+    */
     std::string getParsedValues(std::string key);
+    /**
+    * Similar method to registerFolder but it permits you to register only one creature. It is necessary for
+    * runtime adding new types of creatures. 
+    * \param pathToFile path to JSON file
+    */
     void registerCreature(const std::string &pathToFile);
+    /**
+    * Method used to register an entire folder with JSON files, that defines new creature parameters.
+    * \param pathToFolder path to folder
+    */
     void registerFolder(const std::string &pathToFolder);
     FactoryMap getFactoryMap() { return FactoryMap_; }
     std::string getConfigurationPath() { return configurationPath_ + std::filesystem::path::preferred_separator; };
@@ -87,7 +137,7 @@ struct CreatureParameters
     std::string type_;
 
     CreatureParameters(
-        const std::string& type,
+        const std::string &type,
         float energy,
         float weight,
         float hue,
