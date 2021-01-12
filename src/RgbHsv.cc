@@ -1,10 +1,5 @@
 #include "structs/RgbHsv.h"
-/**
- * Converter from hsv values to rgb
- * It is an implementation of algorithm found on the internet
- * https://www.rapidtables.com/convert/color/hsv-to-rgb.html 
- * \return RGB values of the provided HSV
- */
+
 RGBvals convert2RGB(HSVvals &hsv)
 {
     float C = hsv.v_ * hsv.s_;
@@ -52,12 +47,6 @@ RGBvals convert2RGB(HSVvals &hsv)
     return RGBvals(std::round((R1 + m) * 255), std::round((G1 + m) * 255), std::round((B1 + m) * 255));
 }
 
-/**
- * Converter from rgb values to  hsv
- * It is an implementation of algorithm found on the internet
- * https://www.rapidtables.com/convert/color/rgb-to-hsv.html
- * \return HSV values of the provided RGB
- */
 HSVvals convert2HSV(RGBvals &rgb)
 {
     HSVvals hsv;
