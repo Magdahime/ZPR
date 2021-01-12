@@ -3,6 +3,7 @@
 #pragma warning(push, 0)
 
 #include <iostream>
+#include <array>
 
 #pragma warning(pop)
 
@@ -22,7 +23,7 @@ class Perlin
 {
     const int width_;
     const int height_;
-    float *primaryNoise_;
+    std::vector<float> primaryNoise_;
     Perlin() = delete;
     Perlin(const Perlin &) = delete;
     Perlin(Perlin &&) = delete;
@@ -30,10 +31,11 @@ class Perlin
     Perlin &operator=(const Perlin &) = delete;
 public:
     Perlin(int width, int height);
-    ~Perlin();
+    ~Perlin() = default;
     void generateWhiteNoise();
-    float *generateSmoothNoise(int octave);
+    std::vector<float> generateSmoothNoise(int octave);
+    std::vector<float> generatePerlinNoise();
+};
+
     float cosineInterpolation(float value1, float value2, float alpha);
     float linearInterpolation(float value1, float value2, float alpha);
-    float *generatePerlinNoise();
-};

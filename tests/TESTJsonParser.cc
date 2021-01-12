@@ -7,11 +7,11 @@
 #include "JsonParser.h"
 namespace utf = boost::unit_test;
 BOOST_AUTO_TEST_SUITE(JsonParserSuite)
-BOOST_AUTO_TEST_CASE(searchFiles)
+BOOST_AUTO_TEST_CASE(searchFilesTest)
 {
     BOOST_CHECK(JsonParser::searchFiles(".\\config\\creature").size() == 2);
 }
-BOOST_AUTO_TEST_CASE(getValueFromFile)
+BOOST_AUTO_TEST_CASE(getValueFromFileTest)
 {
     std::vector<std::filesystem::path> files = JsonParser::searchFiles(".\\config\\creature");
     for(auto entry : files){
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(getValueFromFile)
     }
 }
 
-BOOST_AUTO_TEST_CASE(saveJsonToFile)
+BOOST_AUTO_TEST_CASE(saveJsonToFileTest)
 {
     std::string filename= "test";
     for(int i =0; i<100; i++){

@@ -1,6 +1,7 @@
 /////////////////////////////////////////////////////////
 ///     Author: Magdalena Majkowska                   ///
-///     Unit tests for Map class                      ///
+///     Unit tests for RGBHSV converter functions     ///
+///     class                                         ///
 /////////////////////////////////////////////////////////
 
 #include <boost/test/unit_test.hpp>
