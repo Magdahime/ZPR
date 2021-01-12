@@ -1,29 +1,29 @@
 /////////////////////////////////////////////////////////
 ///     Author: Magdalena Majkowska                   ///
-///     Unit tests for Map class                      ///
+///     Unit tests for RGBHSV converter functions     ///
+///     class                                         ///
 /////////////////////////////////////////////////////////
 
 #include <boost/test/unit_test.hpp>
-#include "Map.h"
+#include "structs/RgbHsv.h"
 namespace utf = boost::unit_test;
-BOOST_AUTO_TEST_SUITE(MapSuite)
+BOOST_AUTO_TEST_SUITE(RgbHsvSuite)
 BOOST_AUTO_TEST_CASE(Convert2HSVTest, *utf::tolerance(0.01))
 {
-    Map map;
-    Map::RGBvals black(0, 0, 0);
-    Map::RGBvals white(255, 255, 255);
-    Map::RGBvals red(255, 0, 0);
-    Map::RGBvals lime(0, 255, 0);
-    Map::RGBvals blue(0, 0, 255);
-    Map::RGBvals olive(128, 128, 0);
-    Map::RGBvals purple(128, 0, 128);
-    Map::HSVvals hsvBlack = map.convert2HSV(black);
-    Map::HSVvals hsvWhite = map.convert2HSV(white);
-    Map::HSVvals hsvRed = map.convert2HSV(red);
-    Map::HSVvals hsvLime = map.convert2HSV(lime);
-    Map::HSVvals hsvBlue = map.convert2HSV(blue);
-    Map::HSVvals hsvOlive = map.convert2HSV(olive);
-    Map::HSVvals hsvPurple = map.convert2HSV(purple);
+    RGBvals black(0, 0, 0);
+    RGBvals white(255, 255, 255);
+    RGBvals red(255, 0, 0);
+    RGBvals lime(0, 255, 0);
+    RGBvals blue(0, 0, 255);
+    RGBvals olive(128, 128, 0);
+    RGBvals purple(128, 0, 128);
+    HSVvals hsvBlack = convert2HSV(black);
+    HSVvals hsvWhite = convert2HSV(white);
+    HSVvals hsvRed = convert2HSV(red);
+    HSVvals hsvLime = convert2HSV(lime);
+    HSVvals hsvBlue = convert2HSV(blue);
+    HSVvals hsvOlive = convert2HSV(olive);
+    HSVvals hsvPurple = convert2HSV(purple);
     //BLACK
     BOOST_CHECK(hsvBlack.h_ == 0.0f);
     BOOST_CHECK(hsvBlack.s_ == 0.0f);
@@ -55,21 +55,20 @@ BOOST_AUTO_TEST_CASE(Convert2HSVTest, *utf::tolerance(0.01))
 }
 BOOST_AUTO_TEST_CASE(Convert2RGBTest)
 {
-    Map map;
-    Map::HSVvals hsvBlack(0.0f, 0.0f, 0.0f);
-    Map::HSVvals hsvWhite(0.0f, 0.0, 1.0f);
-    Map::HSVvals hsvRed(0.0f, 1.0f, 1.0f);
-    Map::HSVvals hsvLime(120.0, 1.0, 1.0);
-    Map::HSVvals hsvBlue(240.0f, 1.0f, 1.0f);
-    Map::HSVvals hsvOlive(60.0f, 1.0f, 0.5f);
-    Map::HSVvals hsvPurple(300.0f, 1.0, 0.5f);
-    Map::RGBvals black = map.convert2RGB(hsvBlack);
-    Map::RGBvals white = map.convert2RGB(hsvWhite);
-    Map::RGBvals red = map.convert2RGB(hsvRed);
-    Map::RGBvals lime = map.convert2RGB(hsvLime);
-    Map::RGBvals blue = map.convert2RGB(hsvBlue);
-    Map::RGBvals olive = map.convert2RGB(hsvOlive);
-    Map::RGBvals purple = map.convert2RGB(hsvPurple);
+    HSVvals hsvBlack(0.0f, 0.0f, 0.0f);
+    HSVvals hsvWhite(0.0f, 0.0, 1.0f);
+    HSVvals hsvRed(0.0f, 1.0f, 1.0f);
+    HSVvals hsvLime(120.0, 1.0, 1.0);
+    HSVvals hsvBlue(240.0f, 1.0f, 1.0f);
+    HSVvals hsvOlive(60.0f, 1.0f, 0.5f);
+    HSVvals hsvPurple(300.0f, 1.0, 0.5f);
+    RGBvals black = convert2RGB(hsvBlack);
+    RGBvals white = convert2RGB(hsvWhite);
+    RGBvals red = convert2RGB(hsvRed);
+    RGBvals lime = convert2RGB(hsvLime);
+    RGBvals blue = convert2RGB(hsvBlue);
+    RGBvals olive = convert2RGB(hsvOlive);
+    RGBvals purple = convert2RGB(hsvPurple);
 
     //BLACK
     BOOST_CHECK(black.r_ == 0.0f);

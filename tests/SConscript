@@ -18,5 +18,6 @@ sources=Glob("*.cc")
 sources.append(["#/src/Neuron.cc",
                 "#/src/Map.cc",
                 "#/src/Perlin.cc",
-                "#/src/CreatureFactory.cc"])
+                "#/src/CreatureFactory.cc",
+                "#/src/RgbHsv.cc"])
 env.Program('../bin/Tests',sources,LIBPATH=['#/lib/boost_1_75_0/stage/lib'])

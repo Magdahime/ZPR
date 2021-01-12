@@ -7,11 +7,11 @@
 #include "JsonParser.h"
 namespace utf = boost::unit_test;
 BOOST_AUTO_TEST_SUITE(JsonParserSuite)
-BOOST_AUTO_TEST_CASE(searchFiles)
+BOOST_AUTO_TEST_CASE(searchFilesTest)
 {
     BOOST_CHECK(JsonParser::searchFiles(".\\config\\creature").size() == 2);
 }
-BOOST_AUTO_TEST_CASE(getValueFromFile)
+BOOST_AUTO_TEST_CASE(getValueFromFileTest)
 {
     std::vector<std::filesystem::path> files = JsonParser::searchFiles(".\\config\\creature");
     for(auto entry : files){
@@ -27,16 +27,16 @@ BOOST_AUTO_TEST_CASE(getValueFromFile)
     }
 }
 
-BOOST_AUTO_TEST_CASE(saveJsonToFile)
+BOOST_AUTO_TEST_CASE(saveJsonToFileTest)
 {
     std::string filename= "test";
     for(int i =0; i<100; ++i){
         JsonParser::saveJsonToFile(filename, "test");
     }
     BOOST_CHECK(JsonParser::searchFiles(".\\config\\creature").size() == 102);
-    for(int i =0; i<100; ++i){
-        std::filesystem::remove(".\\config\\creature\\" + filename + std::to_string(i) + ".txt");
+    for(int i =0; i<100; i++){
+        std::filesystem::remove(".\\config\\creature\\" + filename + std::to_string(i) + ".json");
     }
-    std::filesystem::remove(".\\config\\creature\\" + filename + ".txt");
+    std::filesystem::remove(".\\config\\creature\\" + filename + ".json");
 }
 BOOST_AUTO_TEST_SUITE_END()

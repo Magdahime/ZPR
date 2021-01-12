@@ -46,11 +46,11 @@ class CreatureFactory
     CreatureFactory &operator=(CreatureFactory &&) = delete;
     CreatureFactory &operator=(const CreatureFactory &) = delete;
 
-    CreatureParametersSPtr parseCreature(boost::json::object obj);
     CreatureParametersSPtr create(CreatureParametersSPtr csptr);
 
     std::string configurationPath_;
 public:
+    CreatureParametersSPtr parseCreature(boost::json::object obj);
     CreatureParametersSPtr createCreature(const std::string &type);
     CreatureParametersSPtr createChild(CreatureParametersSPtr csptr);
     static CreatureFactory &getInstance();

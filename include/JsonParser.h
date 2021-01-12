@@ -10,6 +10,7 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include <boost/json.hpp>
 
@@ -64,7 +65,9 @@ public:
         stream.open(path.string(), std::ios::in);
         std::stringstream buffer;
         buffer << stream.rdbuf();
-        boost::json::value jv = boost::json::parse(buffer.str());
+        std::string toParse = buffer.str();
+        std::replace(toParse.begin(), toParse.end(), '\'', ' ');
+        boost::json::value jv = boost::json::parse(toParse);
         return jv.as_object();
     }
     /**

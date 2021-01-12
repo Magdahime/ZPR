@@ -5,7 +5,6 @@
 #endif //LINUX_PRAGMA
 
 #include <iostream>
-#include <cstdlib>
 #include <cmath>
 
 #ifndef LINUX_PRAGMA
@@ -13,6 +12,7 @@
 #endif //LINUX_PRAGMA
 
 #include "Perlin.h"
+#include "structs/RgbHsv.h"
 
 constexpr int DEGREES = 360;
 constexpr int INVALID_COORDS = -1;
@@ -28,8 +28,6 @@ class Map
     unsigned char *pixels_;
     unsigned char *HSVpixels_;
     void scalePerlin(float *perlinH, float *perlinS, float *perlinV);
-    float max3(float float1, float float2, float float3);
-    float min3(float float1, float float2, float float3);
 
     Map(const Map &) = delete;
     Map(Map &&) = delete;
@@ -49,34 +47,7 @@ public:
         delete[] HSVpixels_;
     };
     Map(int width, int height, unsigned char *pixels) : width_(width), height_(height), pixels_(pixels){};
-
-    /**
-    * RGBvals are used to store the RGB values of one pixel on the map.
-    * They are used during converting colours from HSV to RGB and the other way round.
-    */
-    struct RGBvals
-    {
-        float r_;
-        float g_;
-        float b_;
-        RGBvals(float r, float g, float b) : r_(r), g_(g), b_(b) {}
-        RGBvals() {}
-    };
-    /**
-    * HSVvals are used to store the HSV values of one pixel on the map.
-    * They are used during converting colours from HSV to RGB and the other way round.
-    */
-    struct HSVvals
-    {
-        float h_;
-        float s_;
-        float v_;
-        HSVvals(float h, float s, float v) : h_(h), s_(s), v_(v) {}
-        HSVvals() {}
-    };
     unsigned char *generateMapFromPerlin(Perlin &perlin);
-    HSVvals convert2HSV(RGBvals &rgb);
-    RGBvals convert2RGB(HSVvals &hsv);
     inline int getWidth() { return width_; };
     inline int getHeight() { return height_; };
     /**
@@ -106,3 +77,4 @@ public:
         return INVALID_COORDS;
     }
 };
+

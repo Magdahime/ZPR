@@ -1,10 +1,3 @@
-
-var populationArray = []
-localStorage.setItem("populationArray", JSON.stringify(populationArray));
-var weightArray = []
-localStorage.setItem("weightArray", JSON.stringify(weightArray));
-var ageArray = []
-localStorage.setItem("ageArray", JSON.stringify(ageArray));
 var creatureTypeArray = []
 var populationChart
 var weightChart
@@ -13,30 +6,38 @@ var creatureTypeChart
 var bucketsNumber = 13
 
 function newDataPopulationNum(frame, num) {
-    var populationFromJSON = JSON.parse(localStorage.getItem("populationArray"));
-    console.log(populationFromJSON)
+    var populationFromJSON = JSON.parse(sessionStorage.getItem("populationArray"));
+    if(populationFromJSON == null){
+        populationFromJSON = []
+    }
     populationFromJSON.push([frame, num])
-    localStorage.setItem("populationArray", JSON.stringify(populationFromJSON));
+    sessionStorage.setItem("populationArray", JSON.stringify(populationFromJSON));
     populationChart.updateSeries([{
-        data: JSON.parse(localStorage.getItem("populationArray"))
+        data: JSON.parse(sessionStorage.getItem("populationArray"))
     }])
 }
 
 function newDataWeightNum(frame, num) {
-    var weightFromJSON = JSON.parse(localStorage.getItem("weightArray"));
+    var weightFromJSON = JSON.parse(sessionStorage.getItem("weightArray"));
+    if(weightFromJSON == null){
+        weightFromJSON = []
+    }
     weightFromJSON.push([frame, num])
-    localStorage.setItem("weightArray", JSON.stringify(weightFromJSON));
+    sessionStorage.setItem("weightArray", JSON.stringify(weightFromJSON));
     weightChart.updateSeries([{
-        data: JSON.parse(localStorage.getItem("weightArray"))
+        data: JSON.parse(sessionStorage.getItem("weightArray"))
     }])
 }
 
 function newDataAgeNum(frame, num) {
-    var ageFromJSON = JSON.parse(localStorage.getItem("ageArray"));
+    var ageFromJSON = JSON.parse(sessionStorage.getItem("ageArray"));
+    if(ageFromJSON == null){
+        ageFromJSON = []
+    }
     ageFromJSON.push([frame, num])
-    localStorage.setItem("ageArray", JSON.stringify(ageFromJSON));
+    sessionStorage.setItem("ageArray", JSON.stringify(ageFromJSON));
     ageChart.updateSeries([{
-        data: JSON.parse(localStorage.getItem("ageArray"))
+        data: JSON.parse(sessionStorage.getItem("ageArray"))
     }])
 }
 
@@ -59,7 +60,7 @@ function renderPopulationLineChart() {
         },
         series: [{
             name: 'Number of Creatures',
-            data: JSON.parse(localStorage.getItem("populationArray"))
+            data: JSON.parse(sessionStorage.getItem("populationArray"))
         }],
         xaxis: {
             type: 'numeric'
@@ -85,7 +86,7 @@ function renderWeightLineChart() {
         },
         series: [{
             name: 'Weight of Creature',
-            data: JSON.parse(localStorage.getItem("weightArray"))
+            data: JSON.parse(sessionStorage.getItem("weightArray"))
         }],
         xaxis: {
             type: 'numeric'
@@ -111,7 +112,7 @@ function renderAgeLineChart() {
         },
         series: [{
             name: 'Age of Creature',
-            data: JSON.parse(localStorage.getItem("ageArray"))
+            data: JSON.parse(sessionStorage.getItem("ageArray"))
         }],
         xaxis: {
             type: 'numeric'

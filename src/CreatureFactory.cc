@@ -188,6 +188,5 @@ std::string CreatureFactory::getParsedValues(std::string key)
     parsed += R"("speedMultiplier":)";
     parsed += std::to_string(csptr->speedMultiplier_);
     parsed += "}'";
-    std::cout << parsed << std::endl;
     return parsed;
 }
