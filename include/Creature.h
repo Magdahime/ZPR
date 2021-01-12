@@ -17,6 +17,8 @@ class CreatureContainer;
 /**
  * \author Magdalena Majkowska
  * 
+ * \class
+ * 
  * Creature class, supposed to be used as an abstract for accessing specimen data.
  * It is left unused as CreatureContainer provides faster access to any needed parameters, sadly leaving the project without real data abstraction layer.
  */

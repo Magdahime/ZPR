@@ -28,6 +28,7 @@
 // ZPR
 #include "Simulation.h"
 
+//Forward declarations
 namespace webview
 {
     class webview;
@@ -37,6 +38,7 @@ class PyWebserver;
 
 /**
  * \author Bartłomiej Janowski
+ * \class
  * 
  * This is the main class of the Program. It stores all needed pointers to other segments of the app.
  * 
@@ -64,7 +66,15 @@ private:
     std::thread statisticsThread_;
     SimulationData statistics_;
 
+    /**
+     * Semaphore at which the program waits until webview is initialised.
+     */
     boost::interprocess::interprocess_semaphore webviewSemaphore_;
+
+    /**
+     * Semaphore at which run() method waits for the simulation to be initialised
+     * so that the SFML window is not frozen
+     */
     boost::interprocess::interprocess_semaphore sfmlWindowSemaphore_;
 
     bool terminated_ = false;
@@ -77,15 +87,33 @@ private:
     Program &operator=(const Program &) = delete;
     void terminate();
 
+    void sendStatistics(const SimulationData &data);
+
 public:
     Program();
     ~Program() = default;
+
+    /**
+     * Main method of the program, incl. SFML window handler
+     */
     void run();
 
+    /**
+     * Calls the string as Javascript on the webview
+     */
     void callJS(const std::string &javascript);
 
+    /**
+     * Prepares program::run() for terminate
+     */
     void callTerminate();
 
+    /**
+     * Runs statistics thread
+     * 
+     * \note
+     * This could not be easily located elswhere, as webview library characteristics only allow for
+     * inclusion of the header only in a single compilation unit.
+     */
     void runStatistics();
-    void sendStatistics(const SimulationData &data);
 };

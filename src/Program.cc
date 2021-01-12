@@ -45,7 +45,6 @@ void Program::run()
     sf::Image image;
     sf::Texture texture;
     sf::Sprite sprite;
-
     sf::View simView;
 
     bool submittedMap = false;
@@ -53,8 +52,14 @@ void Program::run()
 
     webviewSemaphore_.wait();
 
+    /**
+     * StatisticsThread needs to be delayed until Webview is initialised and can take calls
+     */
     statisticsThread_ = std::thread(&Program::runStatistics, this);
 
+    /**
+     * Binding all necessary calls between JS and C++
+     */
     webviewPtr_->dispatch([&] {
         webviewPtr_->bind(
             "setMapSize",
@@ -75,7 +80,6 @@ void Program::run()
                 simView.setSize(windowWidth, windowHeight);
                 simView.zoom(zpr_windows::SF_ZOOM_RATIO);
                 simView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
-                // programWindowPtr_->setView(simView);
                 simulationPtr_->setMap(mapPtr);
                 sfmlWindowSemaphore_.post();
                 return "OK";
@@ -137,6 +141,9 @@ void Program::run()
                 pausedSimulation_ = !pausedSimulation_;
                 return "OK";
             });
+        /**
+         * This is called when the user needs to select preset creature in "Edit simulation"
+         */
         webviewPtr_->bind(
             "getListOfCreatures",
             [&](std::string s) -> std::string {
@@ -144,6 +151,9 @@ void Program::run()
                 webviewPtr_->eval("addCreaturesToDropdown(" + CreatureFactory::getInstance().parseKeys() + ");");
                 return "OK";
             });
+        /**
+         * This is called when the user selects preset in "Edit simulation" and wants the fields populated
+         */
         webviewPtr_->bind("getDataAboutCreature",
                           [&](std::string s) -> std::string {
                               webviewPtr_->eval("receiveData(" + CreatureFactory::getInstance().getParsedValues(webview::json_parse(s, "", 0)) + ")");
@@ -151,6 +161,10 @@ void Program::run()
                           });
     });
 
+    /**
+     * Waiting with continuing the execution until simulation is initialised.
+     * Otherwise SFML would be freezed regardless
+     */
     sfmlWindowSemaphore_.wait();
 
     programWindowPtr_ = std::make_shared<sf::RenderWindow>(sf::VideoMode(zpr_windows::SF_X, zpr_windows::SF_Y), zpr_windows::SF_NAME),
@@ -188,6 +202,7 @@ void Program::run()
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == 0)
                 {
+                    // Starting map panning
                     moving = true;
                     oldPos = programWindowPtr_->mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
                 }
@@ -200,6 +215,7 @@ void Program::run()
             case sf::Event::MouseButtonReleased:
                 if (event.mouseButton.button == 0)
                 {
+                    // Ending map panning
                     moving = false;
                 }
                 break;
@@ -226,6 +242,7 @@ void Program::run()
                 break;
             }
         }
+        // If a creature is selected, the view follows it with the center over the specimen.
         if (simulationPtr_->isSelected())
         {
             simView = programWindowPtr_->getView();
@@ -244,6 +261,7 @@ void Program::run()
         }
         now = newnow;
 
+        // If the simulation is not paused, printing creatures is delayed until the iteration is calculated.
         if (!pausedSimulation_)
             simulationPtr_->waitVideo();
 
@@ -253,12 +271,16 @@ void Program::run()
         simulationPtr_->printClipped(programWindowPtr_, simView);
         programWindowPtr_->display();
 
+        // If the simulation is not paused, it is notified that an iteration can be started.
         if (!pausedSimulation_)
             simulationPtr_->postVideo();
     }
     terminate();
 }
 
+/**
+ * Terminate calls a terminate action on all other classes whose threads are or may be running.
+ */
 void Program::terminate()
 {
     pausedSimulation_ = false;
@@ -328,6 +350,8 @@ void Program::callTerminate()
 
 void Program::callJS(const std::string &javascript)
 {
+    if(!webviewPtr_)
+        return;
     webviewPtr_->dispatch([this, javascript] {
         webviewPtr_->eval(javascript);
     });
@@ -340,6 +364,7 @@ void Program::runStatistics()
     while (!(terminated_ || toTerminate_))
     {
         SimulationData data;
+        // Gathering the per-second statistics
         data.secondNum = simulationPtr_->getSimulationSecond();
         data.populationSize = simulationPtr_->getPopulationSize();
         data.avgWeight = simulationPtr_->getAvgWeight();
@@ -347,6 +372,7 @@ void Program::runStatistics()
         sendStatistics(data);
         if (simulationPtr_->isSelected())
         {
+            // Gathering specimen data if any selected
             std::string params = simulationPtr_->getSelectedParametersAsJSON();
             std::string neurons = simulationPtr_->getSelectedNeuronsAsJSON();
             std::locale::global(std::locale::classic());
@@ -355,7 +381,9 @@ void Program::runStatistics()
             callJS(
                 std::string("updateDataAboutNetwork(") + neurons + std::string(");"));
         }
-        auto sleeptime = std::chrono::duration_cast<std::chrono::milliseconds>(end - std::chrono::steady_clock::now());
+        // Synchronising sleeptime, so that data is sent with constant intervals
+        auto sleeptime = 
+            std::chrono::duration_cast<std::chrono::milliseconds>(end - std::chrono::steady_clock::now());
         end += increment;
         std::this_thread::sleep_for(sleeptime);
     }
@@ -363,8 +391,29 @@ void Program::runStatistics()
 
 void Program::sendStatistics(const SimulationData &data)
 {
-    std::locale::global(std::locale::classic());
-    callJS(std::string("newDataPopulationNum(") + std::to_string(data.secondNum) + std::string(", ") + std::to_string(data.populationSize) + std::string(");"));
-    callJS(std::string("newDataWeightNum(") + std::to_string(data.secondNum) + std::string(", ") + std::to_string(data.avgWeight) + std::string(");"));
-    callJS(std::string("newDataAgeNum(") + std::to_string(data.secondNum) + std::string(", ") + std::to_string(data.avgAge) + std::string(");"));
+    /**
+     * Boost.JSON seems to unexpectedly hijack the locale, so it is refreshed every iteration.
+     */
+    std::locale::global(std::locale::classic()); 
+    callJS(
+        std::string("newDataPopulationNum(") 
+        + std::to_string(data.secondNum) 
+        + std::string(", ") 
+        + std::to_string(data.populationSize) 
+        + std::string(");")
+    );
+    callJS(
+        std::string("newDataWeightNum(") 
+        + std::to_string(data.secondNum) 
+        + std::string(", ") 
+        + std::to_string(data.avgWeight) 
+        + std::string(");")
+    );
+    callJS(
+        std::string("newDataAgeNum(") 
+        + std::to_string(data.secondNum) 
+        + std::string(", ") 
+        + std::to_string(data.avgAge) 
+        + std::string(");")
+    );
 }

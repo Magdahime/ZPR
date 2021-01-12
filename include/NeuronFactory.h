@@ -17,10 +17,16 @@
 #include "RandomNumberGenerator.h"
 #include "structs/NeuronParameters.h"
 
+/**
+ * Default layer widths for the NN
+ */
 const std::vector<size_t> LAYER_WIDTHS = {
     10,
     12,
     5};
+/**
+ * Default layer offsets (the index of a single set at which the values for a layer start) for the NN
+ */
 const std::vector<size_t> LAYER_OFFSETS{
     0,
     130,
@@ -41,6 +47,11 @@ class NeuronFactory
     NeuronFactory &operator=(NeuronFactory &&) = delete;
     NeuronFactory &operator=(const NeuronFactory &) = delete;
 
+    /**
+     * This function creates a NeuronSet for layer widths as specified,with all but last layers 
+     * having weights normalized between -1/sqrt(no. of neurons on previous layer) and 
+     * 1/sqrt(no. of neurons on previous layer).
+     */
     NeuronSetSPtr createNeuronSet(const std::vector<size_t> &layersWidths)
     {
         NeuronSetSPtr set = std::make_shared<NeuronSet>();
@@ -64,12 +75,17 @@ public:
         static NeuronFactory instance;
         return instance;
     }
-
+    /**
+     * Function returning default size NeuronSet
+     */
     NeuronSetSPtr createNeuronSet()
     {
         return createNeuronSet(LAYER_WIDTHS);
     }
 
+    /**
+     * Function creating neurons based od parent's ones, mutating values slightly.
+     */
     NeuronSetSPtr createChild(NeuronSetSPtr parent)
     {
         NeuronSetSPtr set = std::make_shared<NeuronSet>();

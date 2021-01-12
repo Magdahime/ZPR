@@ -25,6 +25,7 @@ const std::vector<std::string> CONFIG_PATH = {"config", "creature"};
 const float CREATURE_FACTORY_STDDEV = 2.0;
 const unsigned int PARAMS_PER_CREATURE = 14;
 
+//Forward declaration
 struct CreatureParameters;
 
 using CreatureParametersSPtr = std::shared_ptr<CreatureParameters>;

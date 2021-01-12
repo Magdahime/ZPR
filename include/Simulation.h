@@ -1,13 +1,5 @@
 /////////////////////////////////////////////////////////
 ///     Author: Bartlomiej Janowski                   ///
-///     Simulation class that holds all necessary     ///
-///     simulation data.                              ///
-///                                                   ///
-///     As you can see there are some "_PROTO"        ///
-///     members. Those will only be used as a         ///
-///     "proof-of-concept" on library and runtime     ///
-///     cross-compatibility.                          ///
-///                                                   ///
 /////////////////////////////////////////////////////////
 #pragma once
 
@@ -24,30 +16,18 @@
 #pragma warning(pop)
 #endif //LINUX_PRAGMA
 
+#include "Flags.h"
 #include "CreatureContainer.h"
+#include "structs/SimulationParameters.h"
 
-const unsigned int CREATURE_COUNT_PROTO = 10;
 const float pi = 3.1415927f;
 
 const float ACTIVATION_THRESHOLD = 0.8f;
 
-const float ENERGY_THRESHOLD = 100.f;
-const float BIRTH_WEIGHT_THRESHOLD = 100.f;
-const float ENERGY_BIRTH = 20.f;
-const float ENERGY_BIRTH_FAILED = 20.f;
-const float WEIGHT_BIRTH = 20.f;
-
-const float ANGLE_PER_FRAME = 2.0f;
-const float ACCELERATION_MULTIPLIER = 1.05f;
 const float MAX_SPEED = 0.05f;
 const float MIN_SPEED = 0.00001f;
 
-const float BIRTH_AGE_THRESHOLD = 1.f;
-
-const float TARGET_FPS = 60.f;
-
-const float MIN_WEIGHT = 10.f;
-
+//Forward declarations
 class Creature;
 class Neuron;
 class Map;
@@ -58,23 +38,8 @@ namespace sf
     class View;
 } // namespace sf
 
-struct SimulationParameters
-{
-    unsigned int creaturesNum_;
-    float energyThreshhold_;
-    float minWeight_;
-    float weightGained_;
-    float weightLost_;
-    float birthWeightThreshhold_;
-    float energyBirth_;
-    float energyBirthFailed_;
-    float weightBirth_;
-    float birthAgeThreshhold_;
-    float anglePerFrame_;
-    float accelerationMultiplier_;
-    float maxSpeed_;
-};
 /**
+ * \class
  * Simulation class that holds (mostly via CreatureContainer instance) all Simulation data
  */
 class Simulation
@@ -257,7 +222,7 @@ public:
     void unselect();
 
 
-    inline float getSimulationSecond() { return (iterationNumber_ / TARGET_FPS); };
+    inline float getSimulationSecond() { return (iterationNumber_ / zpr_windows::TARGET_FPS); };
     inline size_t getPopulationSize() { return populationSize_; };
     inline float getAvgWeight() { return avgWeight_; };
     inline float getAvgAge() { return avgAge_; };

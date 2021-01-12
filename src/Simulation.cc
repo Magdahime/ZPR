@@ -75,14 +75,28 @@ int Simulation::iteration()
     {
         if (container_.isDeleted(creatureIndex))
             continue;
+        /**
+         * OpenMP happily allows for reducing sums over whole workgroup. 
+         * The specification allows for reducing maximums/minimums, but this remains unimplemented
+         * in MSVC and thus we had to ommit it.
+         */
         ++creatureCounter;
         totalAge += container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE);
         totalWeight += container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_WEIGHT);
+
+        /**
+         * Populating neurons before NN calculations
+         */
         container_.populateNeurons(creatureIndex);
+
+        /**
+         * Neural Network calculations
+         */
         for (unsigned int layerIndex = 0; layerIndex < LAYER_WIDTHS.size(); layerIndex++)
         {
             container_.calculateLayer(creatureIndex, layerIndex);
         }
+
         updateCreature(creatureIndex);
     }
     avgAge_ = totalAge / creatureCounter;
@@ -101,6 +115,9 @@ void Simulation::updateCreature(size_t creatureIndex)
                                                                       // 4 -> birth
     CreatureParametersSPtr creature = container_.getCreatureParameters(creatureIndex);
 
+    /**
+     * Call on all possible actions to be calculated and processed
+     */
     calculateSteer(creature, results[0]);
     calculateAcceleration(creature, results[1]);
     calculateEating(creature, results[2]);
@@ -111,6 +128,10 @@ void Simulation::updateCreature(size_t creatureIndex)
     calculateAntennas(creature);
     calculateAge(creature);
 
+    /**
+     * Birth handling.
+     * If a new creature is birthed, the fact is delayed until after the whole iteration is done.
+     */
     if (birth)
     {
         auto childParams = CreatureFactory::getInstance().createChild(creature);
@@ -194,11 +215,17 @@ bool Simulation::calculateBirth(CreatureParametersSPtr creature, float result)
         if (creature->weight_ + rng.get(0, parameters_.birthWeightThreshhold_) > parameters_.birthWeightThreshhold_)
         {
             birth = true;
+            /**
+             * Birth penalty
+             */
             creature->energy_ -= parameters_.energyBirth_;
             creature->weight_ -= parameters_.weightBirth_;
         }
         else
         {
+            /**
+             * Unsuccesful birth penalty
+             */
             creature->energy_ -= parameters_.energyBirthFailed_;
         }
     }
@@ -208,16 +235,19 @@ bool Simulation::calculateBirth(CreatureParametersSPtr creature, float result)
 void Simulation::calculateMovement(CreatureParametersSPtr creature)
 {
     creature->speed_ = fabs(creature->speed_);
-    float movement = creature->speed_ * creature->speedMultiplier_ > parameters_.maxSpeed_ ? parameters_.maxSpeed_ : creature->speed_ * creature->speedMultiplier_;
+    float movement = fmin(creature->speed_ * creature->speedMultiplier_, parameters_.maxSpeed_);
     creature->positionX_ += sin(creature->heading_) * movement;
-    (creature->positionX_ > map_->getWidth()) ? creature->positionX_ -= map_->getWidth() : ((creature->positionX_ < 0) ? creature->positionX_ += map_->getWidth() : 0);
+    creature->positionX_ = fmod(creature->positionX_ + map_->getWidth(), map_->getWidth());
     creature->positionY_ += cos(creature->heading_) * movement;
-    (creature->positionY_ > map_->getHeight()) ? creature->positionY_ -= map_->getHeight() : ((creature->positionY_ < 0) ? creature->positionY_ += map_->getHeight() : 0);
+    creature->positionY_ = fmod(creature->positionY_ + map_->getHeight(), map_->getHeight());
 }
 void Simulation::calculateAntennas(CreatureParametersSPtr creature)
 {
     creature->bottomAntennaH_ = map_->getPixelH(creature->positionX_, creature->positionY_);
 
+    /**
+     * If any of the antennae outside of map, values considered the same as of the bottom one
+     */
     float xPos = creature->positionX_ + creature->speedMultiplier_ * sin(creature->heading_ - 45.f / 180.f * pi);
     float yPos = creature->positionY_ + creature->speedMultiplier_ * cos(creature->heading_ - 45.f / 180.f * pi);
     float hValue = map_->getPixelH(xPos, yPos);
@@ -236,7 +266,7 @@ void Simulation::calculateAntennas(CreatureParametersSPtr creature)
 
 void Simulation::calculateAge(CreatureParametersSPtr creature)
 {
-    creature->age_ += 1.f / TARGET_FPS;
+    creature->age_ += 1.f / zpr_windows::TARGET_FPS;
 }
 
 void Simulation::calculateEnergy(CreatureParametersSPtr creature)
@@ -275,6 +305,9 @@ void Simulation::printAll(std::shared_ptr<sf::RenderWindow> window)
 void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View view)
 {
     float xMin, xMax, yMin, yMax;
+    /**
+     * Calculating clipping coordinates
+     */
     xMin = view.getCenter().x - view.getSize().x / 2.f;
     xMax = view.getCenter().x + view.getSize().x / 2.f;
     yMin = view.getCenter().y - view.getSize().y / 2.f;
@@ -336,7 +369,9 @@ void Simulation::setMap(std::shared_ptr<Map> mapPtr)
 
 void Simulation::selectClosestCreature(float x, float y)
 {
-    // findClosestCreature(x, y);
+    /**
+     * findClosestCreature should not ever lock up, so the detach is mostly safe
+     */
     std::thread findThread(&Simulation::findClosestCreature, this, x, y);
     findThread.detach();
 }
@@ -385,6 +420,8 @@ std::string Simulation::getSelectedParametersAsJSON()
     std::string comma = ", ";
     std::string quote = R"(")";
     auto params = container_.getCreatureParameters(selectedIndex_);
+    // This is not the best way of JSON creation, but seemed the most practical before introducing Boost.JSON
+    // after which we did not manage to rewrite this
     std::string out = R"('{"data":[)";
     out += std::to_string(params->age_) + comma;
     out += std::to_string(params->weight_) + comma;
@@ -406,6 +443,8 @@ std::string Simulation::getSelectedNeuronsAsJSON()
         return "None selected";
     }
     auto neurons = container_.getNeuronStates(selectedIndex_);
+    // This is not the best way of JSON creation, but seemed the most practical before introducing Boost.JSON
+    // after which we did not manage to rewrite this
     std::string out = R"('{"nodes" : [)";
     for (size_t i = 0; i < neurons.size(); ++i)
     {

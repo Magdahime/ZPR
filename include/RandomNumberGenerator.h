@@ -13,6 +13,7 @@
 #endif //LINUX_PRAGMA
 /**
  * \author Magdalena Majkowska
+ * \class
  * One of the most important class of our project - RandomNumberGenerator. 
  * Depending on the inital values given during the initialization it can generate 
  * either an integer or floating point random numbers from the linear distribution

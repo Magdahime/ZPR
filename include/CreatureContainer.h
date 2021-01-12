@@ -31,6 +31,8 @@ using FullParams = std::tuple<std::shared_ptr<CreatureParameters>, std::shared_p
 /**
  * \author Bartłomiej Janowski
  * 
+ * \class
+ * 
  * CreatureContainer is the main container for simulation data.
  * It stores data of all creatures in stadard library Vectors, but maps unused space from deletions
  * with a Queue, allowing for a decreased memory cost of running simulation for longer.

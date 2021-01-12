@@ -2,9 +2,10 @@
 #include <cmath>
 #include <algorithm>
 /**
-* RGBvals are used to store the RGB values of one pixel on the map.
-* They are used during converting colours from HSV to RGB and the other way round.
-*/
+ * \class
+ * RGBvals are used to store the RGB values of one pixel on the map.
+ * They are used during converting colours from HSV to RGB and the other way round.
+ */
 struct RGBvals
 {
     float r_;
@@ -14,9 +15,10 @@ struct RGBvals
     RGBvals() {}
 };
 /**
-* HSVvals are used to store the HSV values of one pixel on the map.
-* They are used during converting colours from HSV to RGB and the other way round.
-*/
+ * \class
+ * HSVvals are used to store the HSV values of one pixel on the map.
+ * They are used during converting colours from HSV to RGB and the other way round.
+ */
 struct HSVvals
 {
     float h_;
