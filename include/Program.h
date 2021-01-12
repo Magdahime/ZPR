@@ -8,7 +8,9 @@
 /////////////////////////////////////////////////////////
 #pragma once
 
+#ifndef LINUX_PRAGMA
 #pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 //C++ Standard Library stuff.
 #include <memory>
@@ -19,7 +21,9 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
+#ifndef LINUX_PRAGMA
 #pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 // ZPR
 #include "Simulation.h"

@@ -1,12 +1,16 @@
 #pragma once
 
+#ifndef LINUX_PRAGMA
 #pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
 
+#ifndef LINUX_PRAGMA
 #pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 #include "Perlin.h"
 
@@ -19,8 +23,8 @@ constexpr int INVALID_COORDS = -1;
  */
 class Map
 {
-    unsigned int width_;
-    unsigned int height_;
+    size_t width_;
+    size_t height_;
     unsigned char *pixels_;
     unsigned char *HSVpixels_;
     void scalePerlin(float *perlinH, float *perlinS, float *perlinV);
@@ -77,27 +81,27 @@ public:
     inline int getHeight() { return height_; };
     /**
     * Gets value of the selected pixel from the RGB version of the map
-    * \param x - x coordinate on the map
-    * \param y - y coordinate on the map
-    * \param offset - used to acces the certain value of colour 0 - red, 1 - green, 2 - blue
-    * \return value of the pixel
+    * \param x x coordinate on the map
+    * \param y y coordinate on the map
+    * \param offset Used to acces the certain value of colour 0 - red, 1 - green, 2 - blue
+    * \return Value of the pixel
     */
     inline short getPixel(unsigned int x, unsigned int y, unsigned int offset)
     {
-        if (x < width_ && y < height_ && x >= 0 && y >= 0 && offset < 4)
+        if (x < width_ && y < height_ && offset < 4)
             return pixels_[width_ * y * 4 + x * 4 + offset];
         return INVALID_COORDS;
     };
     /**
     * Gets value of the selected pixel from the HSV version of the map
-    * \param x - x coordinate on the map
-    * \param y - y coordinate on the map
-    * \param offset - used to acces the certain value of colour 0 - red, 1 - green, 2 - blue
-    * \return value of the pixel
+    * \param x x coordinate on the map
+    * \param y y coordinate on the map
+    * \param offset Used to acces the certain value of colour 0 - red, 1 - green, 2 - blue
+    * \return Value of the pixel
     */
     inline short getPixelH(unsigned int x, unsigned int y, unsigned int offset = 0)
     {
-        if (x < width_ && y < height_ && x >= 0 && y >= 0 && offset < 4)
+        if (x < width_ && y < height_ && offset < 4)
             return HSVpixels_[width_ * y * 4 + x * 4 + offset];
         return INVALID_COORDS;
     }

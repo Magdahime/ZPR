@@ -13,7 +13,7 @@ unsigned char *Map::generateMapFromPerlin(Perlin &perlin)
     float *perlinNoiseH = perlin.generatePerlinNoise();
     float *perlinNoiseS = perlin.generatePerlinNoise();
     float *perlinNoiseV = perlin.generatePerlinNoise();
-    for (int i = 0; i < width_ * height_ * 4; i += 4)
+    for (size_t i = 0; i < width_ * height_ * 4; i += 4)
     {
         HSVvals hsv(perlinNoiseH[i / 4] * 360, perlinNoiseS[i / 4], perlinNoiseV[i / 4]);
         HSVpixels_[i] = hsv.h_;

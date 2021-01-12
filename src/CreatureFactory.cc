@@ -1,8 +1,14 @@
+#ifndef LINUX_PRAGMA
 #pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 #include <filesystem>
 
+#include <boost/dll/runtime_symbol_info.hpp>
+
+#ifndef LINUX_PRAGMA
 #pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 #include "CreatureFactory.h"
 #include "JsonParser.h"
@@ -31,7 +37,7 @@ void CreatureFactory::registerFolder(const std::string &pathToFolder)
 void CreatureFactory::registerCreature(const std::string &pathToFile)
 {
     std::filesystem::path path = pathToFile;
-    boost::json::object &obj = JsonParser::getValueFromFile(path);
+    boost::json::object obj = JsonParser::getValueFromFile(path);
     CreatureParametersSPtr csptr = parseCreature(obj);
     FactoryMap_.insert(std::pair<std::string, CreatureParametersSPtr>(csptr->type_, csptr));
 }
@@ -64,13 +70,17 @@ CreatureFactory &CreatureFactory::getInstance()
 }
 
 /**
-* Constructor of CreatureFactory - it automatically registers all creatures from default path
-* as set in DEFAULT_CONFIGURATION_PATH.
+* Constructor of CreatureFactory - it automatically registers all creatures from default path.
 */
 
 CreatureFactory::CreatureFactory()
 {
-    registerFolder(DEFAULT_CONFIGURATION_PATH);
+    auto path = boost::dll::program_location().parent_path().parent_path();
+    for(auto &s : CONFIG_PATH){
+        path /= s;
+    }
+    configurationPath_ = path.string();
+    registerFolder(configurationPath_);
 }
 
 /**
@@ -88,6 +98,10 @@ CreatureParametersSPtr CreatureFactory::createCreature(const std::string &type)
     }
     else
     {
+        std::cout<<"\n\nHenlo\n";
+        for(FactoryMap::iterator it = FactoryMap_.begin(); it != FactoryMap_.end(); ++it){
+            std::cout<<"\nEntry:\t"<<it->first;
+        }
         CreatureParametersSPtr csptr = FactoryMap_.at(DEFAULT_CREATURE);
         return create(csptr);
     }

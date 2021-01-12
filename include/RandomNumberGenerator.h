@@ -1,10 +1,16 @@
 #pragma once
 
+#ifndef LINUX_PRAGMA
 #pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 #include <random>
+#ifndef LINUX_PRAGMA
 #pragma warning(pop)
+#endif //LINUX_PRAGMA
 
+#ifndef LINUX_PRAGMA
 #pragma warning(disable : 4003)
+#endif //LINUX_PRAGMA
 /**
  * \author Magdalena Majkowska
  * One of the most important class of our project - RandomNumberGenerator. 

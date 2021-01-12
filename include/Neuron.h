@@ -1,11 +1,15 @@
 #pragma once
 
+#ifndef LINUX_PRAGMA
 #pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 #include <iostream>
 #include <vector>
 
+#ifndef LINUX_PRAGMA
 #pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 const unsigned short int NEURONINPUTSNUM = 8;
 const float MUTATIONSTRENGTH = 0.2f;

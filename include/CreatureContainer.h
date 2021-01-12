@@ -1,13 +1,17 @@
 #pragma once
 
+#ifndef LINUX_PRAGMA
 #pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 #include <vector>
 #include <queue>
 
 #include <boost/lockfree/queue.hpp>
 
+#ifndef LINUX_PRAGMA
 #pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 #include "Creature.h"
 #include "CreatureFactory.h"
@@ -81,7 +85,7 @@ class CreatureContainer : public std::enable_shared_from_this<CreatureContainer>
 
 public:
     CreatureContainer();
-    unsigned int getSize();
+    size_t getSize();
     void putCreature(std::string type = DEFAULT_CREATURE);
     const CreatureParametersSPtr getCreatureParameters(size_t index);
     NeuronSetSPtr getNeurons(size_t index);
@@ -104,15 +108,15 @@ public:
      */
     void putQueue();
 
-    const size_t getPutQueueSize() { return putQueue_.size(); };
+    size_t getPutQueueSize() { return putQueue_.size(); };
 
     /**
      * Method replacing creatureValues_ entry for creature at index with values from params
      */
     void updateCreatureParameters(size_t index, CreatureParametersSPtr params);
 
-    const float getCreatureX(size_t index);
-    const float getCreatureY(size_t index);
+    float getCreatureX(size_t index);
+    float getCreatureY(size_t index);
 
     void deleteCreature(size_t index);
     bool isDeleted(size_t index);

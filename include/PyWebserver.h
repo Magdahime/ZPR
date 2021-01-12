@@ -8,7 +8,9 @@
 /////////////////////////////////////////////////////////
 #pragma once
 
-#pragma warning (push, 0)
+#ifndef LINUX_PRAGMA
+#pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 #include <thread>
 #include <iostream>
@@ -18,7 +20,9 @@
 
 #include <boost/dll/runtime_symbol_info.hpp>
 
-#pragma warning (pop)
+#ifndef LINUX_PRAGMA
+#pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 #include "Flags.h"
 
@@ -56,6 +60,10 @@ public:
         auto terminatingEx = PyExc_Exception;
         PyGILState_STATE gstate;
         gstate = PyGILState_Ensure();
+        /**
+         * This is necessary as on Linux two Exceptions are needed for SimpleHTTPWebserver to exit.
+         */
+        PyThreadState_SetAsyncExc(threadId_, terminatingEx);
         PyThreadState_SetAsyncExc(threadId_, terminatingEx);
         PyGILState_Release(gstate);
     }

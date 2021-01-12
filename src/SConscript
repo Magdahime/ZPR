@@ -38,11 +38,11 @@ if system == "windows":
 else:
     print("Linux!")
     env = Environment()
-    env.Append(CPPDEFINES=['LINUX_WV'])
+    env.Append(CPPDEFINES=['LINUX_PRAGMA'])
     env.Append(CPPPATH=['#include',
                         '#lib/webview',
                         '#lib/boost'])
-    env.Append(CXXFLAGS='-std=c++17 -DWEBVIEWGTK -Wall -Wextra -O3')
+    env.Append(CXXFLAGS='-std=c++17 -DWEBVIEWGTK -Wall -Wextra -fopenmp')
     env.ParseConfig('pkg-config --cflags --libs python3 gtk+-3.0 webkit2gtk-4.0')
     boost_json = File('#lib/boost/stage/lib/libboost_json.a')
     boost_filesystem = File('#lib/boost/stage/lib/libboost_filesystem.a')

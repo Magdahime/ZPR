@@ -11,14 +11,18 @@
 /////////////////////////////////////////////////////////
 #pragma once
 
-#pragma warning (push, 0)
+#ifndef LINUX_PRAGMA
+#pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 #include <vector>
 #include <memory>
 
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
 
-#pragma warning (pop)
+#ifndef LINUX_PRAGMA
+#pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 #include "CreatureContainer.h"
 
@@ -95,7 +99,7 @@ class Simulation
     boost::interprocess::interprocess_semaphore videoSemaphore_;
 
     unsigned int iterationNumber_ = 0;
-    unsigned int populationSize_ = 0;
+    size_t populationSize_ = 0;
     float avgWeight_ = 0.f;
     float avgAge_ = 0.f;
 
@@ -104,14 +108,14 @@ class Simulation
     /**
      * Method for calculating passing of a single frame for the set creature
      */
-    void updateCreature(int creatureIndex);
+    void updateCreature(size_t creatureIndex);
 
     /**
      * Method for finding and selecting the closest creature to a set point.
      */
     void findClosestCreature(float x, float y);
 
-    unsigned int selectedIndex_ = 0 - 1;
+    size_t selectedIndex_ = 0 - 1;
 
     /**
      * Mutex guarding for only one iteration to run at the same time
@@ -135,7 +139,7 @@ public:
     /**
      * Spawns creatureCount of default species.
      */
-    void prepare(unsigned int creatureCount);
+    void prepare(size_t creatureCount);
 
     /**
      * Puts creatureNum of creautures as specified by type (if registered in CreatureFactory)
@@ -229,13 +233,13 @@ public:
      * Internally calls findClosestCreature() on a new thread to minimize overhead.
      */
     void selectClosestCreature(float x, float y);
-    const float getSelectedX();
-    const float getSelectedY();
+    float getSelectedX();
+    float getSelectedY();
 
     /**
      * Informs whether a creature is selected at the moment
      */
-    bool isSelected() { return (selectedIndex_ != 0 - 1); };
+    bool isSelected() { return (selectedIndex_ != static_cast<size_t>(0 - 1)); };
 
     /**
      * Returns a JSON string of selected creature's parameters as accepted by JS frontend.
@@ -247,9 +251,14 @@ public:
      */
     std::string getSelectedNeuronsAsJSON();
 
+    /**
+     * Unselects the selected creature.
+     */
+    void unselect();
+
 
     inline float getSimulationSecond() { return (iterationNumber_ / TARGET_FPS); };
-    inline unsigned int getPopulationSize() { return populationSize_; };
+    inline size_t getPopulationSize() { return populationSize_; };
     inline float getAvgWeight() { return avgWeight_; };
     inline float getAvgAge() { return avgAge_; };
 

@@ -21,11 +21,11 @@ BOOST_AUTO_TEST_CASE(getIntTest)
     double factor = 10000.0;  /// (number:1000000)*100
     double difference = 0.1;  /// a small number to check the quality of randomness
     RandomNumberGenerator<int> rng(min, max);
-    for (int i = 0; i < iterations; i++)
+    for (int i = 0; i < iterations; ++i)
     {
         testArray[rng.get()]++;
     }
-    for (int i = 0; i <= max; i++)
+    for (int i = 0; i <= max; ++i)
     {
         BOOST_CHECK(fabs(percentage - (testArray[i] / factor)) <= difference);
     }

@@ -1,11 +1,15 @@
 #pragma once
 
+#ifndef LINUX_PRAGMA
 #pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 #include <vector>
 #include <memory>
 
+#ifndef LINUX_PRAGMA
 #pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 #include "RandomNumberGenerator.h"
 
@@ -31,7 +35,7 @@ struct NeuronParameters
     {
         float lowerBound = (-1) / sqrt(inputsNo);
         float upperBound = 1 / sqrt(inputsNo);
-        for (int i = 0; i < inputsNo; i++)
+        for (unsigned int i = 0; i < inputsNo; ++i)
         {
             weights.push_back(rng.get(lowerBound, upperBound));
         }
@@ -42,7 +46,7 @@ struct NeuronParameters
     NeuronParameters getChild()
     {
         NeuronParameters child(inputsNo, layerNo);
-        for (int i = 0; i < inputsNo; i++)
+        for (unsigned int i = 0; i < inputsNo; ++i)
         {
             child.weights[i] = weights[i] + rng.getNormal(0, 0.02); //alert MAGIC
         }

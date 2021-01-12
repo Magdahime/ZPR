@@ -1,6 +1,8 @@
 #pragma once
 
+#ifndef LINUX_PRAGMA
 #pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 #include <iostream>
 #include <fstream>
@@ -11,7 +13,9 @@
 
 #include <boost/json.hpp>
 
+#ifndef LINUX_PRAGMA
 #pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 /**
  * \author Magdalena Majkowska
@@ -33,8 +37,8 @@ public:
 
     /**
      * Method to retrieve all of the files from specified folder.
-     * \param pathToFolder - path to folder that we want to search
-     * \return - vector of std::filesystem::path objects
+     * \param pathToFolder Path to folder that we want to search
+     * \return Vector of std::filesystem::path objects
      */
     static std::vector<std::filesystem::path> searchFiles(const std::string &pathToFolder)
     {
@@ -51,8 +55,8 @@ public:
     }
     /**
      * Method to read JSON file and creates a boost::json::object for further processing. 
-     * \param path - path to JSON file (std::filesystem::path not string)
-     * \return - boost::json::object that we can easily read to get data
+     * \param path Path to JSON file (std::filesystem::path not string)
+     * \return boost::json::object that we can easily read to get data
      */
     static boost::json::object getValueFromFile(std::filesystem::path path)
     {
@@ -66,13 +70,13 @@ public:
     /**
      * Method to save a prepared beforehand string to file. 
      * Used for saving a new user-defined specimens in webview.  
-     * \param filename - name for the file, that will store new Creature Parameters
-     * \param jsonToSave - JSON string
-     * \return - full path to this filenam (only for purposes of testing)
+     * \param filename Name for the file, that will store new Creature Parameters
+     * \param jsonToSave JSON string
+     * \return Full path to this filename (only for purposes of testing)
      */
     static std::string saveJsonToFile(std::string filename, std::string jsonToSave)
     {
-        int index = 0;
+        size_t index = 0;
         std::string testFilename = filename;
         std::string fullPath = SAVE_PATH + testFilename + ".json";
         std::filesystem::path path = fullPath;

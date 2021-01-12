@@ -8,11 +8,15 @@
 
 #pragma once
 
+#ifndef LINUX_PRAGMA
 #pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 #include <string>
 
+#ifndef LINUX_PRAGMA
 #pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 namespace zpr_dev_flags
 {
@@ -38,7 +42,7 @@ namespace zpr_windows
 
 namespace zpr_consts
 {
-    const int statistics_sleep_millis = 1000;
+    const int STATISTICS_SLEEP_MILLIS = 1000;
     const std::string PYTHON_SERVER =
         R"(
 import http.server

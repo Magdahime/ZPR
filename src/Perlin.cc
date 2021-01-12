@@ -20,7 +20,7 @@ Perlin::~Perlin(){
 void Perlin::generateWhiteNoise()
 {
     RandomNumberGenerator<float, float> rng(0.0, 1.0);
-    for (int i = 0; i < height_ * width_; i++)
+    for (int i = 0; i < height_ * width_; ++i)
         primaryNoise_[i] = rng.get();
 }
 
@@ -64,7 +64,7 @@ float *Perlin::generateSmoothNoise(int octave)
     int samplePeriod = 1 << octave;
     float frequency = 1.0f / samplePeriod;
 
-    for (int i = 0; i < width_ * height_; i++)
+    for (int i = 0; i < width_ * height_; ++i)
     {
         int x = i % width_;
         int y = i / width_;
@@ -104,13 +104,13 @@ float *Perlin::generatePerlinNoise()
     {
         amplitude *= persistence;
         totalAmplitude += amplitude;
-        for (int i = 0; i < width_ * height_; i++)
+        for (int i = 0; i < width_ * height_; ++i)
         {
             perlinNoise[i] += smoothedNoises[octave][i] * amplitude;
         }
     }
 
-    for (int i = 0; i < width_ * height_; i++)
+    for (int i = 0; i < width_ * height_; ++i)
     {
         perlinNoise[i] /= totalAmplitude;
     }

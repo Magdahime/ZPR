@@ -1,20 +1,25 @@
 #pragma once
 
-#pragma warning (push, 0)
+#ifndef LINUX_PRAGMA
+#pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 #include <iostream>
 #include <map>
 #include <string>
 #include <memory>
+#include <vector>
 
 #include <boost/json.hpp>
 
-#pragma warning (pop)
+#ifndef LINUX_PRAGMA
+#pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 #include "Creature.h"
 
-const std::string DEFAULT_CONFIGURATION_PATH = ".\\config\\creature";
 const std::string DEFAULT_CREATURE = "default";
+const std::vector<std::string> CONFIG_PATH = {"config", "creature"};
 
 const float CREATURE_FACTORY_STDDEV = 2.0;
 const unsigned int PARAMS_PER_CREATURE = 14;
@@ -43,6 +48,8 @@ class CreatureFactory
 
     CreatureParametersSPtr parseCreature(boost::json::object obj);
     CreatureParametersSPtr create(CreatureParametersSPtr csptr);
+
+    std::string configurationPath_;
 public:
     CreatureParametersSPtr createCreature(const std::string &type);
     CreatureParametersSPtr createChild(CreatureParametersSPtr csptr);

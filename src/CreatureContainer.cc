@@ -8,14 +8,14 @@ CreatureContainer::CreatureContainer()
 {
     neuronSize_ = 0;
     neuronSize_ += LAYER_WIDTHS[0];
-    for (int i = 1; i < LAYER_WIDTHS.size(); ++i)
+    for (size_t i = 1; i < LAYER_WIDTHS.size(); ++i)
     {
         neuronSize_ += LAYER_WIDTHS[i];
         neuronSize_ += LAYER_WIDTHS[i - 1] * LAYER_WIDTHS[i];
     };
 }
 
-unsigned int CreatureContainer::getSize()
+size_t CreatureContainer::getSize()
 {
     return types_.size();
 }
@@ -28,25 +28,25 @@ void CreatureContainer::putCreature(std::string type)
 }
 NeuronSetSPtr CreatureContainer::getNeurons(size_t index)
 {
-    std::vector<unsigned int> layerWidths;
+    std::vector<size_t> layerWidths;
     {
         layerWidths = LAYER_WIDTHS;
     }
     unsigned int neuronsSize = layerWidths[0];
-    for (int i = 1; i < layerWidths.size(); i++)
+    for (size_t i = 1; i < layerWidths.size(); ++i)
     {
         neuronsSize += layerWidths[i] + layerWidths[i - 1] * layerWidths[i];
     }
     NeuronSetSPtr neurons = std::make_shared<NeuronSet>();
     unsigned int neuronsOffset = index * neuronsSize;
-    for (int i = 1; i < layerWidths.size(); i++)
+    for (size_t i = 1; i < layerWidths.size(); ++i)
     {
         neuronsOffset += layerWidths[i - 1];
         neurons->emplace_back(std::make_shared<NeuronLayer>());
-        for (int j = 0; j < layerWidths[i]; j++)
+        for (size_t j = 0; j < layerWidths[i]; ++j)
         {
             neurons->back()->emplace_back(layerWidths[i - 1], i);
-            for (int k = 0; k < layerWidths[i - 1]; k++)
+            for (size_t k = 0; k < layerWidths[i - 1]; ++k)
             {
                 neurons->back()->back().weights[k] = neuronValues_[neuronsOffset++];
             }
@@ -57,12 +57,12 @@ NeuronSetSPtr CreatureContainer::getNeurons(size_t index)
 void CreatureContainer::putCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons)
 {
     std::lock_guard<std::mutex> lockGuard(mutex_);
-    std::vector<unsigned int> layerWidths;
+    std::vector<size_t> layerWidths;
     {
         layerWidths = LAYER_WIDTHS;
     }
     unsigned int neuronsSize = layerWidths[0];
-    for (int i = 1; i < layerWidths.size(); i++)
+    for (size_t i = 1; i < layerWidths.size(); ++i)
     {
         neuronsSize += layerWidths[i] + layerWidths[i - 1] * layerWidths[i];
     }
@@ -195,11 +195,11 @@ const CreatureParametersSPtr CreatureContainer::getCreatureParameters(size_t ind
     return parameters;
 };
 
-const float CreatureContainer::getCreatureX(size_t index)
+float CreatureContainer::getCreatureX(size_t index)
 {
     return creatureValues_[index * PARAMS_PER_CREATURE + 3];
 };
-const float CreatureContainer::getCreatureY(size_t index)
+float CreatureContainer::getCreatureY(size_t index)
 {
     return creatureValues_[index * PARAMS_PER_CREATURE + 4];
 };
@@ -213,7 +213,7 @@ void CreatureContainer::deleteCreature(size_t index)
             throw std::exception();
         }
     }
-    catch (std::exception ex)
+    catch (std::exception &ex) // allows for ommiting both out-of-bound and deleted indexes
     {
         return;
     }
@@ -245,14 +245,11 @@ void CreatureContainer::calculateLayer(size_t index, unsigned int layer)
 {
     if (layer > LAYER_WIDTHS.size() - 1 || layer < 1)
         return;
-    unsigned int inputs = LAYER_WIDTHS[layer - 1];
-    unsigned int outputs = LAYER_WIDTHS[layer];
-    unsigned int offset = neuronSize_ * index;
-    //std::cout<<"I L O S:\t"<<index<<"\t"<<layer<<"\t"<<offset<<"\t"<<neuronValues_.size()<<"\n"; //alert DEBUG
-    for (int i = 0; i < LAYER_WIDTHS[layer]; i++)
+    size_t offset = neuronSize_ * index;
+    for (size_t i = 0; i < LAYER_WIDTHS[layer]; ++i)
     {
         neuronValues_[offset + LAYER_OFFSETS[layer] + i] = 0.f;
-        for (int j = 0; j < LAYER_WIDTHS[layer - 1]; j++)
+        for (size_t j = 0; j < LAYER_WIDTHS[layer - 1]; ++j)
         {
             neuronValues_[offset + LAYER_OFFSETS[layer] + i] +=
                 neuronValues_[offset + LAYER_OFFSETS[layer - 1] + j] *
@@ -290,10 +287,10 @@ std::vector<std::vector<float>> CreatureContainer::getNeuronStates(size_t index)
 {
     std::vector<std::vector<float>> out = {};
     unsigned int neuronValuesIndex = neuronSize_ * index;
-    for (int i = 0; i < LAYER_WIDTHS.size(); i++)
+    for (size_t i = 0; i < LAYER_WIDTHS.size(); ++i)
     {
         out.emplace_back();
-        for (int j = 0; j < LAYER_WIDTHS[i]; j++)
+        for (size_t j = 0; j < LAYER_WIDTHS[i]; ++j)
         {
             out.back().push_back(neuronValues_[neuronValuesIndex++]);
         }

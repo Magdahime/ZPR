@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(MutateTest)
     float min = 0.0;
     float max = 100.0;
     RandomNumberGenerator<float> rng(min, max);
-    for (int i = 0; i < iterations; i++)
+    for (int i = 0; i < iterations; ++i)
     {
         randomWeights.push_back(rng.get());
     }
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(MutateTest)
     Neuron testNeuron(copyRandomWeights.begin(), copyRandomWeights.end());
     testNeuron.mutate();
     int numberOfMutated = 0;
-    for (int i = 0; i < iterations; i++)
+    for (int i = 0; i < iterations; ++i)
     {
         if (copyRandomWeights[i] != randomWeights[i])
         {

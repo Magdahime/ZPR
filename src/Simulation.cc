@@ -1,15 +1,20 @@
+#ifndef LINUX_PRAGMA
 #pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 #include <iostream>
 #include <cmath>
 #include <chrono>
+#include <thread>
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
 #include <boost/json.hpp>
 
+#ifndef LINUX_PRAGMA
 #pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 #include <omp.h>
 
@@ -20,9 +25,9 @@
 
 Simulation::Simulation() : dataSemaphore_(1), videoSemaphore_(0){};
 
-void Simulation::prepare(unsigned int creatureCount)
+void Simulation::prepare(size_t creatureCount)
 {
-    for (int i = 0; i < creatureCount; i++)
+    for (size_t i = 0; i < creatureCount; ++i)
     {
         container_.putCreature();
     }
@@ -63,9 +68,8 @@ int Simulation::iteration()
     float totalAge = 0.f;
     float totalWeight = 0.f;
     // std::cout<<"\nEntering"; // alert DEBUG
-#pragma omp parallel for reduction(+ \
-                                   : creatureCounter, totalWeight, totalAge)
-    for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
+#pragma omp parallel for reduction(+ : creatureCounter, totalWeight, totalAge)
+    for (size_t creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
             continue;
@@ -94,7 +98,7 @@ int Simulation::iteration()
     return creatureCounter;
 }
 
-void Simulation::updateCreature(int creatureIndex)
+void Simulation::updateCreature(size_t creatureIndex)
 {
 
     std::vector<float> results = container_.getResult(creatureIndex); // 0 -> steer
@@ -132,6 +136,8 @@ void Simulation::updateCreature(int creatureIndex)
     if (creature->weight_ < parameters_.minWeight_)
     {
         container_.deleteCreature(creatureIndex);
+        if(creatureIndex == selectedIndex_)
+            unselect();
     }
 
     container_.updateCreatureParameters(creatureIndex, creature);
@@ -185,7 +191,7 @@ void Simulation::calculateEating(CreatureParametersSPtr creature, float result)
         creature->energy_ += dist;
     }
 }
-void Simulation::calculateAttack(CreatureParametersSPtr creature, float result) {}
+void Simulation::calculateAttack(CreatureParametersSPtr creature, float result) { (void)creature; (void)result; } //Supressing -Wunused-parameter
 
 bool Simulation::calculateBirth(CreatureParametersSPtr creature, float result)
 {
@@ -258,7 +264,7 @@ void Simulation::calculateEnergy(CreatureParametersSPtr creature)
 
 void Simulation::printAll(std::shared_ptr<sf::RenderWindow> window)
 {
-    for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
+    for (size_t creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         CreatureParametersSPtr creature = container_.getCreatureParameters(creatureIndex);
         sf::CircleShape circle;
@@ -283,7 +289,7 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
     yMin = view.getCenter().y - view.getSize().y / 2.f;
     yMax = view.getCenter().y + view.getSize().y / 2.f;
     // std::cout<<"\nStart print\n"; // alert DEBUG
-    for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
+    for (size_t creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
             continue;
@@ -341,15 +347,15 @@ void Simulation::setMap(std::shared_ptr<Map> mapPtr)
 void Simulation::selectClosestCreature(float x, float y)
 {
     // findClosestCreature(x, y);
-    std::thread thread(&Simulation::findClosestCreature, this, x, y);
-    thread.detach();
+    std::thread findThread(&Simulation::findClosestCreature, this, x, y);
+    findThread.detach();
 }
 
 void Simulation::findClosestCreature(float x, float y)
 {
-    float minDist = map_->getWidth() * map_->getHeight();
-    unsigned int foundIndex = 0 - 1;
-    for (int creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
+    float minDist = INFINITY;
+    size_t foundIndex = 0 - 1;
+    for (size_t creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
             continue;
@@ -364,7 +370,7 @@ void Simulation::findClosestCreature(float x, float y)
     selectedIndex_ = foundIndex;
 }
 
-const float Simulation::getSelectedX()
+float Simulation::getSelectedX()
 {
     if (isSelected())
     {
@@ -372,7 +378,7 @@ const float Simulation::getSelectedX()
     }
     return map_->getWidth() / 2;
 }
-const float Simulation::getSelectedY()
+float Simulation::getSelectedY()
 {
     if (isSelected())
     {
@@ -383,6 +389,9 @@ const float Simulation::getSelectedY()
 
 std::string Simulation::getSelectedParametersAsJSON()
 {
+    if(!isSelected()){
+        return "None selected";
+    }
     std::string comma = ", ";
     std::string quote = R"(")";
     auto params = container_.getCreatureParameters(selectedIndex_);
@@ -403,11 +412,14 @@ std::string Simulation::getSelectedParametersAsJSON()
 
 std::string Simulation::getSelectedNeuronsAsJSON()
 {
+    if(!isSelected()){
+        return "None selected";
+    }
     auto neurons = container_.getNeuronStates(selectedIndex_);
     std::string out = R"('{"nodes" : [)";
-    for (int i = 0; i < neurons.size(); i++)
+    for (size_t i = 0; i < neurons.size(); ++i)
     {
-        for (int j = 0; j < neurons[i].size(); j++)
+        for (size_t j = 0; j < neurons[i].size(); ++j)
         {
             out += std::string(R"({"label":)");
             out += std::to_string((neurons[i])[j]);
@@ -420,9 +432,14 @@ std::string Simulation::getSelectedNeuronsAsJSON()
     out += std::string(R"(}]}')");
     return out;
 };
+
+void Simulation::unselect(){
+    selectedIndex_ = static_cast<size_t>(0 - 1);
+}
+
 void Simulation::putCreature(std::string type, int creatureNum)
 {
-    for (int i = 0; i < creatureNum; i++)
+    for (int i = 0; i < creatureNum; ++i)
     {
         container_.putCreature(type);
     }

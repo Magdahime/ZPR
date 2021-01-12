@@ -1,6 +1,8 @@
 #pragma once
 
+#ifndef LINUX_PRAGMA
 #pragma warning(push, 0)
+#endif //LINUX_PRAGMA
 
 #include <iostream>
 #include <map>
@@ -8,16 +10,18 @@
 #include <string>
 #include <memory>
 
+#ifndef LINUX_PRAGMA
 #pragma warning(pop)
+#endif //LINUX_PRAGMA
 
 #include "RandomNumberGenerator.h"
 #include "structs/NeuronParameters.h"
 
-const std::vector<unsigned int> LAYER_WIDTHS = {
+const std::vector<size_t> LAYER_WIDTHS = {
     10,
     12,
     5};
-const std::vector<unsigned int> LAYER_OFFSETS{
+const std::vector<size_t> LAYER_OFFSETS{
     0,
     130,
     202};
@@ -37,16 +41,16 @@ class NeuronFactory
     NeuronFactory &operator=(NeuronFactory &&) = delete;
     NeuronFactory &operator=(const NeuronFactory &) = delete;
 
-    NeuronSetSPtr createNeuronSet(const std::vector<unsigned int> &layersWidths)
+    NeuronSetSPtr createNeuronSet(const std::vector<size_t> &layersWidths)
     {
         NeuronSetSPtr set = std::make_shared<NeuronSet>();
-        unsigned int lastLayerWidth, currLayerWidth;
-        for (int layer = 1; layer < layersWidths.size(); ++layer)
+        size_t lastLayerWidth, currLayerWidth;
+        for (size_t layer = 1; layer < layersWidths.size(); ++layer)
         {
             set->push_back(std::make_shared<NeuronLayer>());
             lastLayerWidth = layersWidths[layer - 1];
             currLayerWidth = layersWidths[layer];
-            for (int neuron = 0; neuron < currLayerWidth; ++neuron)
+            for (size_t neuron = 0; neuron < currLayerWidth; ++neuron)
             {
                 set->back()->emplace_back(NeuronParameters(lastLayerWidth, layer));
             }
