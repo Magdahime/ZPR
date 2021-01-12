@@ -107,34 +107,18 @@ void CreatureContainer::putCreature(CreatureParametersSPtr params, NeuronSetSPtr
     creatureValues_[creaturesIndex++] = params->bottomAntennaH_;
     creatureValues_[creaturesIndex++] = params->popDensity_;
     neuronsIndex += layerWidths[0];
-    // std::cout << "\nSurvived creatureValues_... NI: "<<neuronsIndex<<"\n"; //alert DEBUG COUT
-    //std::cout<<"INIT SIZE\t"<<neuronValues_.size()<<"\t"<<layerWidths.size()<<"\n";
     for (unsigned int layerNo = 1; layerNo < layerWidths.size(); ++layerNo)
     {
-        // std::cout<<"I'm still alive... neurons->size "<<(*neurons).size()<<"\n"; //alert DEBUG COUT
         auto layer = (*neurons)[layerNo - 1];
         for (auto neuron : *layer)
         {
-            // std::cout<<"I'm still still alive...\n"; //alert DEBUG COUT
             for (float value : neuron.weights)
             {
                 neuronValues_[neuronsIndex++] = value;
             }
         }
-        // std::cout<<"NIndex: "<<neuronsIndex<<"\n"; //alert DEBUG COUT
         neuronsIndex += layerWidths[layerNo];
-        //std::cout<<"LATER SIZE\t"<<neuronValues_.size()<<"\n";
     }
-    // std::cout << "\nSurvived neuronValues_...\n"; //alert DEBUG COUT
-    // creatures_.emplace_back(
-    //     Creature(
-    //         weak_from_this(),
-    //         layerWidths,
-    //         neuronsInitial,
-    //         neuronValues_.size() - 1,
-    //         creaturesInitial,
-    //         creatureValues_.size() - 1,
-    //         types_.size() - 1));
 };
 
 void CreatureContainer::delayPutCreature(CreatureParametersSPtr params, NeuronSetSPtr neurons)
@@ -146,7 +130,6 @@ void CreatureContainer::delayPutCreature(CreatureParametersSPtr params, NeuronSe
 
 void CreatureContainer::putQueue()
 {
-    // std::lock_guard<std::mutex> lockGuard(mutex_);
     while (!putQueue_.empty())
     {
         auto val = putQueue_.front();
@@ -218,8 +201,6 @@ void CreatureContainer::deleteCreature(size_t index)
         return;
     }
     types_[index] = DELETED_DESIGNATOR;
-    if (availableIndexes_.push(index))
-        std::cerr << "\nPush failed - memory in CreatureContainer may be lost\n"; // alert DEBUG
 };
 
 bool CreatureContainer::isDeleted(size_t index)

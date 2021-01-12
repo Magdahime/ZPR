@@ -98,10 +98,6 @@ CreatureParametersSPtr CreatureFactory::createCreature(const std::string &type)
     }
     else
     {
-        std::cout<<"\n\nHenlo\n";
-        for(FactoryMap::iterator it = FactoryMap_.begin(); it != FactoryMap_.end(); ++it){
-            std::cout<<"\nEntry:\t"<<it->first;
-        }
         CreatureParametersSPtr csptr = FactoryMap_.at(DEFAULT_CREATURE);
         return create(csptr);
     }

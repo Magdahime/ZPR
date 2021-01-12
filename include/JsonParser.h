@@ -34,7 +34,6 @@ private:
     JsonParser &operator=(const JsonParser &) = delete;
 
 public:
-    inline static const std::string SAVE_PATH = R"(.\config\creature\)";
 
     /**
      * Method to retrieve all of the files from specified folder.
@@ -77,18 +76,18 @@ public:
      * \param jsonToSave JSON string
      * \return Full path to this filename (only for purposes of testing)
      */
-    static std::string saveJsonToFile(std::string filename, std::string jsonToSave)
+    static std::string saveJsonToFile(const std::string& filename, const std::string& jsonToSave, const std::string& savePath)
     {
         size_t index = 0;
         std::string testFilename = filename;
-        std::string fullPath = SAVE_PATH + testFilename + ".json";
+        std::string fullPath = savePath + testFilename + ".json";
         std::filesystem::path path = fullPath;
         while (std::filesystem::exists(path))
         {
             std::string testFilename = filename;
             testFilename += std::to_string(index);
             index++;
-            fullPath = SAVE_PATH + testFilename + ".json";
+            fullPath = savePath + testFilename + ".json";
             path = fullPath;
         }
         std::ofstream fileStream(path);

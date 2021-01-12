@@ -52,7 +52,7 @@ class NeuronFactory
             currLayerWidth = layersWidths[layer];
             for (size_t neuron = 0; neuron < currLayerWidth; ++neuron)
             {
-                set->back()->emplace_back(NeuronParameters(lastLayerWidth, layer));
+                set->back()->emplace_back(NeuronParameters(lastLayerWidth, layer, layer == layersWidths.size() - 1));
             }
         }
         return set;
@@ -74,21 +74,15 @@ public:
     {
         NeuronSetSPtr set = std::make_shared<NeuronSet>();
         int i = 0;
-        // std::cout << " a "<<parent->size()<<" ";
         for (NeuronLayerSPtr layer : (*parent))
         {
-            // std::cout << " b ";
-            // --i;
             set->push_back(std::make_shared<NeuronLayer>());
             for (NeuronParameters &neuron : (*layer))
             {
-                // std::cout << " c ";
                 ++i;
-                //     0;
                 set->back()->emplace_back(neuron.getChild());
             }
         }
-        // std::cout << " I: " << i;
         return set;
     }
 

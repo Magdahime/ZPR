@@ -9,6 +9,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <filesystem>
 
 #include <boost/json.hpp>
 
@@ -59,6 +60,7 @@ public:
     void registerCreature(const std::string &pathToFile);
     void registerFolder(const std::string &pathToFolder);
     FactoryMap getFactoryMap() { return FactoryMap_; }
+    std::string getConfigurationPath() { return configurationPath_ + std::filesystem::path::preferred_separator; };
     ~CreatureFactory() { FactoryMap_.clear(); }
 };
 

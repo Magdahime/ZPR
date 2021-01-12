@@ -31,10 +31,17 @@ struct NeuronParameters
 
     NeuronParameters(
         unsigned int inputsNo,
-        unsigned int layerNo) : inputsNo(inputsNo), layerNo(layerNo)
+        unsigned int layerNo, bool lastLayer = false) : inputsNo(inputsNo), layerNo(layerNo)
     {
-        float lowerBound = (-1) / sqrt(inputsNo);
-        float upperBound = 1 / sqrt(inputsNo);
+        float lowerBound, upperBound;
+        if(!lastLayer){
+            lowerBound = (-1) / sqrt(inputsNo);
+            upperBound = 1 / sqrt(inputsNo);
+        }
+        else {
+            lowerBound = -1;
+            upperBound = 1;
+        }
         for (unsigned int i = 0; i < inputsNo; ++i)
         {
             weights.push_back(rng.get(lowerBound, upperBound));
@@ -48,7 +55,7 @@ struct NeuronParameters
         NeuronParameters child(inputsNo, layerNo);
         for (unsigned int i = 0; i < inputsNo; ++i)
         {
-            child.weights[i] = weights[i] + rng.getNormal(0, 0.02); //alert MAGIC
+            child.weights[i] = weights[i] + rng.getNormal(0, 0.01 * sqrt(inputsNo));
         }
         return child;
     }

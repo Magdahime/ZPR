@@ -117,9 +117,9 @@ void Program::run()
                     std::string creatureData = webview::json_parse(s, "", 0);
                     std::string creatureNum = webview::json_parse(s, "", 1);
                     std::string filename = webview::json_parse(creatureData, "type", 0);
-                    if (!std::filesystem::exists(JsonParser::SAVE_PATH + webview::json_parse(creatureData, "type", 0)))
+                    if (!std::filesystem::exists(CreatureFactory::getInstance().getConfigurationPath() + webview::json_parse(creatureData, "type", 0)))
                     {
-                        std::string path = JsonParser::saveJsonToFile(filename, creatureData);
+                        std::string path = JsonParser::saveJsonToFile(filename, creatureData, CreatureFactory::getInstance().getConfigurationPath());
                         CreatureFactory::getInstance().registerCreature(path);
                         simulationPtr_->putCreature(webview::json_parse(creatureData, "type", 0), std::stoi(creatureNum));
                     }

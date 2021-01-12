@@ -10,6 +10,7 @@ namespace utf = boost::unit_test;
 BOOST_AUTO_TEST_SUITE(RgbHsvSuite)
 BOOST_AUTO_TEST_CASE(Convert2HSVTest, *utf::tolerance(0.01))
 {
+    float epsilon = 2.f/255.f;
     RGBvals black(0, 0, 0);
     RGBvals white(255, 255, 255);
     RGBvals red(255, 0, 0);
@@ -25,33 +26,33 @@ BOOST_AUTO_TEST_CASE(Convert2HSVTest, *utf::tolerance(0.01))
     HSVvals hsvOlive = convert2HSV(olive);
     HSVvals hsvPurple = convert2HSV(purple);
     //BLACK
-    BOOST_CHECK(hsvBlack.h_ == 0.0f);
-    BOOST_CHECK(hsvBlack.s_ == 0.0f);
-    BOOST_CHECK(hsvBlack.v_ == 0.0f);
+    BOOST_CHECK(fabs(hsvBlack.h_ - 0.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvBlack.s_ - 0.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvBlack.v_ - 0.0f) < epsilon);
     //WHITE
-    BOOST_CHECK(hsvWhite.h_ == 0.0f);
-    BOOST_CHECK(hsvWhite.s_ == 0.0f);
-    BOOST_CHECK(hsvWhite.v_ == 1.0f);
+    BOOST_CHECK(fabs(hsvWhite.h_ - 0.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvWhite.s_ - 0.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvWhite.v_ - 1.0f) < epsilon);
     //RED
-    BOOST_CHECK(hsvRed.h_ == 0.0f);
-    BOOST_CHECK(hsvRed.s_ == 1.0f);
-    BOOST_CHECK(hsvRed.v_ == 1.0f);
+    BOOST_CHECK(fabs(hsvRed.h_ - 0.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvRed.s_ - 1.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvRed.v_ - 1.0f) < epsilon);
     //LIME
-    BOOST_CHECK(hsvLime.h_ == 120.0f);
-    BOOST_CHECK(hsvLime.s_ == 1.0f);
-    BOOST_CHECK(hsvLime.v_ == 1.0f);
+    BOOST_CHECK(fabs(hsvLime.h_ - 120.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvLime.s_ - 1.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvLime.v_ - 1.0f) < epsilon);
     //BLUE
-    BOOST_CHECK(hsvBlue.h_ == 240.0f);
-    BOOST_CHECK(hsvBlue.s_ == 1.0f);
-    BOOST_CHECK(hsvBlue.v_ == 1.0f);
+    BOOST_CHECK(fabs(hsvBlue.h_ - 240.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvBlue.s_ - 1.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvBlue.v_ - 1.0f) < epsilon);
     //OLIVE
-    BOOST_CHECK(hsvOlive.h_ == 60.0f);
-    BOOST_CHECK(hsvOlive.s_ == 1.0f);
-    BOOST_CHECK(hsvOlive.v_ == 0.5f);
+    BOOST_CHECK(fabs(hsvOlive.h_ - 60.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvOlive.s_ - 1.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvOlive.v_ - 0.502f) < epsilon);
     //PURPLE
-    BOOST_CHECK(hsvPurple.h_ == 300.0f);
-    BOOST_CHECK(hsvPurple.s_ == 1.0f);
-    BOOST_CHECK(hsvPurple.v_ == 0.5f);
+    BOOST_CHECK(fabs(hsvPurple.h_ - 300.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvPurple.s_ - 1.0f) < epsilon);
+    BOOST_CHECK(fabs(hsvPurple.v_ - 0.502f) < epsilon);
 }
 BOOST_AUTO_TEST_CASE(Convert2RGBTest)
 {

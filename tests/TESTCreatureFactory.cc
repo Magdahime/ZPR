@@ -22,8 +22,8 @@ BOOST_AUTO_TEST_CASE(createTest)
 }
 BOOST_AUTO_TEST_CASE(parseCreatureTest)
 {
-    std::filesystem::path path = ".\\config\\creature\\defaultCreatures.json";
-    boost::json::object &obj = JsonParser::getValueFromFile(path);
+    std::filesystem::path path = CreatureFactory::getInstance().getConfigurationPath() + "defaultCreatures.json";
+    boost::json::object obj = JsonParser::getValueFromFile(path);
     CreatureParametersSPtr csptr = CreatureFactory::getInstance().parseCreature(obj);
     BOOST_CHECK(csptr-> energy_ == 50.0);
     BOOST_CHECK(csptr-> weight_ == 1000.0 );
@@ -35,10 +35,10 @@ BOOST_AUTO_TEST_CASE(parseCreatureTest)
 BOOST_AUTO_TEST_CASE(getParsedValuesTest)
 {
     std::string filename = "parsedValues";
-    std::string path = ".\\config\\creature\\" + filename + ".json";
+    std::string path = CreatureFactory::getInstance().getConfigurationPath() + filename + ".json";
     std::string parsed = CreatureFactory::getInstance().getParsedValues("default");
-    JsonParser::saveJsonToFile(filename, parsed);
-    boost::json::object &obj = JsonParser::getValueFromFile(path);
+    JsonParser::saveJsonToFile(filename, parsed, CreatureFactory::getInstance().getConfigurationPath());
+    boost::json::object obj = JsonParser::getValueFromFile(path);
     CreatureParametersSPtr csptr = CreatureFactory::getInstance().parseCreature(obj);
     CreatureParametersSPtr csptrTest = CreatureFactory::getInstance().getFactoryMap()["default"];
     BOOST_CHECK(csptr->type_ == csptrTest-> type_);
