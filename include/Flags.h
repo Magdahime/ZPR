@@ -38,6 +38,7 @@ namespace zpr_windows
     const int WV_Y = 800;
     const int SF_X = 800;
     const int SF_Y = 800;
+    const float SF_ZOOM_RATIO = .06125f;
 } // namespace zpr_windows
 
 namespace zpr_consts

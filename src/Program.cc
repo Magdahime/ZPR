@@ -59,7 +59,6 @@ void Program::run()
         webviewPtr_->bind(
             "setMapSize",
             [&](std::string s) -> std::string {
-                std::cout<<"\n\n\nIM ALIVE\n\n\n";
                 if (submittedMap)
                     return "ALREADY SUBMITTED";
                 submittedMap = true;
@@ -74,7 +73,7 @@ void Program::run()
                 sprite.setTexture(texture);
                 simView.setCenter(windowWidth / 2.f, windowHeight / 2.f);
                 simView.setSize(windowWidth, windowHeight);
-                simView.zoom(.06125f); //alert MAGIC
+                simView.zoom(zpr_windows::SF_ZOOM_RATIO);
                 simView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
                 // programWindowPtr_->setView(simView);
                 simulationPtr_->setMap(mapPtr);
@@ -85,7 +84,6 @@ void Program::run()
         webviewPtr_->bind(
             "setSimulationParameters",
             [&](std::string s) -> std::string {
-                std::cout<<"\n\n\nIM ALIVE TOO\n\n\n";
                 if (submittedParams)
                     return "ALREADY SUBMITTED";
                 submittedParams = true;
@@ -148,7 +146,6 @@ void Program::run()
             });
         webviewPtr_->bind("getDataAboutCreature",
                           [&](std::string s) -> std::string {
-                              std::cout << webview::json_parse(s, "", 0) << std::endl;
                               webviewPtr_->eval("receiveData(" + CreatureFactory::getInstance().getParsedValues(webview::json_parse(s, "", 0)) + ")");
                               return "OK";
                           });
@@ -186,7 +183,6 @@ void Program::run()
                 worldPos = (worldPos + currCenter) * 0.5f;
                 simView.setCenter(worldPos);
                 programWindowPtr_->setView(simView);
-                std::cout << simView.getSize().x << "\t" << simView.getSize().y << "\n";
                 break;
             }
             case sf::Event::MouseButtonPressed:
@@ -237,6 +233,9 @@ void Program::run()
             programWindowPtr_->setView(simView);
         }
         ++frameCounter;
+        /**
+         * FPS counter
+         */
         newnow = time(0);
         if (newnow != now)
         {
@@ -271,7 +270,7 @@ void Program::terminate()
     if (programWindowPtr_)
         programWindowPtr_->close();
 
-    std::cout << "\nTerminating.\n";
+    std::cout << "\nTerminating....\n";
 
     if (simulationPtr_)
         simulationPtr_->terminate();
@@ -329,7 +328,6 @@ void Program::callTerminate()
 
 void Program::callJS(const std::string &javascript)
 {
-    std::cout<<"\n\n\nJS:\n"<<javascript<<"\n\n\n";
     webviewPtr_->dispatch([this, javascript] {
         webviewPtr_->eval(javascript);
     });
@@ -343,10 +341,8 @@ void Program::runStatistics()
     {
         SimulationData data;
         data.secondNum = simulationPtr_->getSimulationSecond();
-        std::cout<<"\nSecond: "<<data.secondNum<<"\n";
         data.populationSize = simulationPtr_->getPopulationSize();
         data.avgWeight = simulationPtr_->getAvgWeight();
-        std::cout<<"\navgWeight: "<<std::to_string(simulationPtr_->getAvgWeight())<<" "<<std::to_string(data.avgWeight)<<"\n";
         data.avgAge = simulationPtr_->getAvgAge();
         sendStatistics(data);
         if (simulationPtr_->isSelected())

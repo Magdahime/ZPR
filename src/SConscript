@@ -42,7 +42,7 @@ else:
     env.Append(CPPPATH=['#include',
                         '#lib/webview',
                         '#lib/boost'])
-    env.Append(CXXFLAGS='-std=c++17 -DWEBVIEWGTK -Wall -Wextra -fopenmp')
+    env.Append(CXXFLAGS='-std=c++17 -DWEBVIEWGTK -Wall -Wextra -fopenmp -O3')
     env.ParseConfig('pkg-config --cflags --libs python3 gtk+-3.0 webkit2gtk-4.0')
     boost_json = File('#lib/boost/stage/lib/libboost_json.a')
     boost_filesystem = File('#lib/boost/stage/lib/libboost_filesystem.a')

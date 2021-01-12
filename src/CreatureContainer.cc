@@ -76,13 +76,11 @@ void CreatureContainer::putCreature(CreatureParametersSPtr params, NeuronSetSPtr
         types_.resize(types_.size() + 1);
         creatureValues_.resize(creatureValues_.size() + PARAMS_PER_CREATURE);
         neuronValues_.resize(neuronValues_.size() + neuronsSize);
-        // std::cout << "\nSurvived resizing... NSize: "<<neuronValues_.size()<<"\n"; //alert DEBUG COUT
     }
     else
     {
         if (!availableIndexes_.pop(index))
         {
-            std::cout << "\nunsuccesful pop\n"; // alert DEBUG
             return;                             //unsuccesful pop
         }
     }
@@ -275,7 +273,6 @@ std::vector<std::vector<float>> CreatureContainer::getNeuronStates(size_t index)
         {
             out.back().push_back(neuronValues_[neuronValuesIndex++]);
         }
-        std::cout << "\nLW: " << LAYER_WIDTHS[i] << " " << i << "\n\n";
         neuronValuesIndex += LAYER_WIDTHS[i] * LAYER_WIDTHS[i + 1];
     }
     return out;

@@ -50,9 +50,12 @@ void Simulation::run()
             break;
         i++;
         newnow = time(0);
+        /**
+         * Iterations per second counter
+         */
         if (newnow != now)
         {
-            std::cout << "IPS:\t" << i << "\t CCount:\t" << populationSize_ << "\n";
+            std::cout << "\nIPS:\t" << i << "\t CCount:\t" << populationSize_ << "\n";
             i = 0;
         }
         now = newnow;
@@ -67,14 +70,12 @@ int Simulation::iteration()
     int creatureCounter = 0;
     float totalAge = 0.f;
     float totalWeight = 0.f;
-    // std::cout<<"\nEntering"; // alert DEBUG
 #pragma omp parallel for reduction(+ : creatureCounter, totalWeight, totalAge)
     for (size_t creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
             continue;
         ++creatureCounter;
-        // if(container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE) > totalAge) totalAge = container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE);
         totalAge += container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_AGE);
         totalWeight += container_.getCreatureValue(creatureIndex, CONTAINER_SLOT_WEIGHT);
         container_.populateNeurons(creatureIndex);
@@ -82,19 +83,11 @@ int Simulation::iteration()
         {
             container_.calculateLayer(creatureIndex, layerIndex);
         }
-        // if(creatureIndex == 0)
-        // std::cout<<"\nPast calculate"; // alert DEBUG
         updateCreature(creatureIndex);
-        // if(creatureIndex == 0)
-        // std::cout<<"\nPast update"; // alert DEBUG
     }
-    // std::cout<<"\nPast all"; //alert DEBUG
     avgAge_ = totalAge / creatureCounter;
     avgWeight_ = totalWeight / creatureCounter;
-    // container_.printCapacities(); // alert DEBUG
-    // std::cout<<"\n\nQueue size before:\t"<<container_.putQueue_.size()<<"\tContainer size before:\t"<<container_.getSize()<<"\n"; // alert DEBUG
     container_.putQueue();
-    // std::cout<<"\n\nQueue size after:\t"<<container_.putQueue_.size()<<"\tContainer size after:\t"<<container_.getSize()<<"\n"; // alert DEBUG
     return creatureCounter;
 }
 
@@ -120,17 +113,10 @@ void Simulation::updateCreature(size_t creatureIndex)
 
     if (birth)
     {
-        auto before = creature->speed_;
         auto childParams = CreatureFactory::getInstance().createChild(creature);
-        auto after = childParams->speed_;
-        if (after == INFINITY)
-        {
-            std::cout << "\no cie balon\t" << before << "\t" << after << "\n";
-        }
         childParams->weight_ = parameters_.weightBirth_;
         auto neurons = container_.getNeurons(creatureIndex);
         auto childNeurons = NeuronFactory::getInstance().createChild(neurons);
-        // std::cout<<"\nStarting birth... "<<iterationNumber_<<"\n"; //alert DEBUG COUT
         container_.delayPutCreature(childParams, childNeurons);
     }
     if (creature->weight_ < parameters_.minWeight_)
@@ -187,7 +173,13 @@ void Simulation::calculateEating(CreatureParametersSPtr creature, float result)
         float diffH = fabs(creature->hue_ - currH);
         if (diffH > 180.f)
             diffH = fabs(diffH - 360.f);
-        float dist = -((diffH * diffH + 30.f * 30.f) / 180.f - 50.f); //alert MAGIC
+        /**
+         * This function calculates energy loss/gain on eating based on difference between
+         * creature's and surface's color.
+         * 
+         * See: https://www.wolframalpha.com/input/?i=-%28%28x+*+x+%2B+30+*+30%29+%2F+180+-+50%29+for+x+from+0+to+180
+         */
+        float dist = -((diffH * diffH + 30.f * 30.f) / 180.f - 50.f);
         creature->energy_ += dist;
     }
 }
@@ -249,7 +241,10 @@ void Simulation::calculateAge(CreatureParametersSPtr creature)
 
 void Simulation::calculateEnergy(CreatureParametersSPtr creature)
 {
-    creature->energy_ -= (1000.f + creature->age_) / 20.f / 200.f; //alert MAGIC // idle energy consumption
+    /**
+     * The following calculates idle energy consumption, increasing with age
+     */
+    creature->energy_ -= (100.f + creature->age_) / 400.f;
     if (creature->energy_ > parameters_.energyThreshhold_)
     {
         creature->weight_ += parameters_.weightGained_;
@@ -272,10 +267,6 @@ void Simulation::printAll(std::shared_ptr<sf::RenderWindow> window)
         circle.setRadius(creature->weight_ / 2.0f);
         HSVvals hsv(creature->hue_, 1, 1);
         auto rgb = convert2RGB(hsv);
-        // if (creatureIndex == 0)
-        // {
-        //     std::cout << "Index x y w r g b a s\t" << creatureIndex << "\t" << creature->positionX_ << "\t" << creature->positionY_ << "\t" << creature->weight_ << "\t" << rgb.r_ << "\t" << rgb.g_ << "\t" << rgb.b_ << "\tAGE: " << creature->age_ << "\t" << creature->speed_ << "\n";
-        // }
         circle.setFillColor(sf::Color(rgb.r_, rgb.g_, rgb.b_));
         window->draw(circle);
     }
@@ -288,7 +279,6 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
     xMax = view.getCenter().x + view.getSize().x / 2.f;
     yMin = view.getCenter().y - view.getSize().y / 2.f;
     yMax = view.getCenter().y + view.getSize().y / 2.f;
-    // std::cout<<"\nStart print\n"; // alert DEBUG
     for (size_t creatureIndex = 0; creatureIndex < container_.getSize(); ++creatureIndex)
     {
         if (container_.isDeleted(creatureIndex))
@@ -299,7 +289,7 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
         {
             CreatureParametersSPtr creature = container_.getCreatureParameters(creatureIndex);
             sf::CircleShape circle;
-            float radius = creature->weight_ / 200.f; //alert MAGIC
+            float radius = fabs(creature->weight_) / 20.f; // Radius has to be a bit smaller than weight
             circle.setPosition(creature->positionX_ - radius, creature->positionY_ - radius);
             circle.setRadius(radius);
             HSVvals hsv(creature->hue_, 1, 1);
@@ -307,10 +297,11 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
             circle.setFillColor(sf::Color(rgb.r_, rgb.g_, rgb.b_, 200));
             window->draw(circle);
             sf::CircleShape marker;
+            // Direction marker is 1/10th size of the creature itself
             marker.setPosition(
-                creature->positionX_ + radius * sin(creature->heading_) - radius / 10.f, //alert MAGIC
+                creature->positionX_ + radius * sin(creature->heading_) - radius / 10.f,
                 creature->positionY_ + radius * cos(creature->heading_) - radius / 10.f);
-            marker.setRadius(radius / 10.f); //alert MAGIC
+            marker.setRadius(radius / 10.f);
             HSVvals hsvmarker(creature->hue_, 1, 1);
             hsvmarker.h_ = fmod(hsvmarker.h_ + 180.f, 360.f);
             auto rgbmarker = convert2RGB(hsvmarker);
@@ -326,7 +317,6 @@ void Simulation::printClipped(std::shared_ptr<sf::RenderWindow> window, sf::View
             }
         }
     }
-    // std::cout<<"\nEnd print\n"; // alert DEBUG
 }
 
 void Simulation::postVideo()
